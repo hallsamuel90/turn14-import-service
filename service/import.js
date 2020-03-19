@@ -8,6 +8,20 @@ class ImportService {
   test() {
     return 'test';
   }
+
+  /**
+   * @return {string} test
+   */
+  validateCredentials() {
+    return 'test';
+  }
+
+  /**
+   *@return {string} test
+   */
+  import() {
+    return 'test';
+  }
 }
 
 module.exports = ImportService;
