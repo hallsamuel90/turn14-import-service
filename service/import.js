@@ -1,26 +1,19 @@
 /**
- * TODO: jsdoc
+ * Import Service imports products from Turn14 into WC store
  */
 class ImportService {
   /**
-   *@return {string} test
+   * Imports brand products into WC Store
+   *
+   * @param {ImportBrandsDto} importBrandsDto
    */
-  test() {
-    return 'test';
-  }
+  async import(importBrandsDto) {
+    // validate credentials, if invalid throw up, error
 
-  /**
-   * @return {string} test
-   */
-  validateCredentials() {
-    return 'test';
-  }
+    // loop brands, import items, media, pricing, inventory
 
-  /**
-   *@return {string} test
-   */
-  import() {
-    return 'test';
+    // every 50 items, send to WC
+    console.info('👍 Import complete!');
   }
 }
 
