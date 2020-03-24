@@ -7,7 +7,7 @@ const healthRouter = require('./api/health');
 const importRouter = require('./api/import');
 
 const Container = require('typedi').Container;
-const ImportSubscriber = require('./subscriber/importSubscriber');
+const ImportSubscriber = require('./subscribers/importSubscriber');
 
 const app = express();
 

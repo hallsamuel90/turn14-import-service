@@ -16,6 +16,15 @@ class ImportBrandsDTO {
   }
 
   /**
+   * Getter for turn14Client
+   *
+   * @return {string} turn14client
+   */
+  getTurn14Client() {
+    return this.turn14Client;
+  }
+
+  /**
    * @return {*}
    */
   toJSON() {

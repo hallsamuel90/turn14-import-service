@@ -1,5 +1,5 @@
 const Container = require('typedi').Container;
-const ImportService = require('../service/import');
+const ImportService = require('../services/import');
 
 /**
  *
@@ -8,7 +8,7 @@ class ImportBrandsSequenceJob {
   /**
    * Handler for the Import Brands Job
    *
-   * @param {*} importBrandsDTO
+   * @param {ImportBrandsDTO} importBrandsDTO
    */
   handler(importBrandsDTO) {
     console.info('🔨 Import Brands Sequence Job starting!');

@@ -1,7 +1,7 @@
 const express = require('express');
 const Container = require('typedi').Container;
-const ImportBrandsDTO = require('../dto/importBrandsDto');
-const ImportPublisher = require('../publisher/importPublisher');
+const ImportBrandsDTO = require('../dtos/importBrandsDto');
+const ImportPublisher = require('../publishers/importPublisher');
 const router = express.Router();
 
 /**
@@ -19,7 +19,7 @@ router.post('/brands', function(req, res, next) {
   const importPublisher = Container.get(ImportPublisher);
   importPublisher.queueImportBrandsSequence(importBrandsDTO);
   // TODO: send email as well
-  return res.status(200).end('Import is starting!');
+  return res.status(202).end('Import is starting!');
 });
 
 module.exports = router;

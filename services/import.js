@@ -1,3 +1,4 @@
+const Turn14RestApi = require('../clients/turn14RestApi');
 /**
  * Import Service imports products from Turn14 into WC store
  */
@@ -8,7 +9,11 @@ class ImportService {
    * @param {ImportBrandsDto} importBrandsDto
    */
   async import(importBrandsDto) {
-    // validate credentials, if invalid throw up, error
+    const turn14RestApi = new Turn14RestApi(importBrandsDto.turn14Client,
+        importBrandsDto.turn14Secret);
+
+    await turn14RestApi.authenticate();
+    const brands = await turn14RestApi.fetchBrandItems(83, 1);
 
     // loop brands, import items, media, pricing, inventory
 
