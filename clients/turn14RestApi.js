@@ -33,12 +33,13 @@ class Turn14RestApi {
         'client_secret': this.turn14Secret,
       });
       if (response.status = 200) {
+        console.info('🔑 Authenticated Turn14 API!');
         const token = response.data.access_token;
         this.axiosClient.defaults.headers.common =
           {'Authorization': `Bearer ${token}`};
       }
     } catch (e) {
-      console.error('🔥 error: ' + e);
+      console.error('🔥 ' + e);
     }
   }
 
@@ -58,32 +59,96 @@ class Turn14RestApi {
       });
       return response.data;
     } catch (e) {
-      console.error('🔥 ' + e);
+      if (e.response.status = 401) {
+        console.error('🔥 ERROR: Token expired or invalid, ' +
+          'attempting to authenticate!');
+        await this.authenticate();
+        this.fetchBrandItems(brandId, pageNumber);
+      } else {
+        console.error('🔥 ' + e);
+      }
     }
   }
 
   /**
+   * Fetches brand items data
    *
-   * @param {string} brandId
+   * @param {int} brandId
+   * @param {int} pageNumber
    */
-  async fetchBrandItemData(brandId) {
-
+  async fetchBrandItemsData(brandId, pageNumber) {
+    const BRAND_ITEMS_RESOURCE = `items/data/brand/${brandId}`;
+    try {
+      const response = await this.axiosClient.get(BRAND_ITEMS_RESOURCE, {
+        params: {
+          page: pageNumber,
+        },
+      });
+      return response.data;
+    } catch (e) {
+      if (e.response.status = 401) {
+        console.error('🔥 ERROR: Token expired or invalid, ' +
+          'attempting to authenticate!');
+        await this.authenticate();
+        this.fetchBrandItemsData(brandId, pageNumber);
+      } else {
+        console.error('🔥 ' + e);
+      }
+    }
   }
 
   /**
+   * Fetches brand pricing
    *
-   * @param {string} brandId
+   * @param {int} brandId
+   * @param {int} pageNumber
    */
-  async fetchBrandPricing(brandId) {
-
+  async fetchBrandPricing(brandId, pageNumber) {
+    const BRAND_PRICING_RESOURCE = `pricing/brand/${brandId}`;
+    try {
+      const response = await this.axiosClient.get(BRAND_PRICING_RESOURCE, {
+        params: {
+          page: pageNumber,
+        },
+      });
+      return response.data;
+    } catch (e) {
+      if (e.response.status = 401) {
+        console.error('🔥 ERROR: Token expired or invalid, ' +
+            'attempting to authenticate!');
+        await this.authenticate();
+        this.fetchBrandPricing(brandId, pageNumber);
+      } else {
+        console.error('🔥 ' + e);
+      }
+    }
   }
 
   /**
+   * Fetches brand inventory
    *
-   * @param {string} brandId
+   * @param {int} brandId
+   * @param {int} pageNumber
    */
-  async fetchBrandInventory(brandId) {
-
+  async fetchBrandInventory(brandId, pageNumber) {
+    const BRAND_INVENTORY_RESOURCE = `inventory/brand/${brandId}`;
+    try {
+      const response = await this.axiosClient.get(BRAND_INVENTORY_RESOURCE, {
+        params: {
+          page: pageNumber,
+        },
+      });
+      return response.data;
+    } catch (e) {
+      if (e.response.status = 401) {
+        console.error('🔥 ERROR: Token expired or invalid, ' +
+          'attempting to authenticate!');
+        await this.authenticate();
+        this.fetchBrandInventory(brandId, pageNumber);
+      } else {
+        console.error('🔥 ' + e);
+      }
+    }
   }
 }
 

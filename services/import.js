@@ -13,7 +13,11 @@ class ImportService {
         importBrandsDto.turn14Secret);
 
     await turn14RestApi.authenticate();
-    const brands = await turn14RestApi.fetchBrandItems(83, 1);
+    const brandItems = await turn14RestApi.fetchBrandItems(83, 1);
+    const brandItemsData = await turn14RestApi.fetchBrandItemsData(83, 1);
+    const brandPricing = await turn14RestApi.fetchBrandPricing(83, 1);
+    const brandInventory= await turn14RestApi.fetchBrandInventory(83, 1);
+
 
     // loop brands, import items, media, pricing, inventory
 
