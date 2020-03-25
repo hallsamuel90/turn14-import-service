@@ -1,4 +1,5 @@
 const axios = require('axios');
+const _ = require('underscore');
 
 const BASE_URL = 'https://apitest.turn14.com/v1';
 
@@ -44,6 +45,25 @@ class Turn14RestApi {
   }
 
   /**
+   * Fetches all brand items sorted
+   *
+   * @param {int} brandId
+   */
+  async fetchAllBrandItems(brandId) {
+    let allData = [];
+    let i = 1;
+    while (true) {
+      const pageData = await this.fetchBrandItems(brandId, i);
+      if (!Array.isArray(pageData) || !pageData.length) {
+        break;
+      }
+      allData = allData.concat(pageData);
+      i++;
+    }
+    return _.sortBy(allData, 'id');
+  }
+
+  /**
    * Fetches brand items
    *
    * @param {int} brandId
@@ -57,7 +77,7 @@ class Turn14RestApi {
           page: pageNumber,
         },
       });
-      return response.data;
+      return response.data.data;
     } catch (e) {
       if (e.response.status = 401) {
         console.error('🔥 ERROR: Token expired or invalid, ' +
