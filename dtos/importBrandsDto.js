@@ -4,7 +4,7 @@
 class ImportBrandsDTO {
   /**
    *
-   * @param {*} importBrandsJSON
+   * @param {JSON} importBrandsJSON
    */
   constructor(importBrandsJSON) {
     this.turn14Client = importBrandsJSON.turn14Client;
@@ -25,7 +25,7 @@ class ImportBrandsDTO {
   }
 
   /**
-   * @return {*}
+   * @return {JSON}
    */
   toJSON() {
     return {

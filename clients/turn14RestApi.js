@@ -1,5 +1,6 @@
+const Turn14ProductDTO = require('../dtos/turn14ProductDto');
 const axios = require('axios');
-const _ = require('underscore');
+const _ = require('lodash');
 
 const BASE_URL = 'https://apitest.turn14.com/v1';
 
@@ -45,9 +46,32 @@ class Turn14RestApi {
   }
 
   /**
+   * Fetches all brand data
+   *
+   * @param {int} brandId
+   * @return {Promise<Turn14ProductDTO[]>} of all items, data, pricing,
+   * and inventory
+   */
+  async fetchAllBrandData(brandId) {
+    const items = await this.fetchAllBrandItems(brandId);
+    const itemData = await this.fetchAllBrandItemsData(brandId);
+    const itemPricing = await this.fetchAllBrandPricing(brandId);
+    const itemInventory = await this.fetchAllBrandInventory(brandId);
+    const turn14ProductDtos = [];
+    for (const item of items) {
+      const itemId = item.id;
+      const turn14ProductDto = new Turn14ProductDTO(item, itemData[itemId],
+          itemPricing[itemId], itemInventory[itemId]);
+      turn14ProductDtos.push(turn14ProductDto);
+    }
+    return turn14ProductDtos;
+  }
+
+  /**
    * Fetches all brand items sorted
    *
    * @param {int} brandId
+   * @return {Promise<JSON[]>} of brand items
    */
   async fetchAllBrandItems(brandId) {
     let allData = [];
@@ -68,6 +92,7 @@ class Turn14RestApi {
    *
    * @param {int} brandId
    * @param {int} pageNumber
+   * @return {Promise<JSON>}
    */
   async fetchBrandItems(brandId, pageNumber) {
     const BRAND_ITEMS_RESOURCE = `items/brand/${brandId}`;
@@ -79,7 +104,7 @@ class Turn14RestApi {
       });
       return response.data.data;
     } catch (e) {
-      if (e.response.status = 401) {
+      if (e.response.status == 401) {
         console.error('🔥 ERROR: Token expired or invalid, ' +
           'attempting to authenticate!');
         await this.authenticate();
@@ -91,10 +116,32 @@ class Turn14RestApi {
   }
 
   /**
+   * Fetches all brand items data as a map of
+   * {'itemId', itemData}
+   *
+   * @param {int} brandId
+   * @return {Promise<Map<string, JSON>>} of brand items data
+   */
+  async fetchAllBrandItemsData(brandId) {
+    let allData = [];
+    let i = 1;
+    while (true) {
+      const pageData = await this.fetchBrandItemsData(brandId, i);
+      if (!Array.isArray(pageData) || !pageData.length) {
+        break;
+      }
+      allData = allData.concat(pageData);
+      i++;
+    }
+    return _.keyBy(allData, 'id');
+  }
+
+  /**
    * Fetches brand items data
    *
    * @param {int} brandId
    * @param {int} pageNumber
+   * @return {Promise<JSON>}
    */
   async fetchBrandItemsData(brandId, pageNumber) {
     const BRAND_ITEMS_RESOURCE = `items/data/brand/${brandId}`;
@@ -104,9 +151,9 @@ class Turn14RestApi {
           page: pageNumber,
         },
       });
-      return response.data;
+      return response.data.data;
     } catch (e) {
-      if (e.response.status = 401) {
+      if (e.response.status == 401) {
         console.error('🔥 ERROR: Token expired or invalid, ' +
           'attempting to authenticate!');
         await this.authenticate();
@@ -118,10 +165,32 @@ class Turn14RestApi {
   }
 
   /**
+   * Fetches all brand pricing as a map of
+   * {'itemId', itemPricing}
+   *
+   * @param {int} brandId
+   * @return {Promise<Map<string, JSON>>} of brand pricing
+   */
+  async fetchAllBrandPricing(brandId) {
+    let allData = [];
+    let i = 1;
+    while (true) {
+      const pageData = await this.fetchBrandPricing(brandId, i);
+      if (!Array.isArray(pageData) || !pageData.length) {
+        break;
+      }
+      allData = allData.concat(pageData);
+      i++;
+    }
+    return _.keyBy(allData, 'id');
+  }
+
+  /**
    * Fetches brand pricing
    *
    * @param {int} brandId
    * @param {int} pageNumber
+   * @return {Promise<JSON>}
    */
   async fetchBrandPricing(brandId, pageNumber) {
     const BRAND_PRICING_RESOURCE = `pricing/brand/${brandId}`;
@@ -131,9 +200,9 @@ class Turn14RestApi {
           page: pageNumber,
         },
       });
-      return response.data;
+      return response.data.data;
     } catch (e) {
-      if (e.response.status = 401) {
+      if (e.response.status == 401) {
         console.error('🔥 ERROR: Token expired or invalid, ' +
             'attempting to authenticate!');
         await this.authenticate();
@@ -145,10 +214,32 @@ class Turn14RestApi {
   }
 
   /**
+   * Fetches all brand inventory as a map of
+   * {'itemId', itemInventory}
+   *
+   * @param {int} brandId
+   * @return {Promise<Map<string, JSON>>} of brand inventory
+   */
+  async fetchAllBrandInventory(brandId) {
+    let allData = [];
+    let i = 1;
+    while (true) {
+      const pageData = await this.fetchBrandInventory(brandId, i);
+      if (!Array.isArray(pageData) || !pageData.length) {
+        break;
+      }
+      allData = allData.concat(pageData);
+      i++;
+    }
+    return _.keyBy(allData, 'id');
+  }
+
+  /**
    * Fetches brand inventory
    *
    * @param {int} brandId
    * @param {int} pageNumber
+   * @return {Promise<JSON>}
    */
   async fetchBrandInventory(brandId, pageNumber) {
     const BRAND_INVENTORY_RESOURCE = `inventory/brand/${brandId}`;
@@ -158,9 +249,9 @@ class Turn14RestApi {
           page: pageNumber,
         },
       });
-      return response.data;
+      return response.data.data;
     } catch (e) {
-      if (e.response.status = 401) {
+      if (e.response.status == 401) {
         console.error('🔥 ERROR: Token expired or invalid, ' +
           'attempting to authenticate!');
         await this.authenticate();
