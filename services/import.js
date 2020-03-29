@@ -19,8 +19,10 @@ class ImportService {
    * @param {ImportBrandsDto} importBrandsDto
    */
   async import(importBrandsDto) {
-    const turn14RestApi = new Turn14RestApi(importBrandsDto.turn14Client,
-        importBrandsDto.turn14Secret);
+    const turn14RestApi = new Turn14RestApi(
+      importBrandsDto.turn14Client,
+      importBrandsDto.turn14Secret
+    );
     await turn14RestApi.authenticate();
     const wcProducts = [];
     for (const brandId of importBrandsDto.brandIds) {
@@ -33,7 +35,7 @@ class ImportService {
           wcProducts.length = 0;
         }
       }
-    };
+    }
     console.info('👍 Import complete!');
   }
 }

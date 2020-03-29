@@ -17,5 +17,4 @@ class ImportBrandsSequenceJob {
   }
 }
 
-
 module.exports = ImportBrandsSequenceJob;

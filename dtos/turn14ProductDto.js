@@ -3,13 +3,13 @@
  */
 class Turn14ProductDTO {
   /**
-    * Constructor for Turn14ProductDTO
-    *
-    * @param {JSON} item
-    * @param {JSON} itemData
-    * @param {JSON} itemPricing
-    * @param {JSON} itemInventory
-    */
+   * Constructor for Turn14ProductDTO
+   *
+   * @param {JSON} item
+   * @param {JSON} itemData
+   * @param {JSON} itemPricing
+   * @param {JSON} itemInventory
+   */
   constructor(item, itemData, itemPricing, itemInventory) {
     this.item = item;
     this.itemData = itemData;
@@ -51,4 +51,3 @@ class Turn14ProductDTO {
 }
 
 module.exports = Turn14ProductDTO;
-

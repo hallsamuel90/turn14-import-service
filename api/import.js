@@ -7,14 +7,14 @@ const router = express.Router();
 /**
  * TODO: Stub for import all
  */
-router.post('/all', function(req, res) {
+router.post('/all', function (req, res) {
   res.send('Up and Running!');
 });
 
 /**
  * Import by brand
  */
-router.post('/brands', function(req, res, next) {
+router.post('/brands', function (req, res, next) {
   const importBrandsDTO = new ImportBrandsDTO(req.body).toJSON();
   const importPublisher = Container.get(ImportPublisher);
   importPublisher.queueImportBrandsSequence(importBrandsDTO);

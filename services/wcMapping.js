@@ -5,6 +5,14 @@ const WcProductDto = require('../dtos/wcProductDto');
  */
 class WcMappingService {
   /**
+   * Default constructor
+   */
+  constructor() {
+    // get categories as map of {name: Object}
+    this.categoriesCache = null;
+  }
+
+  /**
    *
    * @param {Turn14ProductDTO} turn14ProductDto
    */

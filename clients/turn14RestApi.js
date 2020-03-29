@@ -30,15 +30,16 @@ class Turn14RestApi {
     const TOKEN_RESOURCE = '/token';
     try {
       const response = await this.axiosClient.post(TOKEN_RESOURCE, {
-        'grant_type': 'client_credentials',
-        'client_id': this.turn14Client,
-        'client_secret': this.turn14Secret,
+        grant_type: 'client_credentials',
+        client_id: this.turn14Client,
+        client_secret: this.turn14Secret,
       });
-      if (response.status = 200) {
+      if (response.status == 200) {
         console.info('🔑 Authenticated Turn14 API!');
         const token = response.data.access_token;
-        this.axiosClient.defaults.headers.common =
-          {'Authorization': `Bearer ${token}`};
+        this.axiosClient.defaults.headers.common = {
+          Authorization: `Bearer ${token}`,
+        };
       }
     } catch (e) {
       console.error('🔥 ' + e);
@@ -60,8 +61,12 @@ class Turn14RestApi {
     const turn14ProductDtos = [];
     for (const item of items) {
       const itemId = item.id;
-      const turn14ProductDto = new Turn14ProductDTO(item, itemData[itemId],
-          itemPricing[itemId], itemInventory[itemId]);
+      const turn14ProductDto = new Turn14ProductDTO(
+        item,
+        itemData[itemId],
+        itemPricing[itemId],
+        itemInventory[itemId]
+      );
       turn14ProductDtos.push(turn14ProductDto);
     }
     return turn14ProductDtos;
@@ -105,8 +110,9 @@ class Turn14RestApi {
       return response.data.data;
     } catch (e) {
       if (e.response.status == 401) {
-        console.error('🔥 ERROR: Token expired or invalid, ' +
-          'attempting to authenticate!');
+        console.error(
+          '🔥 ERROR: Token expired or invalid, ' + 'attempting to authenticate!'
+        );
         await this.authenticate();
         this.fetchBrandItems(brandId, pageNumber);
       } else {
@@ -154,8 +160,9 @@ class Turn14RestApi {
       return response.data.data;
     } catch (e) {
       if (e.response.status == 401) {
-        console.error('🔥 ERROR: Token expired or invalid, ' +
-          'attempting to authenticate!');
+        console.error(
+          '🔥 ERROR: Token expired or invalid, ' + 'attempting to authenticate!'
+        );
         await this.authenticate();
         this.fetchBrandItemsData(brandId, pageNumber);
       } else {
@@ -203,8 +210,9 @@ class Turn14RestApi {
       return response.data.data;
     } catch (e) {
       if (e.response.status == 401) {
-        console.error('🔥 ERROR: Token expired or invalid, ' +
-            'attempting to authenticate!');
+        console.error(
+          '🔥 ERROR: Token expired or invalid, ' + 'attempting to authenticate!'
+        );
         await this.authenticate();
         this.fetchBrandPricing(brandId, pageNumber);
       } else {
@@ -252,8 +260,9 @@ class Turn14RestApi {
       return response.data.data;
     } catch (e) {
       if (e.response.status == 401) {
-        console.error('🔥 ERROR: Token expired or invalid, ' +
-          'attempting to authenticate!');
+        console.error(
+          '🔥 ERROR: Token expired or invalid, ' + 'attempting to authenticate!'
+        );
         await this.authenticate();
         this.fetchBrandInventory(brandId, pageNumber);
       } else {
