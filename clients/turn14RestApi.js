@@ -3,6 +3,8 @@ const axios = require('axios');
 const _ = require('lodash');
 
 const BASE_URL = 'https://apitest.turn14.com/v1';
+const INVALID_CREDENTIALS =
+  '🔥 ERROR: Token expired or invalid, attempting to authenticate!';
 
 /**
  * Turn14 Rest Api Client
@@ -109,12 +111,12 @@ class Turn14RestApi {
       });
       return response.data.data;
     } catch (e) {
-      if (e.response.status == 401) {
-        console.error(
-          '🔥 ERROR: Token expired or invalid, ' + 'attempting to authenticate!'
-        );
-        await this.authenticate();
-        this.fetchBrandItems(brandId, pageNumber);
+      if (e.response.status != undefined) {
+        if (e.response.status == 401) {
+          console.error(INVALID_CREDENTIALS);
+          await this.authenticate();
+          this.fetchBrandItems(brandId, pageNumber);
+        }
       } else {
         console.error('🔥 ' + e);
       }
@@ -159,12 +161,12 @@ class Turn14RestApi {
       });
       return response.data.data;
     } catch (e) {
-      if (e.response.status == 401) {
-        console.error(
-          '🔥 ERROR: Token expired or invalid, ' + 'attempting to authenticate!'
-        );
-        await this.authenticate();
-        this.fetchBrandItemsData(brandId, pageNumber);
+      if (e.response.status != undefined) {
+        if (e.response.status == 401) {
+          console.error(INVALID_CREDENTIALS);
+          await this.authenticate();
+          this.fetchBrandItems(brandId, pageNumber);
+        }
       } else {
         console.error('🔥 ' + e);
       }
@@ -209,12 +211,12 @@ class Turn14RestApi {
       });
       return response.data.data;
     } catch (e) {
-      if (e.response.status == 401) {
-        console.error(
-          '🔥 ERROR: Token expired or invalid, ' + 'attempting to authenticate!'
-        );
-        await this.authenticate();
-        this.fetchBrandPricing(brandId, pageNumber);
+      if (e.response.status != undefined) {
+        if (e.response.status == 401) {
+          console.error(INVALID_CREDENTIALS);
+          await this.authenticate();
+          this.fetchBrandItems(brandId, pageNumber);
+        }
       } else {
         console.error('🔥 ' + e);
       }
@@ -259,12 +261,12 @@ class Turn14RestApi {
       });
       return response.data.data;
     } catch (e) {
-      if (e.response.status == 401) {
-        console.error(
-          '🔥 ERROR: Token expired or invalid, ' + 'attempting to authenticate!'
-        );
-        await this.authenticate();
-        this.fetchBrandInventory(brandId, pageNumber);
+      if (e.response.status != undefined) {
+        if (e.response.status == 401) {
+          console.error(INVALID_CREDENTIALS);
+          await this.authenticate();
+          this.fetchBrandItems(brandId, pageNumber);
+        }
       } else {
         console.error('🔥 ' + e);
       }

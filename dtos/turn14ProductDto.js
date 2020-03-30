@@ -16,38 +16,6 @@ class Turn14ProductDTO {
     this.itemPricing = itemPricing;
     this.itemInventory = itemInventory;
   }
-
-  /**
-   * Getter for item
-   * @return {JSON} item
-   */
-  getItem() {
-    return this.item;
-  }
-
-  /**
-   * Getter for item data
-   * @return {JSON} item data
-   */
-  getItemData() {
-    return this.itemData;
-  }
-
-  /**
-   * Getter for item pricing
-   * @return {JSON} item pricing
-   */
-  getItemPricing() {
-    return this.itemPricing;
-  }
-
-  /**
-   * Getter for item inventory
-   * @return {JSON} item inventory
-   */
-  getItemInventory() {
-    return this.itemInventory;
-  }
 }
 
 module.exports = Turn14ProductDTO;
