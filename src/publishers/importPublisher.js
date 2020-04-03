@@ -10,7 +10,7 @@ class ImportPublisher {
    */
   async queueImportBrandsSequence(importBrands) {
     try {
-      const connection = await amqp.connect('amqp://localhost:5672');
+      const connection = await amqp.connect(process.env.RABBITMQ_URI);
       const channel = await connection.createChannel();
       await channel.assertQueue('importBrandsQueue');
       channel.sendToQueue(

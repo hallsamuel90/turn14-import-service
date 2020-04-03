@@ -1,4 +1,4 @@
-const WcDimensionsDTO = require('../dtos/wcDimensionsDto');
+const WcDimensionsDTO = require('./wcDimensionsDto');
 /**
  * WooCommerce Product Data Transfer Object
  */
@@ -34,20 +34,20 @@ class WcProductDTO {
       name: this.name,
       type: this.type,
       short_description: this.shortDescription,
-      // description: this.description,
-      // sku: this.sku,
-      // regular_price: this.regularPrice,
-      // sale_price: this.salePrice,
-      // categories: this.categories,
-      // images: this.images,
-      // weight: this.weight,
-      // dimensions: this.dimensions.toJSON(),
-      // manage_stock: this.manageStock,
-      // stock_quantity: this.stockQuantity,
-      // stock_status: this.stockStatus,
-      // backorders: this.backorders,
-      // backorders_allowed: this.backordersAllowed,
-      // attributes: this.attributes,
+      description: this.description,
+      sku: this.sku,
+      regular_price: this.regularPrice,
+      sale_price: this.salePrice,
+      categories: this.categories,
+      images: this.images,
+      weight: this.weight,
+      dimensions: this.dimensions.toJSON(),
+      manage_stock: this.manageStock,
+      stock_quantity: this.stockQuantity,
+      stock_status: this.stockStatus,
+      backorders: this.backorders,
+      backorders_allowed: this.backordersAllowed,
+      attributes: this.attributes,
     };
   }
 }

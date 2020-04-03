@@ -12,7 +12,7 @@ class ImportSubscriber {
    */
   async subscribeImportBrandsSequence() {
     try {
-      const connection = await amqp.connect('amqp://localhost:5672');
+      const connection = await amqp.connect(process.env.RABBITMQ_URI);
       const channel = await connection.createChannel();
       await channel.assertQueue('importBrandsQueue');
       const importBrandsSequence = Container.get(ImportBrandsSequence);

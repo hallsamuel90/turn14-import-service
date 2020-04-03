@@ -2,7 +2,7 @@ const Turn14RestApi = require('../clients/turn14RestApi');
 const WcRestApi = require('../clients/wcRestApi');
 const WcBatchDTO = require('../dtos/wcBatchDTO');
 const Container = require('typedi').Container;
-const WcMappingService = require('../services/wcMapping');
+const WcMappingService = require('./wcMapping');
 
 /**
  * Import Service imports products from Turn14 into WC store
@@ -14,7 +14,7 @@ class ImportService {
    */
   constructor() {
     this.wcMappingService = Container.get(WcMappingService);
-    this.BATCH_SIZE = 1;
+    this.BATCH_SIZE = 5;
   }
 
   /**
@@ -32,19 +32,20 @@ class ImportService {
       importBrandsDto.wcClient,
       importBrandsDto.wcSecret
     );
+    this.wcMappingService.initCache(wcRestApi);
 
     await turn14RestApi.authenticate();
     const wcProducts = new WcBatchDTO();
     for (const brandId of importBrandsDto.brandIds) {
       const turn14Products = await turn14RestApi.fetchAllBrandData(brandId);
       for (const turn14Product of turn14Products) {
-        const wcProduct = this.wcMappingService.turn14ToWc(turn14Product);
+        const wcProduct = await this.wcMappingService.turn14ToWc(turn14Product);
         wcProducts.create.push(wcProduct);
         if (wcProducts.totalSize() == this.BATCH_SIZE) {
           await wcRestApi.createProducts(wcProducts.toJSON());
           wcProducts.length = 0;
         }
-        break; // TODO: remove
+        // break; // TODO: remove
       }
       break; // TODO: remove
     }
