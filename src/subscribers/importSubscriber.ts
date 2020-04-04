@@ -1,6 +1,6 @@
-const amqp = require('amqplib');
-const Container = require('typedi').Container;
-const ImportBrandsSequence = require('../jobs/importBrandsSequence');
+import amqp from 'amqplib';
+import { Container } from 'typedi';
+import ImportBrandsSequence from '../jobs/importBrandsSequence';
 
 /**
  *
@@ -8,9 +8,8 @@ const ImportBrandsSequence = require('../jobs/importBrandsSequence');
 class ImportSubscriber {
   /**
    *
-   * @param {*} importBrands
    */
-  async subscribeImportBrandsSequence() {
+  async subscribeImportBrandsSequence(): Promise<void> {
     try {
       const connection = await amqp.connect(process.env.RABBITMQ_URI);
       const channel = await connection.createChannel();

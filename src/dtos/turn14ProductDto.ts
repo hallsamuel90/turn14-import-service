@@ -1,7 +1,11 @@
 /**
  * Turn14 Product Data Transfer Object
  */
-class Turn14ProductDTO {
+export default class Turn14ProductDTO {
+  item: JSON;
+  itemData: JSON;
+  itemPricing: JSON;
+  itemInventory: JSON;
   /**
    * Constructor for Turn14ProductDTO
    *
@@ -10,12 +14,15 @@ class Turn14ProductDTO {
    * @param {JSON} itemPricing
    * @param {JSON} itemInventory
    */
-  constructor(item, itemData, itemPricing, itemInventory) {
+  constructor(
+    item: JSON,
+    itemData: JSON,
+    itemPricing: JSON,
+    itemInventory: JSON
+  ) {
     this.item = item;
     this.itemData = itemData;
     this.itemPricing = itemPricing;
     this.itemInventory = itemInventory;
   }
 }
-
-module.exports = Turn14ProductDTO;

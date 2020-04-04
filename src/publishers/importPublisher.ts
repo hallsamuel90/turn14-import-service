@@ -1,4 +1,5 @@
-const amqp = require('amqplib');
+import { connect } from 'amqplib';
+import ImportBrandsDTO from '../dtos/importBrandsDto';
 
 /**
  *
@@ -6,11 +7,13 @@ const amqp = require('amqplib');
 class ImportPublisher {
   /**
    *
-   * @param {JSON} importBrands
+   * @param {ImportBrandsDTO} importBrands
    */
-  async queueImportBrandsSequence(importBrands) {
+  async queueImportBrandsSequence(
+    importBrands: ImportBrandsDTO
+  ): Promise<void> {
     try {
-      const connection = await amqp.connect(process.env.RABBITMQ_URI);
+      const connection = await connect(process.env.RABBITMQ_URI);
       const channel = await connection.createChannel();
       await channel.assertQueue('importBrandsQueue');
       channel.sendToQueue(
@@ -24,4 +27,4 @@ class ImportPublisher {
   }
 }
 
-module.exports = ImportPublisher;
+export default ImportPublisher;

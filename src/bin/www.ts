@@ -3,15 +3,11 @@
 /**
  * Module dependencies.
  */
-const app = require('../app');
-const debug = require('debug')('turn14-import-service:server');
-const http = require('http');
+import * as Debug from 'debug';
+import http from 'http';
+import app from '../app';
 
-/**
- * Get port from environment and store in Express.
- */
-const port = normalizePort(process.env.PORT || '8081');
-app.set('port', port);
+const debug = Debug('turn14-import-service:server');
 
 /**
  * Create HTTP server.
@@ -19,21 +15,13 @@ app.set('port', port);
 const server = http.createServer(app);
 
 /**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
  * Normalize a port into a number, string, or false.
  *
- * @param {any} val
+ * @param {string} val
  *
- * @return {any} normalized port
+ * @return {string|number|boolean} normalized port
  */
-function normalizePort(val) {
+function normalizePort(val: string): string | number | boolean {
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -50,11 +38,17 @@ function normalizePort(val) {
 }
 
 /**
+ * Get port from environment and store in Express.
+ */
+const port = normalizePort(process.env.PORT || '8081');
+app.set('port', port);
+
+/**
  * Event listener for HTTP server "error" event.
  *
- * @param {error} error
+ * @param {NodeJS.ErrnoException} error
  */
-function onError(error) {
+function onError(error: NodeJS.ErrnoException): void {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -79,8 +73,16 @@ function onError(error) {
 /**
  * Event listener for HTTP server "listening" event.
  */
-function onListening() {
+function onListening(): void {
   const addr = server.address();
   const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);

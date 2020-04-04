@@ -1,17 +1,20 @@
-const WcProductDTO = require('../dtos/wcProductDto');
-const WcImageDTO = require('../dtos/wcImageDto');
-const WcCategoriesCache = require('../cache/wcCategoriesCache');
-const _ = require('lodash');
-
+/* eslint-disable @typescript-eslint/camelcase */
+import _ from 'lodash';
+import WcCategoriesCache from '../cache/wcCategoriesCache';
+import WcRestApi from '../clients/wcRestApi';
+import Turn14ProductDTO from '../dtos/turn14ProductDto';
+import WcImageDTO from '../dtos/wcImageDto';
+import WcProductDTO from '../dtos/wcProductDto';
 const MAP = 'MAP';
 const RETAIL = 'Retail';
 const JOBBER = 'Jobber';
 const DESCRIPTION = 'Market Description';
-PRIMARY_IMAGE = 'Photo - Primary';
+const PRIMARY_IMAGE = 'Photo - Primary';
 /**
  * Wc Mapping Service maps Turn14 attributes to WcProductDto
  */
-class WcMappingService {
+export default class WcMappingService {
+  categoriesCache: WcCategoriesCache;
   /**
    * Default constructor
    */
@@ -23,7 +26,7 @@ class WcMappingService {
    *
    * @param {WcRestApi} wcRestApi
    */
-  async initCache(wcRestApi) {
+  async initCache(wcRestApi: WcRestApi): Promise<void> {
     this.categoriesCache = new WcCategoriesCache();
     await this.categoriesCache.initCache(wcRestApi);
   }
@@ -31,12 +34,12 @@ class WcMappingService {
   /**
    *
    * @param {Turn14ProductDTO} turn14ProductDto
-   * @return {WcProductDTO} converted wcProductDto
+   * @return {Promise<WcProductDTO>} converted wcProductDto
    */
-  async turn14ToWc(turn14ProductDto) {
+  async turn14ToWc(turn14ProductDto: Turn14ProductDTO): Promise<WcProductDTO> {
     const wcProduct = new WcProductDTO();
     // attributes
-    const itemAttributes = turn14ProductDto.item.attributes;
+    const itemAttributes = turn14ProductDto.item['attributes'];
     wcProduct.name = itemAttributes.product_name;
     wcProduct.sku = itemAttributes.mfr_part_number;
     wcProduct.shortDescription = itemAttributes.part_description;
@@ -61,7 +64,7 @@ class WcMappingService {
     const itemData = turn14ProductDto.itemData;
     if (itemData['descriptions']) {
       const descriptions = _.keyBy(
-        turn14ProductDto.itemData.descriptions,
+        turn14ProductDto.itemData['descriptions'],
         'type'
       );
       if (descriptions[DESCRIPTION]) {
@@ -69,10 +72,13 @@ class WcMappingService {
       }
     }
     if (itemData['files']) {
-      const files = _.keyBy(turn14ProductDto.itemData.files, 'media_content');
+      const files = _.keyBy(
+        turn14ProductDto.itemData['files'],
+        'media_content'
+      );
       if (files[PRIMARY_IMAGE]) {
         const imageLinks = files[PRIMARY_IMAGE].links;
-        wcProduct.images.push(new WcImageDTO(_.last(imageLinks).url));
+        wcProduct.images.push(new WcImageDTO(_.last(imageLinks)['url']));
       }
       // TODO: other types of photos ie Photo - Mounted
     } else if (itemAttributes.thumbnail) {
@@ -80,28 +86,28 @@ class WcMappingService {
     }
 
     // pricing
-    const itemPricing = turn14ProductDto.itemPricing.attributes;
+    const itemPricing = turn14ProductDto.itemPricing['attributes'];
     const priceLists = _.keyBy(itemPricing.pricelists, 'name');
     if (priceLists[RETAIL] && priceLists[MAP]) {
-      wcProduct.regularPrice = priceLists[RETAIL].price;
-      wcProduct.salePrice = priceLists[MAP].price;
+      wcProduct.regular_price = priceLists[RETAIL].price;
+      wcProduct.sale_price = priceLists[MAP].price;
     } else if (priceLists[RETAIL]) {
-      wcProduct.regularPrice = priceLists[RETAIL].price;
+      wcProduct.regular_price = priceLists[RETAIL].price;
     } else if (priceLists[MAP]) {
-      wcProduct.regularPrice = priceLists[MAP].price;
+      wcProduct.regular_price = priceLists[MAP].price;
     } else if (priceLists[JOBBER]) {
-      wcProduct.regularPrice = priceLists[JOBBER].price;
+      wcProduct.regular_price = priceLists[JOBBER].price;
     }
 
     // inventory
     if (turn14ProductDto.itemInventory) {
-      const itemInventory = turn14ProductDto.itemInventory.attributes;
+      const itemInventory = turn14ProductDto.itemInventory['attributes'];
       let totalStock = 0;
       const warehouseStock = itemInventory['inventory'];
       if (warehouseStock != undefined) {
         for (const stock in warehouseStock) {
           if (warehouseStock[stock] > 0) {
-            totalStock = totalStock + stock;
+            totalStock = totalStock + Number(stock);
           }
         }
       }
@@ -109,13 +115,13 @@ class WcMappingService {
       if (manufacturerStock != undefined) {
         for (const stock in manufacturerStock) {
           if (manufacturerStock[stock] > 0) {
-            totalStock = totalStock + stock;
+            totalStock = totalStock + Number(stock);
           }
         }
       }
-      wcProduct.manageStock = true;
+      wcProduct.manage_stock = true;
       wcProduct.backorders = 'notify';
-      wcProduct.stockQuantity = totalStock;
+      wcProduct.stock_quantity = totalStock;
     } else {
       // TODO: add special order attribute
     }
@@ -125,4 +131,3 @@ class WcMappingService {
     return wcProduct;
   }
 }
-module.exports = WcMappingService;

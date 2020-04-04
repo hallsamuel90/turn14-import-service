@@ -1,20 +1,24 @@
-const axios = require('axios');
-const https = require('https');
-const _ = require('lodash');
+import axios, { AxiosInstance } from 'axios';
+import https from 'https';
+import _, { Dictionary } from 'lodash';
+import WcBatchDTO from '../dtos/wcBatchDTO';
+import WcCategoryDTO from '../dtos/wcCategoryDto';
 
 const BATCH_PRODUCTS_RESOURCE = 'wp-json/wc/v3/products/batch';
 const PRODUCT_CATEOGORIES_RESOURCE = 'wp-json/wc/v3/products/categories';
 /**
  * WooCommerce Rest Api Client
  */
-class WcRestApi {
+export default class WcRestApi {
+  axiosClient: AxiosInstance;
+
   /**
    *
    * @param {string} wcUrl
    * @param {string} wcClient
    * @param {string} wcSecret
    */
-  constructor(wcUrl, wcClient, wcSecret) {
+  constructor(wcUrl: string, wcClient: string, wcSecret: string) {
     this.axiosClient = axios.create({
       baseURL: wcUrl,
       auth: {
@@ -31,16 +35,16 @@ class WcRestApi {
   /**
    * Batch creates, updates, and deletes woocomerce products, limited to 100 at a time
    *
-   * @param {WcProductDTO[]} wcProducts
+   * @param {WcBatchDTO} wcProducts
    * @return {Promise<JSON>} response
    */
-  async createProducts(wcProducts) {
+  async createProducts(wcProducts: WcBatchDTO): Promise<JSON> {
     try {
       const response = await this.axiosClient.post(
         BATCH_PRODUCTS_RESOURCE,
         wcProducts
       );
-      return response;
+      return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
     }
@@ -49,9 +53,9 @@ class WcRestApi {
   /**
    * Fetches categories from woocommerce
    *
-   * @return {Promise<JSON>} response
+   * @return {Promise<Dictionary<JSON>>} response
    */
-  async fetchCategories() {
+  async fetchCategories(): Promise<Dictionary<JSON>> {
     try {
       const response = await this.axiosClient.get(PRODUCT_CATEOGORIES_RESOURCE);
       return _.keyBy(response.data, 'name');
@@ -66,17 +70,15 @@ class WcRestApi {
    * @param {WcCategoryDTO} wcCategoryDto
    * @return {Promise<JSON>} response
    */
-  async createCategory(wcCategoryDto) {
+  async createCategory(wcCategoryDto: WcCategoryDTO): Promise<JSON> {
     try {
       const response = await this.axiosClient.post(
         PRODUCT_CATEOGORIES_RESOURCE,
         wcCategoryDto
       );
-      return response;
+      return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
     }
   }
 }
-
-module.exports = WcRestApi;

@@ -1,6 +1,7 @@
-const Turn14ProductDTO = require('../dtos/turn14ProductDto');
-const axios = require('axios');
-const _ = require('lodash');
+/* eslint-disable @typescript-eslint/camelcase */
+import axios, { AxiosInstance } from 'axios';
+import _, { Dictionary } from 'lodash';
+import Turn14ProductDTO from '../dtos/turn14ProductDto';
 
 const BASE_URL = 'https://apitest.turn14.com/v1';
 const INVALID_CREDENTIALS =
@@ -9,14 +10,18 @@ const INVALID_CREDENTIALS =
 /**
  * Turn14 Rest Api Client
  */
-class Turn14RestApi {
+export default class Turn14RestApi {
+  turn14Client: string;
+  turn14Secret: string;
+  axiosClient: AxiosInstance;
+
   /**
    * Constructs a new Turn14RestApi client
    *
    * @param {string} turn14Client
    * @param {string} turn14Secret
    */
-  constructor(turn14Client, turn14Secret) {
+  constructor(turn14Client: string, turn14Secret: string) {
     this.turn14Client = turn14Client;
     this.turn14Secret = turn14Secret;
     this.axiosClient = axios.create({
@@ -27,8 +32,10 @@ class Turn14RestApi {
   /**
    * Authenticates the Turn14API and attaches the auth token to
    * all subsequent requests
+   *
+   * @return {Promise<void>}
    */
-  async authenticate() {
+  async authenticate(): Promise<void> {
     const TOKEN_RESOURCE = '/token';
     try {
       const response = await this.axiosClient.post(TOKEN_RESOURCE, {
@@ -51,18 +58,18 @@ class Turn14RestApi {
   /**
    * Fetches all brand data
    *
-   * @param {int} brandId
+   * @param {number} brandId
    * @return {Promise<Turn14ProductDTO[]>} of all items, data, pricing,
    * and inventory
    */
-  async fetchAllBrandData(brandId) {
+  async fetchAllBrandData(brandId: number): Promise<Turn14ProductDTO[]> {
     const items = await this.fetchAllBrandItems(brandId);
     const itemData = await this.fetchAllBrandItemsData(brandId);
     const itemPricing = await this.fetchAllBrandPricing(brandId);
     const itemInventory = await this.fetchAllBrandInventory(brandId);
     const turn14ProductDtos = [];
     for (const item of items) {
-      const itemId = item.id;
+      const itemId = item['id'];
       const turn14ProductDto = new Turn14ProductDTO(
         item,
         itemData[itemId],
@@ -77,10 +84,10 @@ class Turn14RestApi {
   /**
    * Fetches all brand items sorted
    *
-   * @param {int} brandId
+   * @param {number} brandId
    * @return {Promise<JSON[]>} of brand items
    */
-  async fetchAllBrandItems(brandId) {
+  async fetchAllBrandItems(brandId: number): Promise<JSON[]> {
     let allData = [];
     let i = 1;
     while (true) {
@@ -97,11 +104,11 @@ class Turn14RestApi {
   /**
    * Fetches brand items
    *
-   * @param {int} brandId
-   * @param {int} pageNumber
+   * @param {number} brandId
+   * @param {number} pageNumber
    * @return {Promise<JSON>}
    */
-  async fetchBrandItems(brandId, pageNumber) {
+  async fetchBrandItems(brandId: number, pageNumber: number): Promise<JSON> {
     const BRAND_ITEMS_RESOURCE = `items/brand/${brandId}`;
     try {
       const response = await this.axiosClient.get(BRAND_ITEMS_RESOURCE, {
@@ -127,10 +134,10 @@ class Turn14RestApi {
    * Fetches all brand items data as a map of
    * {'itemId', itemData}
    *
-   * @param {int} brandId
-   * @return {Promise<Map<string, JSON>>} of brand items data
+   * @param {number} brandId
+   * @return {Promise<Dictionary<JSON>>} of brand items data
    */
-  async fetchAllBrandItemsData(brandId) {
+  async fetchAllBrandItemsData(brandId: number): Promise<Dictionary<JSON>> {
     let allData = [];
     let i = 1;
     while (true) {
@@ -147,11 +154,14 @@ class Turn14RestApi {
   /**
    * Fetches brand items data
    *
-   * @param {int} brandId
-   * @param {int} pageNumber
+   * @param {number} brandId
+   * @param {number} pageNumber
    * @return {Promise<JSON>}
    */
-  async fetchBrandItemsData(brandId, pageNumber) {
+  async fetchBrandItemsData(
+    brandId: number,
+    pageNumber: number
+  ): Promise<JSON> {
     const BRAND_ITEMS_RESOURCE = `items/data/brand/${brandId}`;
     try {
       const response = await this.axiosClient.get(BRAND_ITEMS_RESOURCE, {
@@ -177,10 +187,10 @@ class Turn14RestApi {
    * Fetches all brand pricing as a map of
    * {'itemId', itemPricing}
    *
-   * @param {int} brandId
-   * @return {Promise<Map<string, JSON>>} of brand pricing
+   * @param {number} brandId
+   * @return {Promise<Dictionary<JSON>>} of brand pricing
    */
-  async fetchAllBrandPricing(brandId) {
+  async fetchAllBrandPricing(brandId: number): Promise<Dictionary<JSON>> {
     let allData = [];
     let i = 1;
     while (true) {
@@ -197,11 +207,11 @@ class Turn14RestApi {
   /**
    * Fetches brand pricing
    *
-   * @param {int} brandId
-   * @param {int} pageNumber
+   * @param {number} brandId
+   * @param {number} pageNumber
    * @return {Promise<JSON>}
    */
-  async fetchBrandPricing(brandId, pageNumber) {
+  async fetchBrandPricing(brandId: number, pageNumber: number): Promise<JSON> {
     const BRAND_PRICING_RESOURCE = `pricing/brand/${brandId}`;
     try {
       const response = await this.axiosClient.get(BRAND_PRICING_RESOURCE, {
@@ -227,10 +237,10 @@ class Turn14RestApi {
    * Fetches all brand inventory as a map of
    * {'itemId', itemInventory}
    *
-   * @param {int} brandId
-   * @return {Promise<Map<string, JSON>>} of brand inventory
+   * @param {number} brandId
+   * @return {Promise<Dictionary<JSON>>} of brand inventory
    */
-  async fetchAllBrandInventory(brandId) {
+  async fetchAllBrandInventory(brandId: number): Promise<Dictionary<JSON>> {
     let allData = [];
     let i = 1;
     while (true) {
@@ -247,11 +257,14 @@ class Turn14RestApi {
   /**
    * Fetches brand inventory
    *
-   * @param {int} brandId
-   * @param {int} pageNumber
+   * @param {number} brandId
+   * @param {number} pageNumber
    * @return {Promise<JSON>}
    */
-  async fetchBrandInventory(brandId, pageNumber) {
+  async fetchBrandInventory(
+    brandId: number,
+    pageNumber: number
+  ): Promise<JSON> {
     const BRAND_INVENTORY_RESOURCE = `inventory/brand/${brandId}`;
     try {
       const response = await this.axiosClient.get(BRAND_INVENTORY_RESOURCE, {
@@ -273,5 +286,3 @@ class Turn14RestApi {
     }
   }
 }
-
-module.exports = Turn14RestApi;

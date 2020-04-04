@@ -1,20 +1,19 @@
-const Container = require('typedi').Container;
-const ImportService = require('../services/import');
+import { Container } from 'typedi';
+import ImportBrandsDTO from '../dtos/importBrandsDto';
+import ImportService from '../services/import';
 
 /**
  *
  */
-class ImportBrandsSequenceJob {
+export default class ImportBrandsSequenceJob {
   /**
    * Handler for the Import Brands Job
    *
    * @param {ImportBrandsDTO} importBrandsDTO
    */
-  handler(importBrandsDTO) {
+  handler(importBrandsDTO: ImportBrandsDTO): void {
     console.info('🔨 Import Brands Sequence Job starting!');
     const importService = Container.get(ImportService);
     importService.import(importBrandsDTO);
   }
 }
-
-module.exports = ImportBrandsSequenceJob;
