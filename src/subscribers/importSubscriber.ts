@@ -5,7 +5,7 @@ import ImportBrandsSequence from '../jobs/importBrandsSequence';
 /**
  *
  */
-class ImportSubscriber {
+export default class ImportSubscriber {
   /**
    *
    */
@@ -25,5 +25,3 @@ class ImportSubscriber {
     }
   }
 }
-
-module.exports = ImportSubscriber;

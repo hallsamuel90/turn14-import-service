@@ -1,5 +1,5 @@
 import cookieParser from 'cookie-parser';
-import express, { json, static, urlencoded } from 'express';
+import express, { json, urlencoded } from 'express';
 import logger from 'morgan';
 import { join } from 'path';
 import { Container } from 'typedi';
@@ -13,7 +13,7 @@ app.use(logger('dev'));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(static(join(__dirname, 'public')));
+app.use(express.static(join(__dirname, 'public')));
 
 app.use('/', healthRouter);
 app.use('/import', importRouter);
