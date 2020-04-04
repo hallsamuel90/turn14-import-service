@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-import * as Debug from 'debug';
+import Debug from 'debug';
 import http from 'http';
 import app from '../app';
 
