@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 import WcAttributeDTO from './wcAttributeDTO';
-import WcCategoryDTO from './wcCategoryDto';
+import WcCategoryIdDTO from './wcCategoryIdDtos';
 import WcDimensionsDTO from './wcDimensionsDto';
 import WcImageDTO from './wcImageDto';
 
@@ -16,7 +16,7 @@ export default class WcProductDTO {
   sku: string;
   regular_price: string;
   sale_price: string;
-  categories: WcCategoryDTO[];
+  categories: WcCategoryIdDTO[];
   images: WcImageDTO[];
   weight: string;
   dimensions: WcDimensionsDTO;

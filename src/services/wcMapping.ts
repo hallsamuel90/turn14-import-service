@@ -43,18 +43,18 @@ export default class WcMappingService {
     wcProduct.name = itemAttributes.product_name;
     wcProduct.sku = itemAttributes.mfr_part_number;
     wcProduct.shortDescription = itemAttributes.part_description;
-    // wcProduct.categories.push(
-    //   await this.categoriesCache.getCategory(itemAttributes.category)
-    // );
-    // wcProduct.categories.push(
-    //   await this.categoriesCache.getSubCategory(
-    //     itemAttributes.subCategory,
-    //     itemAttributes.category
-    //   )
-    // );
-    // wcProduct.categories.push(
-    //   await this.categoriesCache.getCategory(itemAttributes.brand)
-    // );
+    wcProduct.categories.push(
+      await this.categoriesCache.getCategory(itemAttributes.category)
+    );
+    wcProduct.categories.push(
+      await this.categoriesCache.getSubCategory(
+        itemAttributes.subcategory,
+        itemAttributes.category
+      )
+    );
+    wcProduct.categories.push(
+      await this.categoriesCache.getCategory(itemAttributes.brand)
+    );
     wcProduct.dimensions.length = itemAttributes.dimensions[0].length;
     wcProduct.dimensions.width = itemAttributes.dimensions[0].width;
     wcProduct.dimensions.height = itemAttributes.dimensions[0].height;

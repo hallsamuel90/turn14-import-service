@@ -1,6 +1,7 @@
 import { Dictionary } from 'lodash';
 import WcRestApi from '../clients/wcRestApi';
 import WcCategoryDTO from '../dtos/wcCategoryDto';
+import WcCategoryIdDTO from '../dtos/wcCategoryIdDtos';
 
 /**
  *
@@ -13,6 +14,7 @@ export default class WcCategoriesCache {
    */
   constructor() {
     this.cache;
+    this.wcRestApi;
   }
 
   /**
@@ -21,25 +23,26 @@ export default class WcCategoriesCache {
    * @param {WcRestApi} wcRestApi
    */
   async initCache(wcRestApi: WcRestApi): Promise<void> {
-    this.cache = await wcRestApi.fetchCategories();
+    this.wcRestApi = wcRestApi;
+    this.cache = await this.wcRestApi.fetchCategories();
   }
 
   /**
    * Fetches the categoryId from the cache, if it does not exist a new one is created
    *
    * @param {string} categoryName
-   * @return {number} categoryId
+   * @return {WcCategoryIdDTO} categoryId object
    */
-  async getCategory(categoryName: string): Promise<number> {
+  async getCategory(categoryName: string): Promise<WcCategoryIdDTO> {
     const category = this.cache[categoryName];
     if (category) {
-      return category['id'];
+      return new WcCategoryIdDTO(category['id']);
     }
     const newCategory = await this.wcRestApi.createCategory(
       new WcCategoryDTO(categoryName)
     );
     this.cache[newCategory['name']] = newCategory;
-    return newCategory['id'];
+    return new WcCategoryIdDTO(newCategory['id']);
   }
 
   /**
@@ -47,22 +50,22 @@ export default class WcCategoriesCache {
    *
    * @param {string} subCategoryName
    * @param {string} parentCategoryName
-   * @return {Promise<number>} categoryId
+   * @return {Promise<WcCategoryIdDTO>} categoryId
    */
   async getSubCategory(
     subCategoryName: string,
     parentCategoryName: string
-  ): Promise<number> {
+  ): Promise<WcCategoryIdDTO> {
     const subCategory = this.cache[subCategoryName];
     if (subCategory) {
-      return subCategory['id'];
+      return new WcCategoryIdDTO(subCategory['id']);
     }
 
     const parentCategoryId = await this.getCategory(parentCategoryName);
     const newSubCategory = await this.wcRestApi.createCategory(
-      new WcCategoryDTO(subCategoryName, parentCategoryId)
+      new WcCategoryDTO(subCategoryName, parentCategoryId.id)
     );
     this.cache[newSubCategory['name']] = newSubCategory;
-    return newSubCategory['id'];
+    return new WcCategoryIdDTO(newSubCategory['id']);
   }
 }

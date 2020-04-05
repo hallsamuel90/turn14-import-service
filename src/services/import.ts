@@ -34,7 +34,7 @@ export default class ImportService {
       importBrandsDto.wcClient,
       importBrandsDto.wcSecret
     );
-    this.wcMappingService.initCache(wcRestApi);
+    await this.wcMappingService.initCache(wcRestApi);
 
     await turn14RestApi.authenticate();
     const wcProducts = new WcBatchDTO();
@@ -48,8 +48,8 @@ export default class ImportService {
         if (wcProducts.totalSize() == this.BATCH_SIZE) {
           await wcRestApi.createProducts(wcProducts);
           wcProducts.create.length = 0;
+          break; // TODO: remove
         }
-        // break; // TODO: remove
       }
       break; // TODO: remove
     }
