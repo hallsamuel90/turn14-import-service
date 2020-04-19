@@ -1,4 +1,5 @@
 import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
 import express, { json, urlencoded } from 'express';
 import logger from 'morgan';
 import { join } from 'path';
@@ -6,6 +7,9 @@ import { Container } from 'typedi';
 import healthRouter from './api/health';
 import importRouter from './api/import';
 import ImportSubscriber from './subscribers/importSubscriber';
+
+// load env variables
+dotenv.config();
 
 const app = express();
 
