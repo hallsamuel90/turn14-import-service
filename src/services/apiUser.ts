@@ -23,12 +23,12 @@ export default class ApiUserService {
 
   /**
    *
-   * @param {string} siteUrl
+   * @param {string} userId
    */
-  async retrieve(siteUrl: string): Promise<ApiUser> {
+  async retrieve(userId: string): Promise<ApiUser> {
     let apiUser;
     try {
-      apiUser = ApiUserModel.findOne({ siteUrl: siteUrl });
+      apiUser = ApiUserModel.findOne({ userId: userId });
     } catch (e) {
       console.error('🔥 error: ' + e);
     }

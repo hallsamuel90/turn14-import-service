@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { ApiUser } from '../interfaces/iApiUser';
 
 const ApiUserModel = new mongoose.Schema({
+  userId: String,
   siteUrl: {
     type: String,
     unique: true,

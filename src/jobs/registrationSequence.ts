@@ -19,6 +19,6 @@ export class RegistrationSequence {
     await apiUserService.create(apiUser);
     // populate brands on registration
     const brandsService = Container.get(BrandsService);
-    await brandsService.publish(apiUser.siteUrl);
+    await brandsService.publish(apiUser.userId);
   }
 }
