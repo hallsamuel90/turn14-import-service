@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import axios, { AxiosInstance } from 'axios';
 import _, { Dictionary } from 'lodash';
-import Turn14ProductDTO from '../dtos/turn14ProductDto';
+import { Turn14Brand } from '../turn14/iTurn14Brand';
+import Turn14ProductDTO from '../turn14/turn14ProductDto';
 
 const BASE_URL = 'https://apitest.turn14.com/v1';
 const INVALID_CREDENTIALS =
@@ -279,6 +280,29 @@ export default class Turn14RestApi {
           console.error(INVALID_CREDENTIALS);
           await this.authenticate();
           this.fetchBrandItems(brandId, pageNumber);
+        }
+      } else {
+        console.error('🔥 ' + e);
+      }
+    }
+  }
+
+  /**
+   * Fetches brands
+   *
+   * @return {Promise<Turn14Brand[]>}
+   */
+  async fetchBrands(): Promise<Turn14Brand[]> {
+    const BRANDS_RESOURCE = `brands`;
+    try {
+      const response = await this.axiosClient.get(BRANDS_RESOURCE);
+      return response.data.data;
+    } catch (e) {
+      if (e.response.status != undefined) {
+        if (e.response.status == 401) {
+          console.error(INVALID_CREDENTIALS);
+          await this.authenticate();
+          this.fetchBrands();
         }
       } else {
         console.error('🔥 ' + e);

@@ -1,7 +1,7 @@
 import { Dictionary } from 'lodash';
 import WcRestApi from '../clients/wcRestApi';
-import WcCategoryDTO from '../dtos/wcCategoryDto';
-import WcCategoryIdDTO from '../dtos/wcCategoryIdDtos';
+import WcCategoryDTO from './wcCategoryDto';
+import WcCategoryIdDTO from './wcCategoryIdDtos';
 
 /**
  *

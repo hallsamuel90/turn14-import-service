@@ -1,32 +1,31 @@
 import amqp from 'amqplib';
 import { Container } from 'typedi';
-import ImportBrandsSequence from '../jobs/importBrandsSequence';
-
+import { RegistrationSequence } from '../jobs/registrationSequence';
 /**
  *
  */
-export default class ImportSubscriber {
+export default class RegistrationSubscriber {
   /**
    * Connects and subscribes to the channel.
    * If it is not available, retry at a set interval
    */
-  async subscribeImportBrandsSequence(): Promise<void> {
+  async subscribeRegistrationSequence(): Promise<void> {
     const RECONNECT_INTERVAL = 5;
     try {
       const connection = await amqp.connect(process.env.RABBITMQ_URI);
       const channel = await connection.createChannel();
-      await channel.assertQueue('importBrandsQueue');
-      const importBrandsSequence = Container.get(ImportBrandsSequence);
-      channel.consume('importBrandsQueue', (message) => {
-        importBrandsSequence.handler(JSON.parse(message.content.toString()));
+      await channel.assertQueue('registerApiQueue');
+      const registrationSequence = Container.get(RegistrationSequence);
+      channel.consume('registerApiQueue', (message) => {
+        registrationSequence.handler(JSON.parse(message.content.toString()));
         channel.ack(message);
       });
-      console.info('⌚ Waiting for import job requests...');
+      console.info('⌚ Waiting for registration job requests...');
     } catch (e) {
       console.error('🔥 ' + e);
       console.log('💪 Retrying in ' + RECONNECT_INTERVAL + ' seconds...');
       setTimeout(() => {
-        this.subscribeImportBrandsSequence();
+        this.subscribeRegistrationSequence();
       }, RECONNECT_INTERVAL * 1000);
     }
   }

@@ -1,8 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import https from 'https';
 import _, { Dictionary } from 'lodash';
-import WcBatchDTO from '../dtos/wcBatchDTO';
-import WcCategoryDTO from '../dtos/wcCategoryDto';
+import WcBatchDTO from '../woocommerce/wcBatchDTO';
+import WcCategoryDTO from '../woocommerce/wcCategoryDto';
 
 const BATCH_PRODUCTS_RESOURCE = 'wp-json/wc/v3/products/batch';
 const PRODUCT_CATEOGORIES_RESOURCE = 'wp-json/wc/v3/products/categories';

@@ -2,8 +2,8 @@ import { Container } from 'typedi';
 import Turn14RestApi from '../clients/turn14RestApi';
 import WcRestApi from '../clients/wcRestApi';
 import ImportBrandsDTO from '../dtos/importBrandsDto';
-import WcBatchDTO from '../dtos/wcBatchDTO';
-import WcMappingService from './wcMapping';
+import WcBatchDTO from '../woocommerce/wcBatchDTO';
+import WcMappingService from '../woocommerce/wcMapping';
 
 /**
  * Import Service imports products from Turn14 into WC store
