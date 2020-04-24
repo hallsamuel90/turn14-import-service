@@ -21,6 +21,7 @@ export default class BrandsService {
       apiUser.turn14Keys.client,
       apiUser.turn14Keys.secret
     );
+    await turn14Client.authenticate();
     const turn14Brands = await turn14Client.fetchBrands();
     const brands = await brandMappingService.turn14ToBrands(
       userId,

@@ -16,7 +16,6 @@ export default class ApiUserService {
       await apiUser.save();
     } catch (e) {
       console.error('🔥 error: ' + e);
-      await apiUser.remove();
       throw e;
     }
   }

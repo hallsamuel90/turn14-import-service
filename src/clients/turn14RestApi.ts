@@ -123,7 +123,7 @@ export default class Turn14RestApi {
         if (e.response.status == 401) {
           console.error(INVALID_CREDENTIALS);
           await this.authenticate();
-          this.fetchBrandItems(brandId, pageNumber);
+          await this.fetchBrandItems(brandId, pageNumber);
         }
       } else {
         console.error('🔥 ' + e);
@@ -176,7 +176,7 @@ export default class Turn14RestApi {
         if (e.response.status == 401) {
           console.error(INVALID_CREDENTIALS);
           await this.authenticate();
-          this.fetchBrandItems(brandId, pageNumber);
+          await this.fetchBrandItems(brandId, pageNumber);
         }
       } else {
         console.error('🔥 ' + e);
@@ -226,7 +226,7 @@ export default class Turn14RestApi {
         if (e.response.status == 401) {
           console.error(INVALID_CREDENTIALS);
           await this.authenticate();
-          this.fetchBrandItems(brandId, pageNumber);
+          await this.fetchBrandItems(brandId, pageNumber);
         }
       } else {
         console.error('🔥 ' + e);
@@ -279,7 +279,7 @@ export default class Turn14RestApi {
         if (e.response.status == 401) {
           console.error(INVALID_CREDENTIALS);
           await this.authenticate();
-          this.fetchBrandItems(brandId, pageNumber);
+          await this.fetchBrandItems(brandId, pageNumber);
         }
       } else {
         console.error('🔥 ' + e);
@@ -302,7 +302,7 @@ export default class Turn14RestApi {
         if (e.response.status == 401) {
           console.error(INVALID_CREDENTIALS);
           await this.authenticate();
-          this.fetchBrands();
+          await this.fetchBrands();
         }
       } else {
         console.error('🔥 ' + e);
