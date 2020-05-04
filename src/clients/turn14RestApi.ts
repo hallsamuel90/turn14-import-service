@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import axios, { AxiosInstance } from 'axios';
 import _, { Dictionary } from 'lodash';
-import { Turn14Brand } from '../turn14/iTurn14Brand';
-import Turn14ProductDTO from '../turn14/turn14ProductDto';
+import { Turn14ProductDTO } from '../turn14/dtos/turn14ProductDto';
+import { Turn14Brand } from '../turn14/interfaces/iTurn14Brand';
 
 const BASE_URL = 'https://apitest.turn14.com/v1';
 const INVALID_CREDENTIALS =
@@ -11,7 +11,7 @@ const INVALID_CREDENTIALS =
 /**
  * Turn14 Rest Api Client
  */
-export default class Turn14RestApi {
+export class Turn14RestApi {
   turn14Client: string;
   turn14Secret: string;
   axiosClient: AxiosInstance;
@@ -34,7 +34,7 @@ export default class Turn14RestApi {
    * Authenticates the Turn14API and attaches the auth token to
    * all subsequent requests
    *
-   * @return {Promise<void>}
+   * @returns {Promise<void>}
    */
   async authenticate(): Promise<void> {
     const TOKEN_RESOURCE = '/token';
@@ -60,7 +60,7 @@ export default class Turn14RestApi {
    * Fetches all brand data
    *
    * @param {number} brandId
-   * @return {Promise<Turn14ProductDTO[]>} of all items, data, pricing,
+   * @returns {Promise<Turn14ProductDTO[]>} of all items, data, pricing,
    * and inventory
    */
   async fetchAllBrandData(brandId: number): Promise<Turn14ProductDTO[]> {
@@ -86,7 +86,7 @@ export default class Turn14RestApi {
    * Fetches all brand items sorted
    *
    * @param {number} brandId
-   * @return {Promise<JSON[]>} of brand items
+   * @returns {Promise<JSON[]>} of brand items
    */
   async fetchAllBrandItems(brandId: number): Promise<JSON[]> {
     let allData = [];
@@ -107,7 +107,7 @@ export default class Turn14RestApi {
    *
    * @param {number} brandId
    * @param {number} pageNumber
-   * @return {Promise<JSON>}
+   * @returns {Promise<JSON>}
    */
   async fetchBrandItems(brandId: number, pageNumber: number): Promise<JSON> {
     const BRAND_ITEMS_RESOURCE = `items/brand/${brandId}`;
@@ -136,7 +136,7 @@ export default class Turn14RestApi {
    * {'itemId', itemData}
    *
    * @param {number} brandId
-   * @return {Promise<Dictionary<JSON>>} of brand items data
+   * @returns {Promise<Dictionary<JSON>>} of brand items data
    */
   async fetchAllBrandItemsData(brandId: number): Promise<Dictionary<JSON>> {
     let allData = [];
@@ -157,7 +157,7 @@ export default class Turn14RestApi {
    *
    * @param {number} brandId
    * @param {number} pageNumber
-   * @return {Promise<JSON>}
+   * @returns {Promise<JSON>}
    */
   async fetchBrandItemsData(
     brandId: number,
@@ -189,7 +189,7 @@ export default class Turn14RestApi {
    * {'itemId', itemPricing}
    *
    * @param {number} brandId
-   * @return {Promise<Dictionary<JSON>>} of brand pricing
+   * @returns {Promise<Dictionary<JSON>>} of brand pricing
    */
   async fetchAllBrandPricing(brandId: number): Promise<Dictionary<JSON>> {
     let allData = [];
@@ -210,7 +210,7 @@ export default class Turn14RestApi {
    *
    * @param {number} brandId
    * @param {number} pageNumber
-   * @return {Promise<JSON>}
+   * @returns {Promise<JSON>}
    */
   async fetchBrandPricing(brandId: number, pageNumber: number): Promise<JSON> {
     const BRAND_PRICING_RESOURCE = `pricing/brand/${brandId}`;
@@ -239,7 +239,7 @@ export default class Turn14RestApi {
    * {'itemId', itemInventory}
    *
    * @param {number} brandId
-   * @return {Promise<Dictionary<JSON>>} of brand inventory
+   * @returns {Promise<Dictionary<JSON>>} of brand inventory
    */
   async fetchAllBrandInventory(brandId: number): Promise<Dictionary<JSON>> {
     let allData = [];
@@ -260,7 +260,7 @@ export default class Turn14RestApi {
    *
    * @param {number} brandId
    * @param {number} pageNumber
-   * @return {Promise<JSON>}
+   * @returns {Promise<JSON>}
    */
   async fetchBrandInventory(
     brandId: number,
@@ -290,7 +290,7 @@ export default class Turn14RestApi {
   /**
    * Fetches brands
    *
-   * @return {Promise<Turn14Brand[]>}
+   * @returns {Promise<Turn14Brand[]>}
    */
   async fetchBrands(): Promise<Turn14Brand[]> {
     const BRANDS_RESOURCE = `brands`;

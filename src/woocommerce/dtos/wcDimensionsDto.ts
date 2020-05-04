@@ -1,7 +1,7 @@
 /**
  * WooCommerce Product Dimensions Data Transfer Object
  */
-export default class WcDimensionsDTO {
+export class WcDimensionsDTO {
   length: string;
   width: string;
   height: string;

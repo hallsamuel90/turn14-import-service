@@ -1,23 +1,19 @@
-import { Container } from 'typedi';
-import Turn14RestApi from '../clients/turn14RestApi';
-import WcRestApi from '../clients/wcRestApi';
-import ImportBrandsDTO from '../dtos/importBrandsDto';
-import WcBatchDTO from '../woocommerce/wcBatchDTO';
-import WcMappingService from '../woocommerce/wcMapping';
+import { Inject, Service } from 'typedi';
+import { Turn14RestApi } from '../clients/turn14RestApi';
+import { WcRestApi } from '../clients/wcRestApi';
+import { ImportBrandsDTO } from '../dtos/importBrandsDto';
+import { WcBatchDTO } from '../woocommerce/dtos/wcBatchDto';
+import { WcMappingService } from '../woocommerce/services/wcMappingService';
 
 /**
  * Import Service imports products from Turn14 into WC store
  */
-export default class ImportService {
-  wcMappingService: WcMappingService;
-  BATCH_SIZE: number;
-  /**
-   *
-   */
-  constructor() {
-    this.wcMappingService = Container.get(WcMappingService);
-    this.BATCH_SIZE = 5;
-  }
+@Service()
+export class ImportService {
+  BATCH_SIZE = 5; // default 50
+
+  @Inject()
+  private readonly wcMappingService: WcMappingService;
 
   /**
    * Imports brand products into WC Store

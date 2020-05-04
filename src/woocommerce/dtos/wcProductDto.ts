@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
-import WcAttributeDTO from './wcAttributeDTO';
-import WcCategoryDTO from './wcCategoryDto';
-import WcDimensionsDTO from './wcDimensionsDto';
-import WcImageDTO from './wcImageDto';
+import { WcAttributeDTO } from './wcAttributeDto';
+import { WcCategoryIdDTO } from './wcCategoryIdDtos';
+import { WcDimensionsDTO } from './wcDimensionsDto';
+import { WcImageDTO } from './wcImageDto';
 
 /**
- * WooCommerce Update Product Data Transfer Object TODO:
+ * WooCommerce Product Data Transfer Object
  */
-export default class WcUpdateProductDTO {
+export class WcProductDTO {
   name: string;
   type: string;
   shortDescription: string;
@@ -16,7 +16,7 @@ export default class WcUpdateProductDTO {
   sku: string;
   regular_price: string;
   sale_price: string;
-  categories: WcCategoryDTO[];
+  categories: WcCategoryIdDTO[];
   images: WcImageDTO[];
   weight: string;
   dimensions: WcDimensionsDTO;

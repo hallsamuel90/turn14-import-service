@@ -1,11 +1,15 @@
-import { Container } from 'typedi';
-import ImportBrandsDTO from '../dtos/importBrandsDto';
-import ImportService from '../services/import';
+import { Inject, Service } from 'typedi';
+import { ImportBrandsDTO } from '../dtos/importBrandsDto';
+import { ImportService } from '../services/import';
 
 /**
  *
  */
-export default class ImportBrandsSequenceJob {
+@Service()
+export class ImportBrandsSequence {
+  @Inject()
+  private readonly importService: ImportService;
+
   /**
    * Handler for the Import Brands Job
    *
@@ -13,7 +17,6 @@ export default class ImportBrandsSequenceJob {
    */
   handler(importBrandsDTO: ImportBrandsDTO): void {
     console.info('🔨 Import Brands Sequence Job starting!');
-    const importService = Container.get(ImportService);
-    importService.import(importBrandsDTO);
+    this.importService.import(importBrandsDTO);
   }
 }

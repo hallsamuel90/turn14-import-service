@@ -1,10 +1,12 @@
+import { Service } from 'typedi';
 import { ApiUser } from '../interfaces/iApiUser';
 import ApiUserModel from '../models/apiUser';
 
 /**
  *
  */
-export default class ApiUserService {
+@Service()
+export class ApiUserService {
   /**
    *
    * @param {ApiUser} apiUserDTO

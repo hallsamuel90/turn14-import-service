@@ -1,8 +1,12 @@
-import { Router } from 'express';
-const router = Router();
+import { Controller, Get } from 'routing-controllers';
 
-router.get('/health', function (req, res) {
-  res.send('Up and Running!');
-});
-
-export default router;
+/**
+ *
+ */
+@Controller()
+export class HealthController {
+  @Get('/health')
+  gethealth(): string {
+    return 'Up and Running!';
+  }
+}

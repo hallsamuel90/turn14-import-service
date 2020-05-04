@@ -1,7 +1,7 @@
 /**
  * WooCommerce Category Id Data Transfer Object
  */
-export default class WcCategoryIdDTO {
+export class WcCategoryIdDTO {
   id: number;
   /**
    * Default constructor

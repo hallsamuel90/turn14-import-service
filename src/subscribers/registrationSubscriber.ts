@@ -1,10 +1,13 @@
 import amqp from 'amqplib';
-import { Container } from 'typedi';
+import { Inject } from 'typedi';
 import { RegistrationSequence } from '../jobs/registrationSequence';
 /**
  *
  */
 export default class RegistrationSubscriber {
+  @Inject()
+  private readonly registrationSequence: RegistrationSequence;
+
   /**
    * Connects and subscribes to the channel.
    * If it is not available, retry at a set interval
@@ -15,9 +18,10 @@ export default class RegistrationSubscriber {
       const connection = await amqp.connect(process.env.RABBITMQ_URI);
       const channel = await connection.createChannel();
       await channel.assertQueue('registerApiQueue');
-      const registrationSequence = Container.get(RegistrationSequence);
       channel.consume('registerApiQueue', (message) => {
-        registrationSequence.handler(JSON.parse(message.content.toString()));
+        this.registrationSequence.handler(
+          JSON.parse(message.content.toString())
+        );
         channel.ack(message);
       });
       console.info('⌚ Waiting for registration job requests...');

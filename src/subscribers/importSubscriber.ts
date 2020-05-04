@@ -1,11 +1,14 @@
 import amqp from 'amqplib';
-import { Container } from 'typedi';
-import ImportBrandsSequence from '../jobs/importBrandsSequence';
+import { Inject, Service } from 'typedi';
+import { ImportBrandsSequence } from '../jobs/importBrandsSequence';
 
 /**
  *
  */
+@Service()
 export default class ImportSubscriber {
+  @Inject()
+  private readonly importBrandsSequence: ImportBrandsSequence;
   /**
    * Connects and subscribes to the channel.
    * If it is not available, retry at a set interval
@@ -16,9 +19,10 @@ export default class ImportSubscriber {
       const connection = await amqp.connect(process.env.RABBITMQ_URI);
       const channel = await connection.createChannel();
       await channel.assertQueue('importBrandsQueue');
-      const importBrandsSequence = Container.get(ImportBrandsSequence);
       channel.consume('importBrandsQueue', (message) => {
-        importBrandsSequence.handler(JSON.parse(message.content.toString()));
+        this.importBrandsSequence.handler(
+          JSON.parse(message.content.toString())
+        );
         channel.ack(message);
       });
       console.info('⌚ Waiting for import job requests...');

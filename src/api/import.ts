@@ -1,25 +1,23 @@
-import { Router } from 'express';
-import { Container } from 'typedi';
-import ImportBrandsDTO from '../dtos/importBrandsDto';
-import ImportPublisher from '../publishers/importPublisher';
-const router = Router();
+import { Response } from 'express';
+import { Body, JsonController, Post, Res } from 'routing-controllers';
+import { Inject } from 'typedi';
+import { ImportBrandsDTO } from '../dtos/importBrandsDto';
+import { ImportPublisher } from '../publishers/importPublisher';
 
 /**
- * TODO: Stub for import all
+ *
  */
-router.post('/all', function (req, res) {
-  res.send('Up and Running!');
-});
+@JsonController('/import')
+export class ImportController {
+  @Inject()
+  private readonly importPublisherService: ImportPublisher;
 
-/**
- * Import by brand
- */
-router.post('/brands', function (req, res) {
-  const importBrandsDTO = new ImportBrandsDTO(req.body);
-  const importPublisher = Container.get(ImportPublisher);
-  importPublisher.queueImportBrandsSequence(importBrandsDTO);
-  // TODO: send email as well
-  return res.status(202).end('Import is starting!');
-});
-
-export default router;
+  @Post('/brands')
+  postBrands(
+    @Body() importBrandsDTO: ImportBrandsDTO,
+    @Res() response: Response
+  ): Response {
+    this.importPublisherService.queueImportBrandsSequence(importBrandsDTO);
+    return response.status(202).send('Import is starting!');
+  }
+}

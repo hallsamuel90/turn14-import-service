@@ -7,6 +7,7 @@ extends:
   - plugin:@typescript-eslint/recommended
   - prettier/@typescript-eslint
   - plugin:prettier/recommended
+  - plugin:jsdoc/recommended
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
@@ -17,8 +18,11 @@ parserOptions:
 plugins: 
   - prettier
   - '@typescript-eslint'
+  - jsdoc
 rules: {
   new-cap: 0,
   prettier/prettier: error,
+  valid-jsdoc: 0,
+  require-jsdoc: 0,
   '@typescript-eslint/no-explicit-any': error
 }

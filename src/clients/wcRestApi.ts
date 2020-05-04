@@ -1,15 +1,15 @@
 import axios, { AxiosInstance } from 'axios';
 import https from 'https';
 import _, { Dictionary } from 'lodash';
-import WcBatchDTO from '../woocommerce/wcBatchDTO';
-import WcCategoryDTO from '../woocommerce/wcCategoryDto';
+import { WcBatchDTO } from '../woocommerce/dtos/wcBatchDto';
+import { WcCategoryDTO } from '../woocommerce/dtos/wcCategoryDto';
 
 const BATCH_PRODUCTS_RESOURCE = 'wp-json/wc/v3/products/batch';
 const PRODUCT_CATEOGORIES_RESOURCE = 'wp-json/wc/v3/products/categories';
 /**
  * WooCommerce Rest Api Client
  */
-export default class WcRestApi {
+export class WcRestApi {
   axiosClient: AxiosInstance;
 
   /**
@@ -51,14 +51,42 @@ export default class WcRestApi {
   }
 
   /**
-   * Fetches categories from woocommerce
+   * Fetches all categories from woocommerce and returns them as
+   * a map of name:category
    *
    * @return {Promise<Dictionary<JSON>>} response
    */
-  async fetchCategories(): Promise<Dictionary<JSON>> {
+  async fetchAllCategories(): Promise<Dictionary<JSON>> {
+    let allData = [];
+    let i = 1;
+    while (true) {
+      const pageData = await this.fetchCategories(i);
+      if (!Array.isArray(pageData) || !pageData.length) {
+        break;
+      }
+      allData = allData.concat(pageData);
+      i++;
+    }
+    return _.keyBy(allData, 'name');
+  }
+
+  /**
+   * Fetches categories from woocommerce
+   *
+   * @param {number} pageNumber
+   * @return {Promise<JSON[]>} response
+   */
+  async fetchCategories(pageNumber: number): Promise<JSON[]> {
     try {
-      const response = await this.axiosClient.get(PRODUCT_CATEOGORIES_RESOURCE);
-      return _.keyBy(response.data, 'name');
+      const response = await this.axiosClient.get(
+        PRODUCT_CATEOGORIES_RESOURCE,
+        {
+          params: {
+            page: pageNumber,
+          },
+        }
+      );
+      return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
     }

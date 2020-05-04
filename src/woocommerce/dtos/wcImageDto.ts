@@ -1,10 +1,10 @@
 /**
- * WooCommerce Attribute Data Transfer Object
+ * WooCommerce Product Data Transfer Object
  */
-export default class WcAttributeDTO {
+export class WcImageDTO {
   src: string;
   /**
-   * Default constructor TODO:
+   * Default constructor
    *
    * @param {string} src
    */

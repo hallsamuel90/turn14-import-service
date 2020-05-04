@@ -1,10 +1,12 @@
 import { connect } from 'amqplib';
-import ImportBrandsDTO from '../dtos/importBrandsDto';
+import { Service } from 'typedi';
+import { ImportBrandsDTO } from '../dtos/importBrandsDto';
 
 /**
  *
  */
-class ImportPublisher {
+@Service()
+export class ImportPublisher {
   /**
    *
    * @param {ImportBrandsDTO} importBrands
@@ -26,5 +28,3 @@ class ImportPublisher {
     }
   }
 }
-
-export default ImportPublisher;

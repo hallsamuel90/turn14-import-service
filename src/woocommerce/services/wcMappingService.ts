@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import _ from 'lodash';
-import WcRestApi from '../clients/wcRestApi';
-import Turn14ProductDTO from '../turn14/turn14ProductDto';
-import WcCategoriesCache from './wcCategoriesCache';
-import WcImageDTO from './wcImageDto';
-import WcProductDTO from './wcProductDto';
+import { WcRestApi } from '../../clients/wcRestApi';
+import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
+import WcCategoriesCache from '../caches/wcCategoriesCache';
+import { WcImageDTO } from '../dtos/wcImageDto';
+import { WcProductDTO } from '../dtos/wcProductDto';
 const MAP = 'MAP';
 const RETAIL = 'Retail';
 const JOBBER = 'Jobber';
@@ -13,7 +13,7 @@ const PRIMARY_IMAGE = 'Photo - Primary';
 /**
  * Wc Mapping Service maps Turn14 attributes to WcProductDto
  */
-export default class WcMappingService {
+export class WcMappingService {
   categoriesCache: WcCategoriesCache;
   /**
    * Default constructor
@@ -34,7 +34,7 @@ export default class WcMappingService {
   /**
    *
    * @param {Turn14ProductDTO} turn14ProductDto
-   * @return {Promise<WcProductDTO>} converted wcProductDto
+   * @returns {Promise<WcProductDTO>} converted wcProductDto
    */
   async turn14ToWc(turn14ProductDto: Turn14ProductDTO): Promise<WcProductDTO> {
     const wcProduct = new WcProductDTO();
@@ -43,22 +43,34 @@ export default class WcMappingService {
     wcProduct.name = itemAttributes.product_name;
     wcProduct.sku = itemAttributes.mfr_part_number;
     wcProduct.shortDescription = itemAttributes.part_description;
-    wcProduct.categories.push(
-      await this.categoriesCache.getCategory(itemAttributes.category)
+    const category = await this.categoriesCache.getCategory(
+      itemAttributes.category
     );
-    wcProduct.categories.push(
-      await this.categoriesCache.getSubCategory(
-        itemAttributes.subcategory,
-        itemAttributes.category
-      )
+    if (category) {
+      wcProduct.categories.push();
+    }
+    const subCategory = await this.categoriesCache.getSubCategory(
+      itemAttributes.subcategory,
+      itemAttributes.category
     );
-    wcProduct.categories.push(
-      await this.categoriesCache.getCategory(itemAttributes.brand)
+    if (subCategory) {
+      wcProduct.categories.push(subCategory);
+    }
+    const brandCategory = await this.categoriesCache.getCategory(
+      itemAttributes.brand
     );
-    wcProduct.dimensions.length = itemAttributes.dimensions[0].length;
-    wcProduct.dimensions.width = itemAttributes.dimensions[0].width;
-    wcProduct.dimensions.height = itemAttributes.dimensions[0].height;
-    wcProduct.weight = itemAttributes.dimensions[0].weight;
+    if (brandCategory) {
+      wcProduct.categories.push(brandCategory);
+    }
+    if (
+      Array.isArray(itemAttributes.dimensions) &&
+      itemAttributes.dimensions.length
+    ) {
+      wcProduct.dimensions.length = itemAttributes.dimensions[0]['length'];
+      wcProduct.dimensions.width = itemAttributes.dimensions[0]['width'];
+      wcProduct.dimensions.height = itemAttributes.dimensions[0]['height'];
+      wcProduct.weight = itemAttributes.dimensions[0]['weight'];
+    }
 
     // media
     const itemData = turn14ProductDto.itemData;

@@ -1,7 +1,7 @@
 /**
  * WooCommerce Category Data Transfer Object
  */
-export default class WcCategoryDTO {
+export class WcCategoryDTO {
   name: string;
   parent: number;
 

@@ -1,7 +1,7 @@
 /**
  * Turn14 Product Data Transfer Object
  */
-export default class Turn14ProductDTO {
+export class Turn14ProductDTO {
   item: JSON;
   itemData: JSON;
   itemPricing: JSON;
