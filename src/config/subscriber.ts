@@ -1,10 +1,11 @@
-import ImportSubscriber from '../subscribers/importSubscriber';
-import RegistrationSubscriber from '../subscribers/registrationSubscriber';
+import Container from 'typedi';
+import { ImportSubscriber } from '../subscribers/importSubscriber';
+import { RegistrationSubscriber } from '../subscribers/registrationSubscriber';
 
 export default (): void => {
-  const importSubscriber = new ImportSubscriber();
-  importSubscriber.subscribeImportBrandsSequence();
+  const importSubscriberService = Container.get(ImportSubscriber);
+  importSubscriberService.subscribeImportBrandsSequence();
 
-  const registrationSubscriber = new RegistrationSubscriber();
-  registrationSubscriber.subscribeRegistrationSequence();
+  const registrationSubscriberService = Container.get(RegistrationSubscriber);
+  registrationSubscriberService.subscribeRegistrationSequence();
 };

@@ -6,7 +6,7 @@ import { ImportBrandsSequence } from '../jobs/importBrandsSequence';
  *
  */
 @Service()
-export default class ImportSubscriber {
+export class ImportSubscriber {
   @Inject()
   private readonly importBrandsSequence: ImportBrandsSequence;
   /**

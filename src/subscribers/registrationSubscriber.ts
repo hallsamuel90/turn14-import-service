@@ -1,10 +1,11 @@
 import amqp from 'amqplib';
-import { Inject } from 'typedi';
+import { Inject, Service } from 'typedi';
 import { RegistrationSequence } from '../jobs/registrationSequence';
 /**
  *
  */
-export default class RegistrationSubscriber {
+@Service()
+export class RegistrationSubscriber {
   @Inject()
   private readonly registrationSequence: RegistrationSequence;
 
