@@ -1,11 +1,11 @@
 {
   "name": "turn14-import-service",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "main": "build/app.js",
   "scripts": {
     "clean": "rm -rf build/*",
-    "start": "node --inspect=0.0.0.0 build/app.js",
+    "start": "node build/app.js",
     "build": "tsc",
     "contain": "sudo docker build -t turn14-import-service ."
   },
