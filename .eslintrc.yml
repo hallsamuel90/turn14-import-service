@@ -1,0 +1,28 @@
+env:
+  commonjs: false
+  es6: true
+  node: true
+extends:
+  - google
+  - plugin:@typescript-eslint/recommended
+  - prettier/@typescript-eslint
+  - plugin:prettier/recommended
+  - plugin:jsdoc/recommended
+globals:
+  Atomics: readonly
+  SharedArrayBuffer: readonly
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaVersion: 2018
+  project: ./tsconfig.json
+plugins: 
+  - prettier
+  - '@typescript-eslint'
+  - jsdoc
+rules: {
+  new-cap: 0,
+  prettier/prettier: error,
+  valid-jsdoc: 0,
+  require-jsdoc: 0,
+  '@typescript-eslint/no-explicit-any': error
+}
