@@ -1,10 +1,12 @@
 import Container from 'typedi';
-import { ImportSubscriber } from '../subscribers/importSubscriber';
 import { RegistrationSubscriber } from '../subscribers/registrationSubscriber';
+import { BrandActivationSubscriber } from '../subscribers/brandActivationSubscriber';
 
 export default (): void => {
-  const importSubscriberService = Container.get(ImportSubscriber);
-  importSubscriberService.subscribeImportBrandsSequence();
+  const brandActivationSubscriberService = Container.get(
+    BrandActivationSubscriber
+  );
+  brandActivationSubscriberService.subscribeBrandActivationSequence();
 
   const registrationSubscriberService = Container.get(RegistrationSubscriber);
   registrationSubscriberService.subscribeRegistrationSequence();

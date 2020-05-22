@@ -35,4 +35,25 @@ export class ApiUserService {
     }
     return apiUser;
   }
+
+  /**
+   * Updates an apiUser.
+   *
+   * @param {string} id
+   * @param {ApiUser} apiUser
+   * @returns {Promise<ApiUser>} updated brand
+   */
+  async update(id: string, apiUser: ApiUser): Promise<ApiUser> {
+    try {
+      // returns brand as it was before update
+      const updatedApiUser = await ApiUserModel.findOneAndUpdate(
+        { _id: id },
+        apiUser
+      );
+      return updatedApiUser;
+    } catch (e) {
+      console.error('🔥 ' + e);
+      throw e;
+    }
+  }
 }
