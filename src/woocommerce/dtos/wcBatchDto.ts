@@ -1,11 +1,11 @@
-import { WcProductDTO } from './wcProductDto';
-import { WcUpdateProductDTO } from './wcUpdateProductDTO';
+import { WcCreateProductDTO } from './wcCreateProductDto';
+import { WcUpdateProductDTO } from './wcUpdateProductDto';
 
 /**
  * WooCommerce Batch Operations Data Transfer Object
  */
 export class WcBatchDTO {
-  create: WcProductDTO[];
+  create: WcCreateProductDTO[];
   update: WcUpdateProductDTO[];
   delete: number[];
   /**
@@ -20,7 +20,7 @@ export class WcBatchDTO {
   /**
    * Determines the total number of objects
    *
-   * @return {number} total number of objects
+   * @returns {number} total number of objects
    */
   totalSize(): number {
     return this.create.length + this.update.length + this.delete.length;
