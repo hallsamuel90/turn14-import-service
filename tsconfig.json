@@ -13,6 +13,7 @@
       "module": "commonjs",
       "pretty": true,
       "sourceMap": true,
+      "strictNullChecks": true,
       "outDir": "./build",
       "allowJs": true,
       "noEmit": false,

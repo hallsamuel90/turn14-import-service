@@ -2,6 +2,7 @@
 import axios, { AxiosInstance } from 'axios';
 import _, { Dictionary } from 'lodash';
 import { Turn14ProductDTO } from '../dtos/turn14ProductDto';
+import { Turn14Error } from '../errors/Turn14Error';
 import { Turn14Brand } from '../interfaces/turn14Brand';
 
 const BASE_URL = 'https://apitest.turn14.com/v1';
@@ -71,7 +72,7 @@ export class Turn14RestApi {
     const itemData = await this.fetchAllBrandItemsData(brandId);
     const itemPricing = await this.fetchAllBrandPricing(brandId);
     const itemInventory = await this.fetchAllBrandInventory(brandId);
-    const turn14ProductDtos = [];
+    const turn14ProductDtos: Turn14ProductDTO[] = [];
     for (const item of items) {
       const itemId = item['id'];
       const turn14ProductDto = new Turn14ProductDTO(
@@ -92,7 +93,7 @@ export class Turn14RestApi {
    * @returns {Promise<JSON[]>} of brand items
    */
   async fetchAllBrandItems(brandId: number): Promise<JSON[]> {
-    let allData = [];
+    let allData: JSON[] = [];
     let i = 1;
     while (true) {
       const pageData = await this.fetchBrandItems(brandId, i);
@@ -131,6 +132,10 @@ export class Turn14RestApi {
       } else {
         console.error('🔥 ' + e);
       }
+    } finally {
+      throw new Turn14Error(
+        'fetchBrandItems(), something went wrong communicating with Turn14.'
+      );
     }
   }
 
@@ -142,7 +147,7 @@ export class Turn14RestApi {
    * @returns {Promise<Dictionary<JSON>>} of brand items data
    */
   async fetchAllBrandItemsData(brandId: number): Promise<Dictionary<JSON>> {
-    let allData = [];
+    let allData: JSON[] = [];
     let i = 1;
     while (true) {
       const pageData = await this.fetchBrandItemsData(brandId, i);
@@ -184,6 +189,10 @@ export class Turn14RestApi {
       } else {
         console.error('🔥 ' + e);
       }
+    } finally {
+      throw new Turn14Error(
+        'fetchBrandItemsData(), something went wrong communicating with Turn14.'
+      );
     }
   }
 
@@ -195,7 +204,7 @@ export class Turn14RestApi {
    * @returns {Promise<Dictionary<JSON>>} of brand pricing
    */
   async fetchAllBrandPricing(brandId: number): Promise<Dictionary<JSON>> {
-    let allData = [];
+    let allData: JSON[] = [];
     let i = 1;
     while (true) {
       const pageData = await this.fetchBrandPricing(brandId, i);
@@ -234,6 +243,10 @@ export class Turn14RestApi {
       } else {
         console.error('🔥 ' + e);
       }
+    } finally {
+      throw new Turn14Error(
+        'fetchBrandPricing(), something went wrong communicating with Turn14.'
+      );
     }
   }
 
@@ -245,7 +258,7 @@ export class Turn14RestApi {
    * @returns {Promise<Dictionary<JSON>>} of brand inventory
    */
   async fetchAllBrandInventory(brandId: number): Promise<Dictionary<JSON>> {
-    let allData = [];
+    let allData: JSON[] = [];
     let i = 1;
     while (true) {
       const pageData = await this.fetchBrandInventory(brandId, i);
@@ -287,6 +300,10 @@ export class Turn14RestApi {
       } else {
         console.error('🔥 ' + e);
       }
+    } finally {
+      throw new Turn14Error(
+        'fetchBrandInventory(), something went wrong communicating with Turn14.'
+      );
     }
   }
 
@@ -310,6 +327,10 @@ export class Turn14RestApi {
       } else {
         console.error('🔥 ' + e);
       }
+    } finally {
+      throw new Turn14Error(
+        'fetchBrands(), something went wrong communicating with Turn14.'
+      );
     }
   }
 }

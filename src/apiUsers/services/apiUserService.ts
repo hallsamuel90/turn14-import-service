@@ -32,9 +32,11 @@ export class ApiUserService {
    * @param {string} userId the unique id to identify the user.
    * @returns {ApiUser} the retrieved api user.
    */
-  async retrieve(userId: string): Promise<ApiUser> {
+  async retrieve(userId: string): Promise<ApiUser | null> {
     try {
-      return ApiUserModel.findOne({ userId: userId });
+      const apiUser = ApiUserModel.findOne({ userId: userId });
+
+      return apiUser;
     } catch (e) {
       console.error('🔥 ' + e);
       throw new Error('Could not retrieve api user with userId: ' + userId);
@@ -48,7 +50,7 @@ export class ApiUserService {
    * @param {ApiUser} apiUser the updated api user object.
    * @returns {Promise<ApiUser>} the updated brand.
    */
-  async update(id: string, apiUser: ApiUser): Promise<ApiUser> {
+  async update(id: string, apiUser: ApiUser): Promise<ApiUser | null> {
     try {
       // returns brand as it was before update
       const updatedApiUser = await ApiUserModel.findOneAndUpdate(

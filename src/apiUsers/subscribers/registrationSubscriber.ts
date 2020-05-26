@@ -1,5 +1,5 @@
-import { RegistrationSequence } from '../jobs/registrationSequence';
 import { AmqpPro } from '../../util/ampqPro';
+import { RegistrationSequence } from '../jobs/registrationSequence';
 
 /**
  * RegistrationSubscriber.
@@ -10,6 +10,8 @@ import { AmqpPro } from '../../util/ampqPro';
  */
 export class RegistrationSubscriber {
   private static RABBITMQ_URI = process.env.RABBITMQ_URI;
+  // TODO: remoce empty string above and  throw in startup process if this is
+  // not defined.
   private static REGISTRATION_CHANNEL = 'registerApiQueue';
 
   private readonly registrationSequence: RegistrationSequence;
@@ -33,7 +35,7 @@ export class RegistrationSubscriber {
    */
   async subscribeRegistrationSequence(): Promise<void> {
     const connection = await this.amqpUtil.connect(
-      RegistrationSubscriber.RABBITMQ_URI,
+      RegistrationSubscriber.RABBITMQ_URI || '',
       this.subscribeRegistrationSequence
     );
 

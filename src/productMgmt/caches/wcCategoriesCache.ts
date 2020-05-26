@@ -2,6 +2,7 @@ import { Dictionary } from 'lodash';
 import { WcRestApi } from '../../woocommerce/clients/wcRestApi';
 import { WcCategoryDTO } from '../../woocommerce/dtos/wcCategoryDto';
 import { WcCategoryIdDTO } from '../../woocommerce/dtos/wcCategoryIdDto';
+import { WcError } from '../../woocommerce/errors/wcError';
 
 /**
  * WcCategoriesCache.
@@ -97,7 +98,10 @@ export class WcCategoriesCache {
       return newCategory;
     } catch (e) {
       console.error('🔥 ' + e);
-      return null;
+    } finally {
+      throw new WcError(
+        'createCategory(), there was an issue communicating with the woocommerce api.'
+      );
     }
   }
 
@@ -120,7 +124,10 @@ export class WcCategoriesCache {
       return newSubCategory;
     } catch (e) {
       console.error('🔥 ' + e);
-      return null;
+    } finally {
+      throw new WcError(
+        'createSubCategory(), there was an issue communicating with the woocommerce api.'
+      );
     }
   }
 }

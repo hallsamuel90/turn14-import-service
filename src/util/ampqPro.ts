@@ -1,5 +1,6 @@
 import amqp from 'amqplib';
-import { Connection, Channel } from './ampqProTypes';
+import { AmpqProError } from './ampqProError';
+import { Channel, Connection } from './ampqProTypes';
 
 /**
  * AmqpPro.
@@ -35,6 +36,10 @@ export abstract class AmqpPro {
 
       reconnectInterval = this.validateReconnectInterval(reconnectInterval);
       this.retryConnect(reconnectInterval, callback);
+    } finally {
+      throw new AmpqProError(
+        `connect(), Something went wrong, could not connect to ${amqpUri}`
+      );
     }
   }
 
@@ -56,6 +61,10 @@ export abstract class AmqpPro {
       return channel;
     } catch (e) {
       console.error('🔥 ' + e);
+    } finally {
+      throw new AmpqProError(
+        `createChannel(), Something went wrong, could not create channel ${channelName}`
+      );
     }
   }
 
@@ -92,7 +101,7 @@ export abstract class AmqpPro {
    * @returns {number} the default reconnect interval if passed in value is
    * null.
    */
-  private validateReconnectInterval(reconnectInterval: number): number {
+  private validateReconnectInterval(reconnectInterval?: number): number {
     if (reconnectInterval == null) {
       return AmqpPro.DEFAULT_RECONNECT_INTERVAL;
     }

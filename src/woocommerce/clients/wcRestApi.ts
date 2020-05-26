@@ -3,6 +3,7 @@ import https from 'https';
 import _, { Dictionary } from 'lodash';
 import { WcBatchDTO } from '../dtos/wcBatchDto';
 import { WcCategoryDTO } from '../dtos/wcCategoryDto';
+import { WcError } from '../errors/wcError';
 
 const BATCH_PRODUCTS_RESOURCE = 'wp-json/wc/v3/products/batch';
 const PRODUCT_CATEOGORIES_RESOURCE = 'wp-json/wc/v3/products/categories';
@@ -53,6 +54,10 @@ export class WcRestApi {
       return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
+    } finally {
+      throw new WcError(
+        'createProducts(), something went wrong communicating with WooCommerce.'
+      );
     }
   }
 
@@ -73,7 +78,7 @@ export class WcRestApi {
    * @returns {Promise<Dictionary<JSON>>} response
    */
   async fetchAllCategories(): Promise<Dictionary<JSON>> {
-    let allData = [];
+    let allData: JSON[] = [];
     let i = 1;
     while (true) {
       const pageData = await this.fetchCategories(i);
@@ -105,6 +110,10 @@ export class WcRestApi {
       return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
+    } finally {
+      throw new WcError(
+        'fetchCategories(), something went wrong communicating with WooCommerce.'
+      );
     }
   }
 
@@ -123,6 +132,10 @@ export class WcRestApi {
       return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
+    } finally {
+      throw new WcError(
+        'createCategory(), something went wrong communicating with WooCommerce.'
+      );
     }
   }
 }

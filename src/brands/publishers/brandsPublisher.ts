@@ -1,6 +1,6 @@
 import { Service } from 'typedi';
-import { BrandDTO } from '../dtos/brandDto';
 import { AmqpPro } from '../../util/ampqPro';
+import { BrandDTO } from '../dtos/brandDto';
 
 /**
  * BrandsPublisher.
@@ -31,7 +31,7 @@ export class BrandsPublisher {
    */
   async queuePublishBrandsSequence(brands: BrandDTO[]): Promise<void> {
     const connection = await this.amqpUtil.connect(
-      this.RABBITMQ_URI,
+      this.RABBITMQ_URI || '',
       this.queuePublishBrandsSequence
     );
 

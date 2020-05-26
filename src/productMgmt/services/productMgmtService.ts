@@ -1,15 +1,15 @@
 import { Inject, Service } from 'typedi';
-import { WcRestApi } from '../../woocommerce/clients/wcRestApi';
-import { PmgmtDTO } from '../dtos/pmgmtDto';
-import { WcBatchDTO } from '../../woocommerce/dtos/wcBatchDto';
-import { WcRestApiFactory } from '../../woocommerce/clients/wcRestApiFactory';
-import { WcMapperFactory } from './wcMapperFactory';
-import { WcCategoriesCache } from '../caches/wcCategoriesCache';
-import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
 import { Keys } from '../../apiUsers/models/apiUser';
-import { Turn14RestApiFactory } from '../../turn14/clients/turn14RestApiFactory';
-import { WcMapper } from './wcMapper';
 import { Turn14RestApi } from '../../turn14/clients/turn14RestApi';
+import { Turn14RestApiFactory } from '../../turn14/clients/turn14RestApiFactory';
+import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
+import { WcRestApi } from '../../woocommerce/clients/wcRestApi';
+import { WcRestApiFactory } from '../../woocommerce/clients/wcRestApiFactory';
+import { WcBatchDTO } from '../../woocommerce/dtos/wcBatchDto';
+import { WcCategoriesCache } from '../caches/wcCategoriesCache';
+import { PmgmtDTO } from '../dtos/pmgmtDto';
+import { WcMapper } from './wcMapper';
+import { WcMapperFactory } from './wcMapperFactory';
 
 /**
  * ProductMgmtService.
@@ -81,6 +81,7 @@ export class ProductMgmtService {
     );
 
     // const brandProducts = wcRestApi.fetchBrandProducts(pmgmtDto.brandId);
+    // should throw if cannot get brandProducts
 
     // const productIds = getProductIds(brandProducts);
 

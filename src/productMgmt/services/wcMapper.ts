@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import _ from 'lodash';
 import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
-import { WcCategoriesCache } from '../caches/wcCategoriesCache';
-import { WcImageDTO } from '../../woocommerce/dtos/wcImageDto';
 import { WcCreateProductDTO } from '../../woocommerce/dtos/wcCreateProductDto';
+import { WcImageDTO } from '../../woocommerce/dtos/wcImageDto';
+import { WcCategoriesCache } from '../caches/wcCategoriesCache';
 const MAP = 'MAP';
 const RETAIL = 'Retail';
 const JOBBER = 'Jobber';
@@ -88,8 +88,11 @@ export class WcMapper {
         'media_content'
       );
       if (files[PRIMARY_IMAGE]) {
-        const imageLinks = files[PRIMARY_IMAGE].links;
-        wcProduct.images.push(new WcImageDTO(_.last(imageLinks)['url']));
+        const imageLinks: JSON[] = files[PRIMARY_IMAGE]?.links;
+        const lastLink = _.last(imageLinks);
+        if (lastLink != null) {
+          wcProduct.images.push(new WcImageDTO(lastLink['url']));
+        }
       }
       // TODO: other types of photos ie Photo - Mounted
     } else if (itemAttributes.thumbnail) {

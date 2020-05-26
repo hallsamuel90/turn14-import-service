@@ -89,7 +89,7 @@ export class BrandsService {
     siteUrl: string,
     turn14Brands: Turn14Brand[]
   ): BrandDTO[] {
-    const brands = [];
+    const brands: BrandDTO[] = [];
 
     for (const turn14Brand of turn14Brands) {
       const brand = this.brandMapper.turn14ToBrand(

@@ -1,5 +1,5 @@
-import { Channel } from './ampqProTypes';
 import { AmqpPro } from './ampqPro';
+import { Channel } from './ampqProTypes';
 
 /**
  * AmqpProJson.
@@ -21,8 +21,10 @@ export class AmqpProJson extends AmqpPro {
    */
   subscribe(channel: Channel, channelName: string, callback: Function): void {
     channel.consume(channelName, (message) => {
-      callback(JSON.parse(message.content.toString()));
-      channel.ack(message);
+      if (message != null) {
+        callback(JSON.parse(message.content.toString()));
+        channel.ack(message);
+      }
     });
   }
 

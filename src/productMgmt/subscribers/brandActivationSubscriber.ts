@@ -1,5 +1,5 @@
-import { BrandActivationSequence } from '../jobs/brandActivationSequence';
 import { AmqpPro } from '../../util/ampqPro';
+import { BrandActivationSequence } from '../jobs/brandActivationSequence';
 
 /**
  * BrandActivationSubscriber.
@@ -34,7 +34,7 @@ export class BrandActivationSubscriber {
    */
   async subscribeBrandActivationSequence(): Promise<void> {
     const connection = await this.amqpUtil.connect(
-      this.RABBITMQ_URI,
+      this.RABBITMQ_URI || '',
       this.subscribeBrandActivationSequence
     );
 
