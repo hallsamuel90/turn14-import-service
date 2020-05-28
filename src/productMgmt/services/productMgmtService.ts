@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { Inject, Service } from 'typedi';
 import { Keys } from '../../apiUsers/models/apiUser';
 import { Turn14RestApi } from '../../turn14/clients/turn14RestApi';
@@ -43,6 +44,10 @@ export class ProductMgmtService {
       pmgmtDto.brandId
     );
 
+    console.info(
+      `🔨 Import Products Job starting! Only ${turn14Products.length} products to go!`
+    );
+
     const wcRestApi: WcRestApi = this.wcRestApiProvider.getWcRestApi(
       pmgmtDto.siteUrl,
       pmgmtDto.wcKeys.client,
@@ -56,7 +61,7 @@ export class ProductMgmtService {
 
     const wcProducts = new WcBatchDTO();
     for (const turn14Product of turn14Products) {
-      const wcProduct = await wcMapper.turn14ToWc(turn14Product);
+      const wcProduct = await wcMapper.turn14ToCreateWc(turn14Product);
       wcProducts.create.push(wcProduct);
 
       if (wcProducts.totalSize() == this.BATCH_SIZE) {
@@ -72,6 +77,7 @@ export class ProductMgmtService {
    * Deletes a brand's products from the WooCommerce store.
    *
    * @param {PmgmtDTO} pmgmtDto the product management object containing keys.
+   * @throws {WcError} if something goes wrong when communicating with the api.
    */
   async delete(pmgmtDto: PmgmtDTO): Promise<void> {
     const wcRestApi = this.wcRestApiProvider.getWcRestApi(
@@ -80,12 +86,27 @@ export class ProductMgmtService {
       pmgmtDto.wcKeys.secret
     );
 
-    // const brandProducts = wcRestApi.fetchBrandProducts(pmgmtDto.brandId);
-    // should throw if cannot get brandProducts
+    const brandProducts = await wcRestApi.fetchProductsByBrand(
+      pmgmtDto.brandId
+    );
 
-    // const productIds = getProductIds(brandProducts);
+    console.info(
+      `💥 Delete Products Job starting! Only ${brandProducts.length} products to go!`
+    );
 
-    // wcRestApi.deleteProducts(productIds);
+    const productIds = _.map(brandProducts, 'id');
+
+    const wcProducts = new WcBatchDTO();
+    for (const productId of productIds) {
+      wcProducts.delete.push(productId);
+
+      if (wcProducts.totalSize() == this.BATCH_SIZE) {
+        await wcRestApi.deleteProducts(wcProducts);
+        wcProducts.delete.length = 0;
+        break; // TODO: remove
+      }
+    }
+    console.info('👍 Deletion complete!');
   }
 
   /**
@@ -111,9 +132,5 @@ export class ProductMgmtService {
     );
 
     return turn14Products;
-  }
-
-  private getProductIds() {
-    throw new Error('meesage not yet implemented');
   }
 }

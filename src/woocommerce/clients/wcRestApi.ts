@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import axios, { AxiosInstance } from 'axios';
 import https from 'https';
 import _, { Dictionary } from 'lodash';
@@ -13,6 +14,7 @@ import { WcError } from '../errors/wcError';
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
 export class WcRestApi {
+  private static PRODUCTS_RESOURCE = 'wp-json/wc/v3/products';
   private static BATCH_PRODUCTS_RESOURCE = 'wp-json/wc/v3/products/batch';
   private static PRODUCT_CATEOGORIES_RESOURCE =
     'wp-json/wc/v3/products/categories';
@@ -71,15 +73,40 @@ export class WcRestApi {
    */
   async fetchProductsByBrand(brandId: string): Promise<JSON[]> {
     try {
-      const response = await this.axiosClient.get(
-        WcRestApi.PRODUCT_CATEOGORIES_RESOURCE
-      );
+      const response = await this.axiosClient.get(WcRestApi.PRODUCTS_RESOURCE, {
+        params: {
+          brand_id: brandId,
+        },
+      });
       return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
 
       throw new WcError(
         'fetchCategories(), something went wrong communicating with WooCommerce.'
+      );
+    }
+  }
+
+  /**
+   * Batch creates, updates, and deletes woocomerce products,
+   * limited to 100 at a time.
+   *
+   * @param {WcBatchDTO} wcProducts the products to be sent to the store.
+   * @returns {Promise<JSON>} the response from woocommerce.
+   */
+  async deleteProducts(wcProducts: WcBatchDTO): Promise<JSON> {
+    try {
+      const response = await this.axiosClient.post(
+        WcRestApi.BATCH_PRODUCTS_RESOURCE,
+        wcProducts
+      );
+      return response.data;
+    } catch (e) {
+      console.error('🔥 ' + e);
+
+      throw new WcError(
+        'createProducts(), something went wrong communicating with WooCommerce.'
       );
     }
   }
@@ -133,8 +160,9 @@ export class WcRestApi {
   /**
    * Creates a new woocommerce category
    *
-   * @param {WcCategoryDTO} wcCategoryDto
-   * @returns {Promise<JSON>} the response from woocommerce.
+   * @param {WcCategoryDTO} wcCategoryDto the data transfer creation object.
+   * @returns {Promise<JSON>} the response from woocommerce or an empy response
+   * if there is an error.
    */
   async createCategory(wcCategoryDto: WcCategoryDTO): Promise<JSON> {
     try {

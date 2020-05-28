@@ -2,7 +2,6 @@ import Container from 'typedi';
 import { ApiUserService } from '../../apiUsers/services/apiUserService';
 import { BrandsService } from '../../brands/services/brandsService';
 import { Turn14RestApiProvider } from '../../turn14/clients/turn14RestApiProvider';
-import { AmqpPro } from '../../util/ampqPro/ampqPro';
 import { AmqpProJson } from '../../util/ampqPro/ampqProJson';
 import { WcRestApiProvider } from '../../woocommerce/clients/wcRestApiProvider';
 import { BrandActivationSequence } from '../jobs/brandActivationSequence';
@@ -28,9 +27,10 @@ export default (): void => {
 
   Container.set(WcMapperProvider, new WcMapperProvider());
 
-  Container.get(BrandActivationSequence);
-
-  Container.set(AmqpPro, new AmqpProJson());
-
-  Container.get(BrandActivationSubscriber);
+  const brandActivationSequence = Container.get(BrandActivationSequence);
+  const amqpProJson = new AmqpProJson();
+  Container.set(
+    BrandActivationSubscriber,
+    new BrandActivationSubscriber(brandActivationSequence, amqpProJson)
+  );
 };

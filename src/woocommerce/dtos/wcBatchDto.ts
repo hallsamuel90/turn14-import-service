@@ -8,6 +8,7 @@ export class WcBatchDTO {
   create: WcCreateProductDTO[];
   update: WcUpdateProductDTO[];
   delete: number[];
+
   /**
    *
    */

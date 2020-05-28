@@ -38,7 +38,7 @@ export class WcMapper {
    * converted.
    * @returns {Promise<WcCreateProductDTO>} converted woocommerce product.
    */
-  async turn14ToWc(
+  async turn14ToCreateWc(
     turn14ProductDto: Turn14ProductDTO
   ): Promise<WcCreateProductDTO> {
     const wcProduct = new WcCreateProductDTO();

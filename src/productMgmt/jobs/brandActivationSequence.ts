@@ -36,8 +36,6 @@ export class BrandActivationSequence {
    * contains the brand's active state.
    */
   async handler(activeBrandDto: ActiveBrandDTO): Promise<void> {
-    console.info('🔨 Import Brands Sequence Job starting!');
-
     const apiUser = await this.apiUserService.retrieve(activeBrandDto.userId);
 
     const brandIds = apiUser.brandIds;
