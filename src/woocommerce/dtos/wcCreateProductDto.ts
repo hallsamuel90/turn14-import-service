@@ -19,7 +19,7 @@ export class WcCreateProductDTO {
   shortDescription: string;
   description: string;
   sku: string;
-  brand_id: string;
+  brand_id: number;
   regular_price: string;
   sale_price: string;
   categories: WcCategoryIdDTO[];
@@ -42,7 +42,6 @@ export class WcCreateProductDTO {
     this.shortDescription = '';
     this.description = '';
     this.sku = '';
-    this.brand_id = '';
     this.regular_price = '';
     this.sale_price = '';
     this.categories = [];

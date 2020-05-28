@@ -25,5 +25,11 @@
     ],
     "exclude": [
       "./node_modules",
-    ]
+    ],
+    // for unit-testing purposes only.
+    // dramatically speeds up start time.
+    "ts-node": {
+      "files": true,
+      "transpileOnly": true
+    }
   }

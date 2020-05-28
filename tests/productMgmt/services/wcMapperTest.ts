@@ -25,16 +25,37 @@ describe('WcMapper tests', () => {
     instance = new WcMapper(mockWcCategoriesCache);
   });
 
-  describe('#turn14ToWc', () => {
+  describe('#turn14AttributesToWc', () => {
     it('should not return null', () => {
       const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
+      const itemAttributes = fakeTurn14ProductDto?.item['attributes'];
 
-      const wcCreateProductDto = instance.turn14ToWc(fakeTurn14ProductDto);
+      const wcCreateProductDto = instance.turn14AttributesToWc(itemAttributes);
 
       expect(wcCreateProductDto).to.not.be.null;
     });
 
-    // TODO other tests.
-    // it('should return a correctly mapped WcCreateProductDTO', () => {});
+    it('should return correctly mapped attributes for WcCreateProductDTO', async () => {
+      const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
+      const itemAttributes = fakeTurn14ProductDto?.item['attributes'];
+
+      const wcCreateProductDtoAttributes = instance.turn14AttributesToWc(
+        itemAttributes
+      );
+
+      expect(wcCreateProductDtoAttributes.name).to.equal(
+        'DBA 4000 Slot&Drill Rotors'
+      );
+      expect(wcCreateProductDtoAttributes.type).to.equal('simple');
+      expect(wcCreateProductDtoAttributes.shortDescription).to.equal(
+        'DBA 92-95 MR-2 Turbo Rear Drilled & Slotted 4000 Series Rotor'
+      );
+      expect(wcCreateProductDtoAttributes.sku).to.equal('4583XS');
+      expect(wcCreateProductDtoAttributes.brand_id).to.equal(18);
+      expect(wcCreateProductDtoAttributes.dimensions.length).to.equal(15);
+      expect(wcCreateProductDtoAttributes.dimensions.width).to.equal(15);
+      expect(wcCreateProductDtoAttributes.dimensions.height).to.equal(4);
+      expect(wcCreateProductDtoAttributes.weight).to.equal(13);
+    });
   });
 });

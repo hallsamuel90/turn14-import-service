@@ -6,8 +6,8 @@
   "scripts": {
     "clean": "rm -rf build/*",
     "start": "node build/app.js",
-    "test": "nyc mocha -r ts-node/register 'tests/**/*.ts'",
-    "build": "tsc",
+    "test": "nyc mocha -r ts-node/register/files 'tests/**/*.ts'",
+    "build": "npm test && tsc",
     "contain": "sudo docker build -t turn14-import-service ."
   },
   "dependencies": {

@@ -43,14 +43,16 @@ export class WcMapper {
     const wcProduct = new WcCreateProductDTO();
 
     const itemAttributes = turn14ProductDto?.item['attributes'];
-    wcProduct.name = itemAttributes?.product_name;
-    wcProduct.sku = itemAttributes?.mfr_part_number;
-    wcProduct.brand_id = itemAttributes?.brand_id;
-    wcProduct.shortDescription = itemAttributes?.part_description;
-    wcProduct.dimensions.length = itemAttributes?.dimensions[0]?.length;
-    wcProduct.dimensions.width = itemAttributes?.dimensions[0]?.width;
-    wcProduct.dimensions.height = itemAttributes?.dimensions[0]?.height;
-    wcProduct.weight = itemAttributes?.dimensions[0]?.weight;
+
+    const wcProductAttributes = this.turn14AttributesToWc(itemAttributes);
+    wcProduct.name = wcProductAttributes.name;
+    wcProduct.sku = wcProductAttributes.sku;
+    wcProduct.brand_id = wcProductAttributes.brand_id;
+    wcProduct.shortDescription = wcProductAttributes.shortDescription;
+    wcProduct.dimensions.length = wcProductAttributes.dimensions.length;
+    wcProduct.dimensions.width = wcProductAttributes.dimensions.width;
+    wcProduct.dimensions.height = wcProductAttributes.dimensions.height;
+    wcProduct.weight = wcProductAttributes.weight;
 
     wcProduct.categories = await this.turn14CategoriesToWc(itemAttributes);
 
@@ -73,6 +75,38 @@ export class WcMapper {
     return wcProduct;
   }
 
+  /**
+   * Converts turn 14 items attributes into woocommerce format.
+   *
+   * @param {any} itemAttributes the attributes to be converted.
+   * @returns {WcCreateProductDTO} a partially populated WcCreateProductDTO
+   * object that only contains the attributes.
+   */
+  turn14AttributesToWc(itemAttributes): WcCreateProductDTO {
+    const wcProductAttributes = new WcCreateProductDTO();
+
+    wcProductAttributes.name = itemAttributes?.product_name;
+    wcProductAttributes.sku = itemAttributes?.mfr_part_number;
+    wcProductAttributes.brand_id = itemAttributes?.brand_id;
+    wcProductAttributes.shortDescription = itemAttributes?.part_description;
+    wcProductAttributes.dimensions.length =
+      itemAttributes?.dimensions[0]?.length;
+    wcProductAttributes.dimensions.width = itemAttributes?.dimensions[0]?.width;
+    wcProductAttributes.dimensions.height =
+      itemAttributes?.dimensions[0]?.height;
+    wcProductAttributes.weight = itemAttributes?.dimensions[0]?.weight;
+
+    return wcProductAttributes;
+  }
+
+  /**
+   * Converts turn14 attributes into woocommerce categories.
+   *
+   * @param {any} itemAttributes the itemAttributes that contain the categories.
+   * Different categories are created from different attributes.
+   * @returns {Promise<WcCategoryIdDTO[]>} a list of data transfer objects that
+   * contain the categories in the format woocommerce expects.
+   */
   async turn14CategoriesToWc(itemAttributes): Promise<WcCategoryIdDTO[]> {
     const wcCategoryDtos: WcCategoryIdDTO[] = [];
     const category = await this.categoriesCache.getCategory(
@@ -103,6 +137,12 @@ export class WcMapper {
     return wcCategoryDtos;
   }
 
+  /**
+   * Converts the turn14 description into woocommerce description.
+   *
+   * @param {JSON} turn14Media the object that contains the descriptions.
+   * @returns {string} the extracted description.
+   */
   turn14DescriptionToWc(turn14Media: JSON): string {
     if (turn14Media['descriptions']) {
       const descriptions = _.keyBy(turn14Media['descriptions'], 'type');
@@ -115,6 +155,16 @@ export class WcMapper {
     return '';
   }
 
+  /**
+   * Converts the turn14 image links into the data transfer object woocommerce
+   * expects.
+   *
+   * @param {any} itemAttributes the itemAttributes contains a thumbnail. If
+   * there is not a suitable image in turn14Media, the thumbnail will be used.
+   * @param {JSON} turn14Media the object that contains the image links.
+   * @returns {WcImageDTO[]} a list of data transfer objects that contain the
+   * image links.
+   */
   turn14ImagesToWc(itemAttributes, turn14Media: JSON): WcImageDTO[] {
     const wcImageDtos: WcImageDTO[] = [];
     if (turn14Media['files']) {
@@ -134,6 +184,14 @@ export class WcMapper {
     return wcImageDtos;
   }
 
+  /**
+   * Traverses the turn14 pricing object and determines the regular_price based
+   * on available properties.
+   *
+   * @param {any} itemPricing the object that contains pricing information.
+   * @returns {string} the determined regular price. may return empty string if
+   * a price cannot be determined.
+   */
   turn14PricingToWcRegularPrice(itemPricing): string {
     const priceLists = _.keyBy(itemPricing.pricelists, 'name');
 
@@ -150,6 +208,14 @@ export class WcMapper {
     return '';
   }
 
+  /**
+   * Traverses the turn14 pricing object and determines the sale_price based
+   * on available properties.
+   *
+   * @param {any} itemPricing the object that contains pricing information.
+   * @returns {string} the determined sale price. may return empty string if
+   * a price cannot be determined.
+   */
   turn14PricingToWcSalePrice(itemPricing): string {
     const priceLists = _.keyBy(itemPricing.pricelists, 'name');
 
@@ -160,6 +226,14 @@ export class WcMapper {
     return '';
   }
 
+  /**
+   * Traverses the inventory object an determines if the item is regularly
+   * carried, its current total stock, and if is available for backorder.
+   *
+   * @param {JSON} itemInventory the object that contains the inventory.
+   * @returns {WcCreateProductDTO} a partially populated WcCreateProductDTO
+   * object that only contains the inventory information.
+   */
   turn14InventoryToWc(itemInventory: JSON): WcCreateProductDTO {
     const wcInventory = new WcCreateProductDTO();
     if (itemInventory) {
@@ -177,10 +251,19 @@ export class WcMapper {
     return wcInventory;
   }
 
-  getTurn14StockQuantity(itemInventory): number {
+  /**
+   * Looks at the different inventory sources, and determines the
+   * combined total stock.
+   *
+   * @param {JSON} itemInventory the object that contains the inventory.
+   * @returns {number} the total stock across sources.
+   */
+  private getTurn14StockQuantity(itemInventory): number {
+    const inventoryAttributes = itemInventory['attributes'];
+
     let totalStock = 0;
 
-    const warehouseStock = itemInventory?.inventory;
+    const warehouseStock = inventoryAttributes?.inventory;
     if (warehouseStock != undefined) {
       for (const stock in warehouseStock) {
         if (warehouseStock[stock] > 0) {
@@ -189,7 +272,7 @@ export class WcMapper {
       }
     }
 
-    const manufacturerStock = itemInventory?.manufacturer;
+    const manufacturerStock = inventoryAttributes?.manufacturer;
     if (manufacturerStock != undefined) {
       for (const stock in manufacturerStock) {
         if (manufacturerStock[stock] > 0) {
