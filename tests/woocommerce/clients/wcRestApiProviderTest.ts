@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 import { WcRestApi } from '../../../src/woocommerce/clients/wcRestApi';
-import { WcRestApiFactory } from '../../../src/woocommerce/clients/wcRestApiFactory';
+import { WcRestApiProvider } from '../../../src/woocommerce/clients/wcRestApiProvider';
 
-describe('WcRestApiFactory tests', () => {
-  let instance: WcRestApiFactory;
+describe('WcRestApiProvider tests', () => {
+  let instance: WcRestApiProvider;
 
   beforeEach(() => {
-    instance = new WcRestApiFactory();
+    instance = new WcRestApiProvider();
   });
 
   describe('#getWcRestApi', () => {

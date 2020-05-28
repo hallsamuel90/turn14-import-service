@@ -1,6 +1,6 @@
 import { Service } from 'typedi';
 import { ApiUser } from '../../apiUsers/models/apiUser';
-import { Turn14RestApiFactory } from '../../turn14/clients/turn14RestApiFactory';
+import { Turn14RestApiProvider } from '../../turn14/clients/turn14RestApiProvider';
 import { Turn14Brand } from '../../turn14/interfaces/turn14Brand';
 import { BrandDTO } from '../dtos/brandDto';
 import { BrandsPublisher } from '../publishers/brandsPublisher';
@@ -16,14 +16,14 @@ import { BrandMapper } from './brandMapper';
  */
 @Service()
 export class BrandsService {
-  private readonly turn14RestApiFactory: Turn14RestApiFactory;
+  private readonly turn14RestApiProvider: Turn14RestApiProvider;
   private readonly brandMapper: BrandMapper;
   private readonly brandsPublisherService: BrandsPublisher;
 
   /**
    * Creates a new instance witht the provided parameters.
    *
-   * @param {Turn14RestApiFactory} turn14RestApiFactory the turn14 rest api factory for communciation
+   * @param {Turn14RestApiProvider} turn14RestApiProvider the turn14 rest api factory for communciation
    * with the turn14 api.
    * @param {BrandMapper} brandMapper the brand mapping service that converts the
    * turn14 brands into the brands service objects.
@@ -31,11 +31,11 @@ export class BrandsService {
    * brands service.
    */
   constructor(
-    turn14RestApiFactory: Turn14RestApiFactory,
+    turn14RestApiProvider: Turn14RestApiProvider,
     brandMapper: BrandMapper,
     brandsPublisherService: BrandsPublisher
   ) {
-    this.turn14RestApiFactory = turn14RestApiFactory;
+    this.turn14RestApiProvider = turn14RestApiProvider;
     this.brandMapper = brandMapper;
     this.brandsPublisherService = brandsPublisherService;
   }
@@ -65,7 +65,7 @@ export class BrandsService {
    * @returns {Turn14Brand[]} a list of turn14 brands.
    */
   private async fetchBrands(apiUser: ApiUser): Promise<Turn14Brand[]> {
-    const turn14Client = this.turn14RestApiFactory.getTurn14RestApi(
+    const turn14Client = this.turn14RestApiProvider.getTurn14RestApi(
       apiUser.turn14Keys.client,
       apiUser.turn14Keys.secret
     );

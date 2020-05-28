@@ -1,4 +1,4 @@
-import { AmqpPro } from '../../util/ampqPro';
+import { AmqpPro } from '../../util/ampqPro/ampqPro';
 import { RegistrationSequence } from '../jobs/registrationSequence';
 
 /**

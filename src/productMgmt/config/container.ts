@@ -1,13 +1,13 @@
 import Container from 'typedi';
-import { ProductMgmtService } from '../services/productMgmtService';
-import { BrandActivationSequence } from '../jobs/brandActivationSequence';
-import { WcMapperFactory } from '../services/wcMapperFactory';
 import { ApiUserService } from '../../apiUsers/services/apiUserService';
 import { BrandsService } from '../../brands/services/brandsService';
-import { AmqpProJson } from '../../util/ampqProJson';
+import { Turn14RestApiProvider } from '../../turn14/clients/turn14RestApiProvider';
+import { AmqpProJson } from '../../util/ampqPro/ampqProJson';
+import { WcRestApiProvider } from '../../woocommerce/clients/wcRestApiProvider';
+import { BrandActivationSequence } from '../jobs/brandActivationSequence';
+import { ProductMgmtService } from '../services/productMgmtService';
+import { WcMapperProvider } from '../services/wcMapperProvider';
 import { BrandActivationSubscriber } from '../subscribers/brandActivationSubscriber';
-import { Turn14RestApiFactory } from '../../turn14/clients/turn14RestApiFactory';
-import { WcRestApiFactory } from '../../woocommerce/clients/wcRestApiFactory';
 
 /**
  * Configures the container dependencies for the product management module.
@@ -15,15 +15,15 @@ import { WcRestApiFactory } from '../../woocommerce/clients/wcRestApiFactory';
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
 export default (): void => {
-  Container.get(Turn14RestApiFactory);
+  Container.get(Turn14RestApiProvider);
 
-  Container.get(WcRestApiFactory);
+  Container.get(WcRestApiProvider);
 
   Container.get(ApiUserService);
 
   Container.get(BrandsService);
 
-  Container.set(WcMapperFactory, new WcMapperFactory());
+  Container.set(WcMapperProvider, new WcMapperProvider());
 
   Container.get(ProductMgmtService);
 

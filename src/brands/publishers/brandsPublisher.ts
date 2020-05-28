@@ -1,5 +1,5 @@
 import { Service } from 'typedi';
-import { AmqpPro } from '../../util/ampqPro';
+import { AmqpPro } from '../../util/ampqPro/ampqPro';
 import { BrandDTO } from '../dtos/brandDto';
 
 /**

@@ -1,11 +1,11 @@
 import { WcRestApi } from './wcRestApi';
 
 /**
- * WcRestApiFactory.
+ * WcRestApiProvider.
  *
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
-export class WcRestApiFactory {
+export class WcRestApiProvider {
   /**
    * Creates and returns a new instance of WcRestApi with the provided
    * parameters.

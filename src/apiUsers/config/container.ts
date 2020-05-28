@@ -1,8 +1,8 @@
-import { RegistrationSequence } from '../jobs/registrationSequence';
-import { AmqpProJson } from '../../util/ampqProJson';
 import Container from 'typedi';
-import { ApiUserService } from '../services/apiUserService';
 import { BrandsService } from '../../brands/services/brandsService';
+import { AmqpProJson } from '../../util/ampqPro/ampqProJson';
+import { RegistrationSequence } from '../jobs/registrationSequence';
+import { ApiUserService } from '../services/apiUserService';
 import { RegistrationSubscriber } from '../subscribers/registrationSubscriber';
 
 /**

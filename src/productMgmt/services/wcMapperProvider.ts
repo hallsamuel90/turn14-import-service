@@ -2,11 +2,11 @@ import { WcCategoriesCache } from '../caches/wcCategoriesCache';
 import { WcMapper } from './wcMapper';
 
 /**
- * WcMapperFactory.
+ * WcMapperProvider.
  *
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
-export class WcMapperFactory {
+export class WcMapperProvider {
   /**
    * Creates and returns a new instance of WcMapper with the provided
    * WcCategoriesCache.

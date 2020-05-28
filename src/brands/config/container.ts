@@ -1,16 +1,16 @@
 import { Container } from 'typedi';
-import { BrandMapper } from '../services/brandMapper';
+import { Turn14RestApiProvider } from '../../turn14/clients/turn14RestApiProvider';
 import { BrandsPublisher } from '../publishers/brandsPublisher';
+import { BrandMapper } from '../services/brandMapper';
 import { BrandsService } from '../services/brandsService';
-import { Turn14RestApiFactory } from '../../turn14/clients/turn14RestApiFactory';
 
 export default (): void => {
-  const turn14RestApiFactory = Container.get(Turn14RestApiFactory);
+  const turn14RestApiProvider = Container.get(Turn14RestApiProvider);
   const brandMapper = Container.get(BrandMapper);
   const brandsPublisher = Container.get(BrandsPublisher);
 
   Container.set(
     BrandsService,
-    new BrandsService(turn14RestApiFactory, brandMapper, brandsPublisher)
+    new BrandsService(turn14RestApiProvider, brandMapper, brandsPublisher)
   );
 };

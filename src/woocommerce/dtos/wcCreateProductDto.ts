@@ -6,7 +6,12 @@ import { WcDimensionsDTO } from './wcDimensionsDto';
 import { WcImageDTO } from './wcImageDto';
 
 /**
- * WooCommerce Product Data Transfer Object
+ * WooCommerceCreateProductDTO.
+ *
+ * Data transfer object used for woocommerce product creation. Data attributes
+ * are in camel_case as that is the format expected by woocommerce.
+ *
+ * @author Sam Hall <hallsamuel90@gmail.com>
  */
 export class WcCreateProductDTO {
   name: string;
@@ -14,6 +19,7 @@ export class WcCreateProductDTO {
   shortDescription: string;
   description: string;
   sku: string;
+  brand_id: string;
   regular_price: string;
   sale_price: string;
   categories: WcCategoryIdDTO[];
@@ -26,8 +32,9 @@ export class WcCreateProductDTO {
   backorders: string;
   backorders_allowed: boolean;
   attributes: WcAttributeDTO[];
+
   /**
-   *
+   * Creates a new instance and sets the initial state.
    */
   constructor() {
     this.name = '';
@@ -35,6 +42,7 @@ export class WcCreateProductDTO {
     this.shortDescription = '';
     this.description = '';
     this.sku = '';
+    this.brand_id = '';
     this.regular_price = '';
     this.sale_price = '';
     this.categories = [];

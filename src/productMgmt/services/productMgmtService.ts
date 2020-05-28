@@ -1,15 +1,15 @@
 import { Inject, Service } from 'typedi';
 import { Keys } from '../../apiUsers/models/apiUser';
 import { Turn14RestApi } from '../../turn14/clients/turn14RestApi';
-import { Turn14RestApiFactory } from '../../turn14/clients/turn14RestApiFactory';
+import { Turn14RestApiProvider } from '../../turn14/clients/turn14RestApiProvider';
 import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
 import { WcRestApi } from '../../woocommerce/clients/wcRestApi';
-import { WcRestApiFactory } from '../../woocommerce/clients/wcRestApiFactory';
+import { WcRestApiProvider } from '../../woocommerce/clients/wcRestApiProvider';
 import { WcBatchDTO } from '../../woocommerce/dtos/wcBatchDto';
 import { WcCategoriesCache } from '../caches/wcCategoriesCache';
 import { PmgmtDTO } from '../dtos/pmgmtDto';
 import { WcMapper } from './wcMapper';
-import { WcMapperFactory } from './wcMapperFactory';
+import { WcMapperProvider } from './wcMapperProvider';
 
 /**
  * ProductMgmtService.
@@ -24,13 +24,13 @@ export class ProductMgmtService {
   BATCH_SIZE = 5; // default 50
 
   @Inject()
-  private readonly turn14RestApiFactory: Turn14RestApiFactory;
+  private readonly turn14RestApiProvider: Turn14RestApiProvider;
 
   @Inject()
-  private readonly wcRestApiFactory: WcRestApiFactory;
+  private readonly wcRestApiProvider: WcRestApiProvider;
 
   @Inject()
-  private readonly wcMapperFactory: WcMapperFactory;
+  private readonly wcMapperProvider: WcMapperProvider;
 
   /**
    * Imports a Turn14 brand's products into the WC Store.
@@ -43,14 +43,14 @@ export class ProductMgmtService {
       pmgmtDto.brandId
     );
 
-    const wcRestApi: WcRestApi = this.wcRestApiFactory.getWcRestApi(
+    const wcRestApi: WcRestApi = this.wcRestApiProvider.getWcRestApi(
       pmgmtDto.siteUrl,
       pmgmtDto.wcKeys.client,
       pmgmtDto.wcKeys.secret
     );
 
     const wcCategoriesCache = new WcCategoriesCache(wcRestApi);
-    const wcMapper: WcMapper = this.wcMapperFactory.getWcMapper(
+    const wcMapper: WcMapper = this.wcMapperProvider.getWcMapper(
       wcCategoriesCache
     );
 
@@ -74,7 +74,7 @@ export class ProductMgmtService {
    * @param {PmgmtDTO} pmgmtDto the product management object containing keys.
    */
   async delete(pmgmtDto: PmgmtDTO): Promise<void> {
-    const wcRestApi = this.wcRestApiFactory.getWcRestApi(
+    const wcRestApi = this.wcRestApiProvider.getWcRestApi(
       pmgmtDto.siteUrl,
       pmgmtDto.wcKeys.client,
       pmgmtDto.wcKeys.secret
@@ -99,7 +99,7 @@ export class ProductMgmtService {
     turn14Keys: Keys,
     brandId: string
   ): Promise<Turn14ProductDTO[]> {
-    const turn14RestApi: Turn14RestApi = this.turn14RestApiFactory.getTurn14RestApi(
+    const turn14RestApi: Turn14RestApi = this.turn14RestApiProvider.getTurn14RestApi(
       turn14Keys.client,
       turn14Keys.secret
     );

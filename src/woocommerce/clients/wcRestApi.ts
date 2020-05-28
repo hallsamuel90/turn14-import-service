@@ -5,8 +5,6 @@ import { WcBatchDTO } from '../dtos/wcBatchDto';
 import { WcCategoryDTO } from '../dtos/wcCategoryDto';
 import { WcError } from '../errors/wcError';
 
-const BATCH_PRODUCTS_RESOURCE = 'wp-json/wc/v3/products/batch';
-const PRODUCT_CATEOGORIES_RESOURCE = 'wp-json/wc/v3/products/categories';
 /**
  * WooCommerceRestApi.
  *
@@ -15,6 +13,10 @@ const PRODUCT_CATEOGORIES_RESOURCE = 'wp-json/wc/v3/products/categories';
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
 export class WcRestApi {
+  private static BATCH_PRODUCTS_RESOURCE = 'wp-json/wc/v3/products/batch';
+  private static PRODUCT_CATEOGORIES_RESOURCE =
+    'wp-json/wc/v3/products/categories';
+
   private axiosClient: AxiosInstance;
 
   /**
@@ -43,12 +45,12 @@ export class WcRestApi {
    * limited to 100 at a time.
    *
    * @param {WcBatchDTO} wcProducts the products to be sent to the store.
-   * @returns {Promise<JSON>} response from woocommerce api.
+   * @returns {Promise<JSON>} the response from woocommerce.
    */
   async createProducts(wcProducts: WcBatchDTO): Promise<JSON> {
     try {
       const response = await this.axiosClient.post(
-        BATCH_PRODUCTS_RESOURCE,
+        WcRestApi.BATCH_PRODUCTS_RESOURCE,
         wcProducts
       );
       return response.data;
@@ -64,18 +66,29 @@ export class WcRestApi {
   /**
    * Fetches all products of a particular brand.
    *
-   * @param brandId the unique id of the brand.
-   * @returns TODO some data object.
+   * @param {string} brandId the unique id of the brand.
+   * @returns {Promise<JSON[]>} the response from woocommerce.
    */
-  async fetchProductsByBrand(brandId: string) {
-    throw new Error('Method not implemented.');
+  async fetchProductsByBrand(brandId: string): Promise<JSON[]> {
+    try {
+      const response = await this.axiosClient.get(
+        WcRestApi.PRODUCT_CATEOGORIES_RESOURCE
+      );
+      return response.data;
+    } catch (e) {
+      console.error('🔥 ' + e);
+    } finally {
+      throw new WcError(
+        'fetchCategories(), something went wrong communicating with WooCommerce.'
+      );
+    }
   }
 
   /**
    * Fetches all categories from woocommerce and returns them as
    * a map of name:category
    *
-   * @returns {Promise<Dictionary<JSON>>} response
+   * @returns {Promise<Dictionary<JSON>>} the response from woocommerce.
    */
   async fetchAllCategories(): Promise<Dictionary<JSON>> {
     let allData: JSON[] = [];
@@ -94,13 +107,13 @@ export class WcRestApi {
   /**
    * Fetches categories from woocommerce
    *
-   * @param {number} pageNumber
-   * @returns {Promise<JSON[]>} response
+   * @param {number} pageNumber the page number to query.
+   * @returns {Promise<JSON[]>} the response from woocommerce.
    */
   async fetchCategories(pageNumber: number): Promise<JSON[]> {
     try {
       const response = await this.axiosClient.get(
-        PRODUCT_CATEOGORIES_RESOURCE,
+        WcRestApi.PRODUCT_CATEOGORIES_RESOURCE,
         {
           params: {
             page: pageNumber,
@@ -121,12 +134,12 @@ export class WcRestApi {
    * Creates a new woocommerce category
    *
    * @param {WcCategoryDTO} wcCategoryDto
-   * @returns {Promise<JSON>} response
+   * @returns {Promise<JSON>} the response from woocommerce.
    */
   async createCategory(wcCategoryDto: WcCategoryDTO): Promise<JSON> {
     try {
       const response = await this.axiosClient.post(
-        PRODUCT_CATEOGORIES_RESOURCE,
+        WcRestApi.PRODUCT_CATEOGORIES_RESOURCE,
         wcCategoryDto
       );
       return response.data;
