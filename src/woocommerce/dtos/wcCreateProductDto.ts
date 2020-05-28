@@ -20,6 +20,7 @@ export class WcCreateProductDTO {
   description: string;
   sku: string;
   brand_id: number;
+  ymm_fitment: string;
   regular_price: string;
   sale_price: string;
   categories: WcCategoryIdDTO[];

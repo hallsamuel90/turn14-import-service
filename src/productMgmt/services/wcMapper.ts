@@ -16,6 +16,7 @@ export class WcMapper {
   private static RETAIL = 'Retail';
   private static JOBBER = 'Jobber';
   private static DESCRIPTION = 'Market Description';
+  private static FITMENT = 'Application Summary';
   private static PRIMARY_IMAGE = 'Photo - Primary';
 
   private categoriesCache: WcCategoriesCache;
@@ -58,6 +59,7 @@ export class WcMapper {
 
     const itemMedia = turn14ProductDto?.itemData;
     wcProduct.description = this.turn14DescriptionToWc(itemMedia);
+    wcProduct.ymm_fitment = this.turn14FitmentToWc(itemMedia);
     wcProduct.images = this.turn14ImagesToWc(itemAttributes, itemMedia);
 
     const itemPricing = turn14ProductDto?.itemPricing['attributes'];
@@ -71,7 +73,6 @@ export class WcMapper {
     wcProduct.backorders = wcInventory?.backorders;
     wcProduct.stock_quantity = wcInventory?.stock_quantity;
 
-    // TODO add fitment to special attribute
     return wcProduct;
   }
 
@@ -149,6 +150,24 @@ export class WcMapper {
 
       if (descriptions[WcMapper.DESCRIPTION]) {
         return descriptions[WcMapper.DESCRIPTION].description;
+      }
+    }
+
+    return '';
+  }
+
+  /**
+   * Maps the turn14 fitment description into woocommerce the ymm_fitment attribute.
+   *
+   * @param {JSON} turn14Media the object that contains the descriptions.
+   * @returns {string} the extracted fitment description.
+   */
+  turn14FitmentToWc(turn14Media: JSON): string {
+    if (turn14Media['descriptions']) {
+      const descriptions = _.keyBy(turn14Media['descriptions'], 'type');
+
+      if (descriptions[WcMapper.FITMENT]) {
+        return descriptions[WcMapper.FITMENT].description;
       }
     }
 
