@@ -30,10 +30,7 @@ export class BrandsPublisher {
    * @param {BrandDTO[]} brands the list of brands to publish.
    */
   async queuePublishBrandsSequence(brands: BrandDTO[]): Promise<void> {
-    const connection = await this.amqpUtil.connect(
-      this.RABBITMQ_URI || '',
-      this.queuePublishBrandsSequence
-    );
+    const connection = await this.amqpUtil.connect(this.RABBITMQ_URI || '');
 
     const channel = await this.amqpUtil.createChannel(
       connection,

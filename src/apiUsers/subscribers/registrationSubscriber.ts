@@ -35,8 +35,7 @@ export class RegistrationSubscriber {
    */
   async subscribeRegistrationSequence(): Promise<void> {
     const connection = await this.amqpUtil.connect(
-      RegistrationSubscriber.RABBITMQ_URI || '',
-      this.subscribeRegistrationSequence
+      RegistrationSubscriber.RABBITMQ_URI || ''
     );
 
     const channel = await this.amqpUtil.createChannel(
@@ -47,7 +46,9 @@ export class RegistrationSubscriber {
     this.amqpUtil.subscribe(
       channel,
       RegistrationSubscriber.REGISTRATION_CHANNEL,
-      this.registrationSequence.handler
+      (msg) => {
+        this.registrationSequence.handler(msg);
+      }
     );
 
     console.info('⌚ Waiting for registration job requests...');

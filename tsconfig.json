@@ -17,11 +17,10 @@
       "outDir": "./build",
       "allowJs": true,
       "noEmit": false,
-      "esModuleInterop": true
+      "esModuleInterop": true,
     },
     "include": [
       "./src/**/*",
-      "./tests/**/*",
     ],
     "exclude": [
       "./node_modules",

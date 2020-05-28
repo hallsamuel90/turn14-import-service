@@ -33,10 +33,7 @@ export class BrandActivationSubscriber {
    * a message is recieved.
    */
   async subscribeBrandActivationSequence(): Promise<void> {
-    const connection = await this.amqpUtil.connect(
-      this.RABBITMQ_URI || '',
-      this.subscribeBrandActivationSequence
-    );
+    const connection = await this.amqpUtil.connect(this.RABBITMQ_URI || '');
 
     const channel = await this.amqpUtil.createChannel(
       connection,
@@ -46,7 +43,9 @@ export class BrandActivationSubscriber {
     this.amqpUtil.subscribe(
       channel,
       BrandActivationSubscriber.ACTIVATE_BRANDS_CHANNEL,
-      this.brandActivationSequence.handler
+      (msg) => {
+        this.brandActivationSequence.handler(msg);
+      }
     );
 
     console.info('⌚ Waiting for brand activation requests...');

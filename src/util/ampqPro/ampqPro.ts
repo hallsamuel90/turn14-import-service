@@ -18,7 +18,6 @@ export abstract class AmqpPro {
    * Attempts a reconnect in a set interval until a connection is achieved.
    *
    * @param {string} amqpUri the uri in which to connect to.
-   * @param {Function} callback the callback function to perform on consecutive
    * @param {number} [reconnectInterval=5] the amount of time (in seconds) to wait to attempt
    * a reconnect if previous attempt failed.
    * retries.
@@ -26,7 +25,6 @@ export abstract class AmqpPro {
    */
   async connect(
     amqpUri: string,
-    callback: Function,
     reconnectInterval?: number
   ): Promise<Connection> {
     try {
@@ -35,10 +33,12 @@ export abstract class AmqpPro {
       console.error('🔥 ' + e);
 
       reconnectInterval = this.validateReconnectInterval(reconnectInterval);
-      this.retryConnect(reconnectInterval, callback);
-    } finally {
+      this.retryConnect(amqpUri, reconnectInterval);
+
       throw new AmpqProError(
-        `connect(), Something went wrong, could not connect to ${amqpUri}`
+        `connect(), Something went wrong, it is likely the message broker is
+        not available or ${amqpUri} is not a valid address, 💪 Retrying in 
+        ${reconnectInterval} seconds...`
       );
     }
   }
@@ -61,7 +61,7 @@ export abstract class AmqpPro {
       return channel;
     } catch (e) {
       console.error('🔥 ' + e);
-    } finally {
+
       throw new AmpqProError(
         `createChannel(), Something went wrong, could not create channel ${channelName}`
       );
@@ -112,14 +112,14 @@ export abstract class AmqpPro {
   /**
    * Retries the message broker connection.
    *
+   * @param {string} amqpUri the uri in which to connect to.
    * @param {number} reconnectInterval the amount of time (in seconds)to wait
    * before attempting a reconnect.
    * @param {Function} callback the function to perform on retry attempt.
    */
-  private retryConnect(reconnectInterval: number, callback: Function): void {
-    console.log('💪 Retrying in ' + reconnectInterval + ' seconds...');
+  private retryConnect(amqpUri: string, reconnectInterval: number): void {
     setTimeout(() => {
-      callback();
+      this.connect(amqpUri, reconnectInterval);
     }, reconnectInterval * 1000);
   }
 }

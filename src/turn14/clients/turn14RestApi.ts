@@ -131,12 +131,14 @@ export class Turn14RestApi {
         }
       } else {
         console.error('🔥 ' + e);
+
+        throw new Turn14Error(
+          'fetchBrandItems(), something went wrong communicating with Turn14.'
+        );
       }
-    } finally {
-      throw new Turn14Error(
-        'fetchBrandItems(), something went wrong communicating with Turn14.'
-      );
     }
+
+    return {} as JSON;
   }
 
   /**
@@ -188,12 +190,14 @@ export class Turn14RestApi {
         }
       } else {
         console.error('🔥 ' + e);
+
+        throw new Turn14Error(
+          'fetchBrandItemsData(), something went wrong communicating with Turn14.'
+        );
       }
-    } finally {
-      throw new Turn14Error(
-        'fetchBrandItemsData(), something went wrong communicating with Turn14.'
-      );
     }
+
+    return {} as JSON;
   }
 
   /**
@@ -242,12 +246,14 @@ export class Turn14RestApi {
         }
       } else {
         console.error('🔥 ' + e);
+
+        throw new Turn14Error(
+          'fetchBrandPricing(), something went wrong communicating with Turn14.'
+        );
       }
-    } finally {
-      throw new Turn14Error(
-        'fetchBrandPricing(), something went wrong communicating with Turn14.'
-      );
     }
+
+    return {} as JSON;
   }
 
   /**
@@ -299,12 +305,14 @@ export class Turn14RestApi {
         }
       } else {
         console.error('🔥 ' + e);
+
+        throw new Turn14Error(
+          'fetchBrandInventory(), something went wrong communicating with Turn14.'
+        );
       }
-    } finally {
-      throw new Turn14Error(
-        'fetchBrandInventory(), something went wrong communicating with Turn14.'
-      );
     }
+
+    return {} as JSON;
   }
 
   /**
@@ -326,11 +334,13 @@ export class Turn14RestApi {
         }
       } else {
         console.error('🔥 ' + e);
+
+        throw new Turn14Error(
+          'fetchBrands(), something went wrong communicating with Turn14.'
+        );
       }
-    } finally {
-      throw new Turn14Error(
-        'fetchBrands(), something went wrong communicating with Turn14.'
-      );
     }
+
+    return [];
   }
 }

@@ -28,7 +28,7 @@
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.8.1",
     "typedi": "^0.8.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.3"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.13",

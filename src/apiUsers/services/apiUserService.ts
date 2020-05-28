@@ -32,11 +32,14 @@ export class ApiUserService {
    * @param {string} userId the unique id to identify the user.
    * @returns {ApiUser} the retrieved api user.
    */
-  async retrieve(userId: string): Promise<ApiUser | null> {
+  async retrieve(userId: string): Promise<ApiUser> {
     try {
-      const apiUser = ApiUserModel.findOne({ userId: userId });
-
-      return apiUser;
+      const apiUser = await ApiUserModel.findOne({ userId: userId });
+      if (apiUser != null) {
+        return apiUser;
+      } else {
+        throw new Error(`Could not find user with id ${userId}`);
+      }
     } catch (e) {
       console.error('🔥 ' + e);
       throw new Error('Could not retrieve api user with userId: ' + userId);

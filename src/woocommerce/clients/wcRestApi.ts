@@ -56,7 +56,7 @@ export class WcRestApi {
       return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
-    } finally {
+
       throw new WcError(
         'createProducts(), something went wrong communicating with WooCommerce.'
       );
@@ -77,7 +77,7 @@ export class WcRestApi {
       return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
-    } finally {
+
       throw new WcError(
         'fetchCategories(), something went wrong communicating with WooCommerce.'
       );
@@ -123,7 +123,7 @@ export class WcRestApi {
       return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
-    } finally {
+
       throw new WcError(
         'fetchCategories(), something went wrong communicating with WooCommerce.'
       );
@@ -145,7 +145,7 @@ export class WcRestApi {
       return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
-    } finally {
+
       throw new WcError(
         'createCategory(), something went wrong communicating with WooCommerce.'
       );
