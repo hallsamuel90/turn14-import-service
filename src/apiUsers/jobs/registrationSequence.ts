@@ -1,7 +1,7 @@
 import { Inject, Service } from 'typedi';
 import { ApiUser } from '../models/apiUser';
 import { ApiUserService } from '../services/apiUserService';
-import { BrandsService } from '../../brands/services/brandsService';
+import { ApiUserPublisher } from '../publishers/apiUserPublisher';
 
 /**
  * RegistrationSequence.
@@ -17,7 +17,7 @@ export class RegistrationSequence {
   private readonly apiUserService: ApiUserService;
 
   @Inject()
-  private readonly brandsService: BrandsService;
+  private readonly apiUserPublisher: ApiUserPublisher;
 
   /**
    * Registers the apiUser (site) and sends an event to populate brand data in
@@ -29,10 +29,6 @@ export class RegistrationSequence {
     console.info('🔨 Registration Sequence Job starting!');
     await this.apiUserService.create(apiUser);
 
-    // TODO: emit event that a new user has registered. The function call below
-    // should subscribe to that event and publish the apiUser (full object) to
-    // the brands service. -SH
-
-    await this.brandsService.publishBrands(apiUser);
+    this.apiUserPublisher.publishApiUser(apiUser);
   }
 }

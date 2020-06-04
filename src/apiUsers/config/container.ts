@@ -1,9 +1,8 @@
 import Container from 'typedi';
-import { BrandsService } from '../../brands/services/brandsService';
 import { AmqpProJson } from '../../util/ampqPro/ampqProJson';
 import { RegistrationSequence } from '../jobs/registrationSequence';
+import { ApiUserPublisher } from '../publishers/apiUserPublisher';
 import { ApiUserService } from '../services/apiUserService';
-import { RegistrationSubscriber } from '../subscribers/registrationSubscriber';
 
 /**
  * Configures the container dependencies for the apiUsers module.
@@ -13,12 +12,7 @@ import { RegistrationSubscriber } from '../subscribers/registrationSubscriber';
 export default (): void => {
   Container.get(ApiUserService);
 
-  Container.get(BrandsService);
-
-  const registrationSequence = Container.get(RegistrationSequence);
-  const amqpProJson = new AmqpProJson();
-  Container.set(
-    RegistrationSubscriber,
-    new RegistrationSubscriber(registrationSequence, amqpProJson)
-  );
+  const amqpProJson = Container.get(AmqpProJson);
+  Container.set(ApiUserPublisher, new ApiUserPublisher(amqpProJson));
+  Container.get(RegistrationSequence);
 };

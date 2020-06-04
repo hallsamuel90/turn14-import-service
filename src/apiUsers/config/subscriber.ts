@@ -1,4 +1,6 @@
 import Container from 'typedi';
+import { AmqpProJson } from '../../util/ampqPro/ampqProJson';
+import { RegistrationSequence } from '../jobs/registrationSequence';
 import { RegistrationSubscriber } from '../subscribers/registrationSubscriber';
 
 /**
@@ -7,6 +9,13 @@ import { RegistrationSubscriber } from '../subscribers/registrationSubscriber';
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
 export default (): void => {
-  const registrationSubscriberService = Container.get(RegistrationSubscriber);
-  registrationSubscriberService.subscribeRegistrationSequence();
+  const registrationSequence = Container.get(RegistrationSequence);
+  const amqpProJson = Container.get(AmqpProJson);
+
+  const registrationSubscriber = new RegistrationSubscriber(
+    registrationSequence,
+    amqpProJson
+  );
+
+  registrationSubscriber.subscribeRegistrationSequence();
 };

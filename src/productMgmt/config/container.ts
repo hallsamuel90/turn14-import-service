@@ -7,7 +7,6 @@ import { WcRestApiProvider } from '../../woocommerce/clients/wcRestApiProvider';
 import { BrandActivationSequence } from '../jobs/brandActivationSequence';
 import { ProductMgmtService } from '../services/productMgmtService';
 import { WcMapperProvider } from '../services/wcMapperProvider';
-import { BrandActivationSubscriber } from '../subscribers/brandActivationSubscriber';
 
 /**
  * Configures the container dependencies for the product management module.
@@ -16,21 +15,11 @@ import { BrandActivationSubscriber } from '../subscribers/brandActivationSubscri
  */
 export default (): void => {
   Container.get(Turn14RestApiProvider);
-
   Container.get(WcRestApiProvider);
-
   Container.get(ApiUserService);
-
   Container.get(ProductMgmtService);
-
   Container.get(BrandsService);
-
-  Container.set(WcMapperProvider, new WcMapperProvider());
-
-  const brandActivationSequence = Container.get(BrandActivationSequence);
-  const amqpProJson = new AmqpProJson();
-  Container.set(
-    BrandActivationSubscriber,
-    new BrandActivationSubscriber(brandActivationSequence, amqpProJson)
-  );
+  Container.get(WcMapperProvider);
+  Container.get(BrandActivationSequence);
+  Container.get(AmqpProJson);
 };

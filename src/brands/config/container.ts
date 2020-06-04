@@ -1,16 +1,18 @@
 import { Container } from 'typedi';
 import { Turn14RestApiProvider } from '../../turn14/clients/turn14RestApiProvider';
+import { AmqpProJson } from '../../util/ampqPro/ampqProJson';
+import { ApiUserSequence } from '../jobs/apiUserSequence';
 import { BrandsPublisher } from '../publishers/brandsPublisher';
 import { BrandMapper } from '../services/brandMapper';
 import { BrandsService } from '../services/brandsService';
 
 export default (): void => {
-  const turn14RestApiProvider = Container.get(Turn14RestApiProvider);
-  const brandMapper = Container.get(BrandMapper);
-  const brandsPublisher = Container.get(BrandsPublisher);
+  Container.get(Turn14RestApiProvider);
+  Container.get(BrandMapper);
 
-  Container.set(
-    BrandsService,
-    new BrandsService(turn14RestApiProvider, brandMapper, brandsPublisher)
-  );
+  const amqpProJson = Container.get(AmqpProJson);
+  Container.set(BrandsPublisher, new BrandsPublisher(amqpProJson));
+
+  Container.get(BrandsService);
+  Container.get(ApiUserSequence);
 };
