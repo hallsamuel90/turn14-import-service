@@ -2,6 +2,7 @@ env:
   commonjs: false
   es6: true
   node: true
+  mocha: true
 extends:
   - google
   - plugin:@typescript-eslint/recommended
@@ -14,7 +15,7 @@ globals:
 parser: '@typescript-eslint/parser'
 parserOptions:
   ecmaVersion: 2018
-  project: ./tsconfig.json
+  project: ./tsconfig.eslint.json
 plugins: 
   - prettier
   - '@typescript-eslint'
@@ -26,3 +27,6 @@ rules: {
   require-jsdoc: 0,
   '@typescript-eslint/no-explicit-any': error
 }
+settings:
+  jsdoc:
+    mode: typescript

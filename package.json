@@ -1,12 +1,14 @@
 {
-  "name": "turn14-import-service",
+  "name": "product-management",
   "version": "0.1.0",
   "private": true,
   "main": "build/app.js",
   "scripts": {
     "clean": "rm -rf build/*",
+    "debug": "node --inspect=0.0.0.0:7000 build/app.js",
     "start": "node build/app.js",
-    "build": "tsc",
+    "test": "nyc mocha -r ts-node/register/files 'tests/**/*.ts'",
+    "build": "npm test && tsc",
     "contain": "sudo docker build -t turn14-import-service ."
   },
   "dependencies": {
@@ -27,27 +29,34 @@
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.8.1",
     "typedi": "^0.8.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.3"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.13",
     "@types/body-parser": "^1.19.0",
+    "@types/chai": "^4.2.11",
     "@types/cookie-parser": "^1.4.2",
     "@types/debug": "^4.1.5",
     "@types/express": "^4.17.4",
     "@types/lodash": "^4.14.149",
+    "@types/mocha": "^7.0.2",
     "@types/mongoose": "^5.7.12",
     "@types/morgan": "^1.9.0",
     "@types/multer": "^1.4.3",
     "@types/node": "^13.11.0",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
+    "chai": "^4.2.0",
     "eslint": "^6.8.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-jsdoc": "^24.0.1",
     "eslint-plugin-prettier": "^3.1.2",
+    "mocha": "^7.2.0",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.0.2"
+    "nyc": "^15.0.1",
+    "prettier": "^2.0.2",
+    "ts-mockito": "^2.5.0",
+    "ts-node": "^8.10.1"
   }
 }
