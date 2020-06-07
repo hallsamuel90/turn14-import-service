@@ -1,10 +1,11 @@
 {
-  "name": "turn14-import-service",
+  "name": "product-management",
   "version": "0.1.0",
   "private": true,
   "main": "build/app.js",
   "scripts": {
     "clean": "rm -rf build/*",
+    "debug": "node --inspect=0.0.0.0:7000 build/app.js",
     "start": "node build/app.js",
     "test": "nyc mocha -r ts-node/register/files 'tests/**/*.ts'",
     "build": "npm test && tsc",
