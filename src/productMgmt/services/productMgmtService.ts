@@ -22,7 +22,7 @@ import { WcMapperProvider } from './wcMapperProvider';
  */
 @Service()
 export class ProductMgmtService {
-  BATCH_SIZE = 5; // default 50
+  BATCH_SIZE = 50;
 
   @Inject()
   private readonly turn14RestApiProvider: Turn14RestApiProvider;
@@ -67,7 +67,6 @@ export class ProductMgmtService {
       if (wcProducts.totalSize() == this.BATCH_SIZE) {
         await wcRestApi.createProducts(wcProducts);
         wcProducts.create.length = 0;
-        break; // TODO: remove
       }
     }
     console.info('👍 Import complete!');
@@ -77,7 +76,6 @@ export class ProductMgmtService {
    * Deletes a brand's products from the WooCommerce store.
    *
    * @param {PmgmtDTO} pmgmtDto the product management object containing keys.
-   * @throws {WcError} if something goes wrong when communicating with the api.
    */
   async delete(pmgmtDto: PmgmtDTO): Promise<void> {
     const wcRestApi = this.wcRestApiProvider.getWcRestApi(
@@ -103,7 +101,6 @@ export class ProductMgmtService {
       if (wcProducts.totalSize() == this.BATCH_SIZE) {
         await wcRestApi.deleteProducts(wcProducts);
         wcProducts.delete.length = 0;
-        break; // TODO: remove
       }
     }
     console.info('👍 Deletion complete!');
