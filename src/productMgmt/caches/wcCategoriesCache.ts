@@ -32,6 +32,7 @@ export class WcCategoriesCache {
     await this.checkCacheInitialized();
 
     let category = this.cache[categoryName];
+
     if (!category) {
       category = await this.createCategory(categoryName);
     }
@@ -94,6 +95,7 @@ export class WcCategoriesCache {
         new WcCategoryDTO(categoryName)
       );
       this.cache[newCategory['name']] = newCategory;
+
       return newCategory;
     } catch (e) {
       console.error('🔥 ' + e);
