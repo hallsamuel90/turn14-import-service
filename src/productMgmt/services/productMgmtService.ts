@@ -69,6 +69,11 @@ export class ProductMgmtService {
         wcProducts.create.length = 0;
       }
     }
+
+    if (wcProducts.totalSize() > 0) {
+      await wcRestApi.createProducts(wcProducts);
+    }
+
     console.info('👍 Import complete!');
   }
 
