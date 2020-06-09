@@ -66,16 +66,46 @@ export class WcRestApi {
   }
 
   /**
+   * Fetches all categories from woocommerce and returns them as
+   * a map of name:category
+   *
+   * @returns {Promise<Dictionary<JSON>>} the response from woocommerce.
+   * @param brandId
+   */
+  async fetchAllProductsByBrand(brandId: string): Promise<JSON[]> {
+    let allData: JSON[] = [];
+
+    let pageNumber = 1;
+    while (true) {
+      const pageData = await this.fetchProductsByBrand(brandId, pageNumber);
+
+      if (!Array.isArray(pageData) || !pageData.length) {
+        break;
+      }
+
+      allData = allData.concat(pageData);
+      pageNumber++;
+    }
+
+    return allData;
+  }
+
+  /**
    * Fetches all products of a particular brand.
    *
    * @param {string} brandId the unique id of the brand.
+   * @param pageNumber
    * @returns {Promise<JSON[]>} the response from woocommerce.
    */
-  async fetchProductsByBrand(brandId: string): Promise<JSON[]> {
+  async fetchProductsByBrand(
+    brandId: string,
+    pageNumber: number
+  ): Promise<JSON[]> {
     try {
       const response = await this.axiosClient.get(WcRestApi.PRODUCTS_RESOURCE, {
         params: {
           brand_id: brandId,
+          page: pageNumber,
         },
       });
       return response.data;

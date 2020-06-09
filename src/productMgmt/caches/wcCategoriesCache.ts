@@ -31,7 +31,9 @@ export class WcCategoriesCache {
   async getCategory(categoryName: string): Promise<WcCategoryIdDTO> {
     await this.checkCacheInitialized();
 
-    let category = this.cache[categoryName];
+    const encodedCategoryName = this.encodeCategoryName(categoryName);
+
+    let category = this.cache[encodedCategoryName];
 
     if (!category) {
       category = await this.createCategory(categoryName);
@@ -53,13 +55,20 @@ export class WcCategoriesCache {
   ): Promise<WcCategoryIdDTO> {
     await this.checkCacheInitialized();
 
-    let subCategory = this.cache[subCategoryName];
+    const encodedSubCategoryName = this.encodeCategoryName(subCategoryName);
+
+    let subCategory = this.cache[encodedSubCategoryName];
+
     if (!subCategory) {
-      const parentCategoryId = await this.getCategory(parentCategoryName);
+      const encodedParentCategoryName = this.encodeCategoryName(
+        parentCategoryName
+      );
+
+      const parentCategory = await this.getCategory(encodedParentCategoryName);
 
       subCategory = await this.createSubCategory(
         subCategoryName,
-        parentCategoryId.id
+        parentCategory.id
       );
     }
 
@@ -126,5 +135,9 @@ export class WcCategoriesCache {
 
       return ({ id: 0 } as unknown) as JSON; // 'uncategorized'
     }
+  }
+
+  private encodeCategoryName(categoryName: string): string {
+    return categoryName.replace('&', '&amp;');
   }
 }

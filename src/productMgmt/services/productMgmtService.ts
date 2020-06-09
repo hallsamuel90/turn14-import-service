@@ -84,7 +84,7 @@ export class ProductMgmtService {
       pmgmtDto.wcKeys.secret
     );
 
-    const brandProducts = await wcRestApi.fetchProductsByBrand(
+    const brandProducts = await wcRestApi.fetchAllProductsByBrand(
       pmgmtDto.brandId
     );
 
