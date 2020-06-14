@@ -44,34 +44,41 @@ export class WcMapper {
     const wcProduct = new WcCreateProductDTO();
 
     const itemAttributes = turn14ProductDto?.item['attributes'];
-
-    const wcProductAttributes = this.turn14AttributesToWc(itemAttributes);
-    wcProduct.name = wcProductAttributes.name;
-    wcProduct.sku = wcProductAttributes.sku;
-    wcProduct.brand_id = wcProductAttributes.brand_id;
-    wcProduct.shortDescription = wcProductAttributes.shortDescription;
-    wcProduct.dimensions.length = wcProductAttributes.dimensions.length;
-    wcProduct.dimensions.width = wcProductAttributes.dimensions.width;
-    wcProduct.dimensions.height = wcProductAttributes.dimensions.height;
-    wcProduct.weight = wcProductAttributes.weight;
+    if (itemAttributes) {
+      const wcProductAttributes = this.turn14AttributesToWc(itemAttributes);
+      wcProduct.name = wcProductAttributes.name;
+      wcProduct.sku = wcProductAttributes.sku;
+      wcProduct.brand_id = wcProductAttributes.brand_id;
+      wcProduct.shortDescription = wcProductAttributes.shortDescription;
+      wcProduct.dimensions.length = wcProductAttributes.dimensions.length;
+      wcProduct.dimensions.width = wcProductAttributes.dimensions.width;
+      wcProduct.dimensions.height = wcProductAttributes.dimensions.height;
+      wcProduct.weight = wcProductAttributes.weight;
+    }
 
     wcProduct.categories = await this.turn14CategoriesToWc(itemAttributes);
 
     const itemMedia = turn14ProductDto?.itemData;
-    wcProduct.description = this.turn14DescriptionToWc(itemMedia);
-    wcProduct.ymm_fitment = this.turn14FitmentToWc(itemMedia);
-    wcProduct.images = this.turn14ImagesToWc(itemAttributes, itemMedia);
+    if (itemMedia) {
+      wcProduct.description = this.turn14DescriptionToWc(itemMedia);
+      wcProduct.ymm_fitment = this.turn14FitmentToWc(itemMedia);
+      wcProduct.images = this.turn14ImagesToWc(itemAttributes, itemMedia);
+    }
 
     const itemPricing = turn14ProductDto?.itemPricing['attributes'];
-    wcProduct.regular_price = this.turn14PricingToWcRegularPrice(itemPricing);
-    wcProduct.sale_price = this.turn14PricingToWcSalePrice(itemPricing);
+    if (itemPricing) {
+      const wcPricing = this.turn14PricingToWc(itemPricing);
+      wcProduct.regular_price = wcPricing.regular_price;
+      wcProduct.sale_price = wcPricing.sale_price;
+    }
 
-    const wcInventory = this.turn14InventoryToWc(
-      turn14ProductDto?.itemInventory
-    );
-    wcProduct.manage_stock = wcInventory?.manage_stock;
-    wcProduct.backorders = wcInventory?.backorders;
-    wcProduct.stock_quantity = wcInventory?.stock_quantity;
+    const itemInventory = turn14ProductDto?.itemInventory;
+    if (itemInventory) {
+      const wcInventory = this.turn14InventoryToWc(itemInventory);
+      wcProduct.manage_stock = wcInventory?.manage_stock;
+      wcProduct.backorders = wcInventory?.backorders;
+      wcProduct.stock_quantity = wcInventory?.stock_quantity;
+    }
 
     return wcProduct;
   }
@@ -203,46 +210,63 @@ export class WcMapper {
     return wcImageDtos;
   }
 
+  turn14PricingToWc(itemPricing) {
+    const wcPricing = new WcCreateProductDTO();
+
+    const priceList = itemPricing?.pricelists;
+    if (priceList) {
+      const priceListsByName = _.keyBy(itemPricing.pricelists, 'name');
+
+      wcPricing.regular_price = this.turn14PricingToWcRegularPrice(
+        priceListsByName
+      );
+
+      wcPricing.sale_price = this.turn14PricingToWcSalePrice(priceListsByName);
+    }
+
+    return wcPricing;
+  }
+
   /**
    * Traverses the turn14 pricing object and determines the regular_price based
    * on available properties.
    *
-   * @param {any} itemPricing the object that contains pricing information.
+   * @param {any} priceListsByName the object that contains pricing information.
    * @returns {string} the determined regular price. may return empty string if
    * a price cannot be determined.
    */
-  turn14PricingToWcRegularPrice(itemPricing): string {
-    const priceLists = _.keyBy(itemPricing.pricelists, 'name');
+  turn14PricingToWcRegularPrice(priceListsByName): string {
+    let regularPrice = '';
 
-    if (priceLists[WcMapper.RETAIL] && priceLists[WcMapper.MAP]) {
-      return priceLists[WcMapper.RETAIL].price;
-    } else if (priceLists[WcMapper.RETAIL]) {
-      return priceLists[WcMapper.RETAIL].price;
-    } else if (priceLists[WcMapper.MAP]) {
-      return priceLists[WcMapper.MAP].price;
-    } else if (priceLists[WcMapper.JOBBER]) {
-      return priceLists[WcMapper.JOBBER].price;
+    if (priceListsByName[WcMapper.RETAIL] && priceListsByName[WcMapper.MAP]) {
+      regularPrice = priceListsByName[WcMapper.RETAIL].price;
+    } else if (priceListsByName[WcMapper.RETAIL]) {
+      regularPrice = priceListsByName[WcMapper.RETAIL].price;
+    } else if (priceListsByName[WcMapper.MAP]) {
+      regularPrice = priceListsByName[WcMapper.MAP].price;
+    } else if (priceListsByName[WcMapper.JOBBER]) {
+      regularPrice = priceListsByName[WcMapper.JOBBER].price;
     }
 
-    return '';
+    return regularPrice;
   }
 
   /**
    * Traverses the turn14 pricing object and determines the sale_price based
    * on available properties.
    *
-   * @param {any} itemPricing the object that contains pricing information.
+   * @param {any} priceListsByName the object that contains pricing information.
    * @returns {string} the determined sale price. may return empty string if
    * a price cannot be determined.
    */
-  turn14PricingToWcSalePrice(itemPricing): string {
-    const priceLists = _.keyBy(itemPricing.pricelists, 'name');
+  turn14PricingToWcSalePrice(priceListsByName): string {
+    let salePrice = '';
 
-    if (priceLists[WcMapper.RETAIL] && priceLists[WcMapper.MAP]) {
-      return priceLists[WcMapper.MAP].price;
+    if (priceListsByName[WcMapper.RETAIL] && priceListsByName[WcMapper.MAP]) {
+      salePrice = priceListsByName[WcMapper.MAP].price;
     }
 
-    return '';
+    return salePrice;
   }
 
   /**
@@ -258,11 +282,13 @@ export class WcMapper {
     if (itemInventory) {
       const itemInventoryAttributes = itemInventory['attributes'];
 
-      wcInventory.manage_stock = true;
-      wcInventory.backorders = 'notify';
-      wcInventory.stock_quantity = this.getTurn14StockQuantity(
-        itemInventoryAttributes
-      );
+      if (itemInventoryAttributes) {
+        wcInventory.manage_stock = true;
+        wcInventory.backorders = 'notify';
+        wcInventory.stock_quantity = this.getTurn14StockQuantity(
+          itemInventoryAttributes
+        );
+      }
     } else {
       // TODO: add special order attribute
     }
@@ -277,27 +303,21 @@ export class WcMapper {
    * @param {JSON} itemInventory the object that contains the inventory.
    * @returns {number} the total stock across sources.
    */
-  private getTurn14StockQuantity(itemInventory): number {
-    const inventoryAttributes = itemInventory['attributes'];
-
+  private getTurn14StockQuantity(itemInventory: JSON): number {
     let totalStock = 0;
 
-    const warehouseStock = inventoryAttributes?.inventory;
-    if (warehouseStock != undefined) {
-      for (const stock in warehouseStock) {
-        if (warehouseStock[stock] > 0) {
-          totalStock = totalStock + Number(stock);
+    const warehouseStock = itemInventory['inventory'];
+    if (warehouseStock) {
+      for (const warehouseLocation in warehouseStock) {
+        if (warehouseStock[warehouseLocation] > 0) {
+          totalStock = totalStock + warehouseStock[warehouseLocation];
         }
       }
     }
 
-    const manufacturerStock = inventoryAttributes?.manufacturer;
-    if (manufacturerStock != undefined) {
-      for (const stock in manufacturerStock) {
-        if (manufacturerStock[stock] > 0) {
-          totalStock = totalStock + Number(stock);
-        }
-      }
+    const manufacturerStock = itemInventory['manufacturer'];
+    if (manufacturerStock?.stock > 0) {
+      totalStock = totalStock + manufacturerStock.stock;
     }
 
     return totalStock;

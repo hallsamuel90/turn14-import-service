@@ -5,7 +5,6 @@ import { WcCategoriesCache } from '../../../src/productMgmt/caches/wcCategoriesC
 import { WcMapper } from '../../../src/productMgmt/services/wcMapper';
 import { WcCategoryIdDTO } from '../../../src/woocommerce/dtos/wcCategoryIdDto';
 import { WcMapperTestUtil } from './wcMapperTestUtil';
-
 describe('WcMapper tests', () => {
   let instance: WcMapper;
 
@@ -35,6 +34,16 @@ describe('WcMapper tests', () => {
       expect(wcCreateProductDto).to.not.be.null;
     });
 
+    it('should not die when itemAttributes is undefined', () => {
+      const undefinedItemAttributesTurn14ProductDto = WcMapperTestUtil.getUndefinedItemAttributesProductDTO();
+      const itemAttributes =
+        undefinedItemAttributesTurn14ProductDto?.item['attributes'];
+
+      const wcCreateProductDto = instance.turn14AttributesToWc(itemAttributes);
+
+      expect(wcCreateProductDto).to.not.be.null;
+    });
+
     it('should return correctly mapped attributes for WcCreateProductDTO', async () => {
       const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
       const itemAttributes = fakeTurn14ProductDto?.item['attributes'];
@@ -56,6 +65,32 @@ describe('WcMapper tests', () => {
       expect(wcCreateProductDtoAttributes.dimensions.width).to.equal(15);
       expect(wcCreateProductDtoAttributes.dimensions.height).to.equal(4);
       expect(wcCreateProductDtoAttributes.weight).to.equal(13);
+    });
+  });
+
+  describe('#turn14InventoryToWc', () => {
+    it('should not return null', () => {
+      const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
+      const itemInventory = fakeTurn14ProductDto?.itemInventory;
+
+      const wcCreateProductDtoInventory = instance.turn14InventoryToWc(
+        itemInventory
+      );
+
+      expect(wcCreateProductDtoInventory).to.not.be.null;
+    });
+
+    it('should return correctly mapped inventory for WcCreateProductDTO', async () => {
+      const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
+      const itemInventory = fakeTurn14ProductDto?.itemInventory;
+
+      const wcCreateProductDtoInventory = instance.turn14InventoryToWc(
+        itemInventory
+      );
+
+      expect(wcCreateProductDtoInventory.manage_stock).to.equal(true);
+      expect(wcCreateProductDtoInventory.backorders).to.equal('notify');
+      expect(wcCreateProductDtoInventory.stock_quantity).to.equal(7);
     });
   });
 });

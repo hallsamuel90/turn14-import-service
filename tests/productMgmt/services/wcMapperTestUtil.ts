@@ -28,6 +28,25 @@ export class WcMapperTestUtil {
     );
   }
 
+  /**
+   * Returns a new Turn14ProductDTO populated with arbitrary fox brand data.
+   *
+   * @returns {Turn14ProductDTO} the created Turn14ProductDTO.
+   */
+  static getUndefinedItemAttributesProductDTO(): Turn14ProductDTO {
+    const undefinedItemAttributesItem = this.getUndefinedAttributesItem();
+    const fakeItemData = this.getFakeItemData();
+    const fakeItemPricing = this.getFakeItemPricing();
+    const fakeItemInventory = this.getFakeItemInventory();
+
+    return new Turn14ProductDTO(
+      undefinedItemAttributesItem,
+      fakeItemData,
+      fakeItemPricing,
+      fakeItemInventory
+    );
+  }
+
   private static getFakeItem(): JSON {
     const fakeItem = {
       id: '10030',
@@ -77,9 +96,19 @@ export class WcMapperTestUtil {
     return JSON.parse(jsonString);
   }
 
+  private static getUndefinedAttributesItem(): JSON {
+    const undefinedItemAttributesItem = {
+      id: '10030',
+      type: 'Item',
+    };
+
+    const jsonString = JSON.stringify(undefinedItemAttributesItem);
+    return JSON.parse(jsonString);
+  }
+
   private static getFakeItemData(): JSON {
     const fakeItemData = {
-      id: '123456',
+      id: '10030',
       type: 'ProductData',
       files: [
         {
@@ -144,7 +173,7 @@ export class WcMapperTestUtil {
 
   private static getFakeItemPricing(): JSON {
     const fakeItemPricing = {
-      id: '54545',
+      id: '10030',
       type: 'PricingItem',
       attributes: {
         purchase_cost: 4.95,
@@ -166,7 +195,7 @@ export class WcMapperTestUtil {
   private static getFakeItemInventory(): JSON {
     const fakeItemInventory = {
       type: 'InventoryItem',
-      id: '15074',
+      id: '10030',
       attributes: {
         inventory: {
           '59': 1,
