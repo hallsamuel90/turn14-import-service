@@ -65,7 +65,8 @@ export class ProductMgmtService {
       wcProducts.create.push(wcProduct);
 
       if (wcProducts.totalSize() == this.BATCH_SIZE) {
-        await wcRestApi.createProducts(wcProducts);
+        await this.pushWcProducts(wcProducts, wcRestApi);
+
         wcProducts.create.length = 0;
       }
     }
@@ -111,13 +112,6 @@ export class ProductMgmtService {
     console.info('👍 Deletion complete!');
   }
 
-  /**
-   * Fetches turn14 products from the api using the supplied brandId.
-   *
-   * @param {Keys} turn14Keys the keys for access to the turn14 api.
-   * @param {string} brandId the id for the products to be retrieved.
-   * @returns {Turn14ProductDTO[]} a list of turn14 products.
-   */
   private async getTurn14ProductsByBrand(
     turn14Keys: Keys,
     brandId: string
@@ -134,5 +128,16 @@ export class ProductMgmtService {
     );
 
     return turn14Products;
+  }
+
+  private async pushWcProducts(
+    wcProducts: WcBatchDTO,
+    wcRestApi: WcRestApi
+  ): Promise<void> {
+    try {
+      await wcRestApi.createProducts(wcProducts);
+    } catch (e) {
+      console.error('🔥 ' + e);
+    }
   }
 }
