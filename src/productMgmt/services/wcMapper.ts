@@ -43,7 +43,7 @@ export class WcMapper {
   ): Promise<WcCreateProductDTO> {
     const wcProduct = new WcCreateProductDTO();
 
-    const itemAttributes = turn14ProductDto?.item['attributes'];
+    const itemAttributes = turn14ProductDto?.item?.['attributes'];
     if (itemAttributes) {
       const wcProductAttributes = this.turn14AttributesToWc(itemAttributes);
       wcProduct.name = wcProductAttributes.name;
@@ -65,7 +65,7 @@ export class WcMapper {
       wcProduct.images = this.turn14ImagesToWc(itemAttributes, itemMedia);
     }
 
-    const itemPricing = turn14ProductDto?.itemPricing['attributes'];
+    const itemPricing = turn14ProductDto?.itemPricing?.['attributes'];
     if (itemPricing) {
       const wcPricing = this.turn14PricingToWc(itemPricing);
       wcProduct.regular_price = wcPricing.regular_price;
