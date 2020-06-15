@@ -1,0 +1,29 @@
+name: Production Build
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Test
+        run: npm test
+
+      - name: Build, Tag, and Publish
+        uses: mattdavis0351/actions/docker-gpr@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: pmgmt-prod
+
