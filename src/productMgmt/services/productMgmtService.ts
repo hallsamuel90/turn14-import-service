@@ -38,7 +38,7 @@ export class ProductMgmtService {
    *
    * @param {PmgmtDTO} pmgmtDto the product management data transer object.
    */
-  async import(pmgmtDto: PmgmtDTO): Promise<void> {
+  public async import(pmgmtDto: PmgmtDTO): Promise<void> {
     const turn14Products = await this.getTurn14ProductsByBrand(
       pmgmtDto.turn14Keys,
       pmgmtDto.brandId
@@ -78,12 +78,23 @@ export class ProductMgmtService {
     console.info('👍 Import complete!');
   }
 
+  public async updateInventory(): Promise<void> {
+    // for each user:
+    // get api credentials
+    // get updated inventories from Turn14
+    // map them by brand id
+    // for each brand id:
+    // get corresponding products from woocommerce
+    // update the inventories
+    // send back to woocommerce
+  }
+
   /**
    * Deletes a brand's products from the WooCommerce store.
    *
    * @param {PmgmtDTO} pmgmtDto the product management object containing keys.
    */
-  async delete(pmgmtDto: PmgmtDTO): Promise<void> {
+  public async delete(pmgmtDto: PmgmtDTO): Promise<void> {
     const wcRestApi = this.wcRestApiProvider.getWcRestApi(
       pmgmtDto.siteUrl,
       pmgmtDto.wcKeys.client,
