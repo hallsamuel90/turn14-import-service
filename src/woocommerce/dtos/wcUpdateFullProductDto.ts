@@ -1,30 +1,23 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 import { WcAttributeDTO } from './wcAttributeDto';
-import { WcCategoryIdDTO } from './wcCategoryIdDto';
+import { WcCategoryDTO } from './wcCategoryDto';
 import { WcDimensionsDTO } from './wcDimensionsDto';
 import { WcImageDTO } from './wcImageDto';
-import { WcProductDTO } from './wcProductDto';
+import { WcUpdateProductDTO } from './wcUpdateProductDto';
 
 /**
- * WooCommerceCreateProductDTO.
- *
- * Data transfer object used for woocommerce product creation. Data attributes
- * are in camel_case as that is the format expected by woocommerce.
- *
- * @author Sam Hall <hallsamuel90@gmail.com>
+ * WooCommerce Update Product Data Transfer Object TODO:
  */
-export class WcCreateProductDTO extends WcProductDTO {
+export class WcUpdateFullProductDTO extends WcUpdateProductDTO {
   name: string;
   type: string;
   shortDescription: string;
   description: string;
   sku: string;
-  brand_id: number;
-  ymm_fitment: string;
   regular_price: string;
   sale_price: string;
-  categories: WcCategoryIdDTO[];
+  categories: WcCategoryDTO[];
   images: WcImageDTO[];
   weight: string;
   dimensions: WcDimensionsDTO;
@@ -36,10 +29,12 @@ export class WcCreateProductDTO extends WcProductDTO {
   attributes: WcAttributeDTO[];
 
   /**
-   * Creates a new instance and sets the initial state.
+   * Initializes the instance to its default state.
+   *
+   * @param {string} id the id of the wc product.
    */
-  constructor() {
-    super();
+  constructor(id: string) {
+    super(id);
 
     this.name = '';
     this.type = 'simple';

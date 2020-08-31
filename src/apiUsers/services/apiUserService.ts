@@ -1,6 +1,7 @@
 import { Service } from 'typedi';
 import { ApiUser } from '../models/apiUser';
 import ApiUserModel from '../models/apiUserModel';
+import _ from 'lodash';
 
 /**
  * ApiUsersService.
@@ -47,6 +48,20 @@ export class ApiUserService {
   }
 
   /**
+   * Retrieves all ApiUsers.
+   *
+   * @returns {ApiUser[]} the retrieved api user.
+   */
+  public async retrieveAll(): Promise<ApiUser[]> {
+    try {
+      return await ApiUserModel.find();
+    } catch (e) {
+      console.error('🔥 ' + e);
+      throw new Error('Could not retrieve apiusers');
+    }
+  }
+
+  /**
    * Updates an ApiUser.
    *
    * @param {string} id the generated id of the api user.
@@ -67,5 +82,31 @@ export class ApiUserService {
 
       throw new Error('Could not update api user with id: ' + id);
     }
+  }
+
+  /**
+   * Adds a brand to the apiUser.
+   *
+   * @param apiUser
+   * @param brandId
+   */
+  public async addBrand(apiUser: ApiUser, brandId: string): Promise<void> {
+    const userBrandIds = apiUser.brandIds;
+    userBrandIds.push(brandId);
+    apiUser.brandIds = userBrandIds;
+
+    await this.update(apiUser.id, apiUser);
+  }
+
+  /**
+   * @param apiUser
+   * @param brandId
+   */
+  public async removeBrand(apiUser: ApiUser, brandId: string): Promise<void> {
+    const userBrandIds = apiUser.brandIds;
+    _.pull(userBrandIds, brandId);
+    apiUser.brandIds = userBrandIds;
+
+    await this.update(apiUser.id, apiUser);
   }
 }

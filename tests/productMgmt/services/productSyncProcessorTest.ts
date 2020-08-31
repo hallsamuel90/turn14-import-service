@@ -1,4 +1,4 @@
-import { ProductSyncManager } from '../../../src/productMgmt/services/productSyncManager';
+import { ProductSyncJobProcessor } from '../../../src/productMgmt/services/productSyncJobProcessor';
 import { ProductSyncQueueService } from '../../../src/productMgmt/services/productSyncQueueService';
 import {
   instance,
@@ -13,8 +13,8 @@ import { ProductSyncQueue } from '../../../src/productMgmt/models/productSyncQue
 import { ProductSyncJobMarshaller } from '../../../src/productMgmt/services/productSyncJobMarshaller';
 import { ProductSyncJobType } from '../../../src/productMgmt/models/proudctSyncJobType';
 
-describe('ProductSyncManager tests', () => {
-  let productSyncManager: ProductSyncManager;
+describe('ProductSyncJobProcessor tests', () => {
+  let productSyncJobProcessor: ProductSyncJobProcessor;
 
   const mockProductSyncQueueService: ProductSyncQueueService = mock(
     ProductSyncQueueService
@@ -32,27 +32,26 @@ describe('ProductSyncManager tests', () => {
       mockProductSyncJobMarshller
     );
 
-    productSyncManager = new ProductSyncManager(
+    productSyncJobProcessor = new ProductSyncJobProcessor(
       mockProductSyncQueueServiceInstance,
       mockProductSyncJobMarshllerInstance
     );
+  });
 
+  afterEach(() => {
     resetCalls(mockProductSyncQueueService);
     resetCalls(mockProductSyncJobMarshller);
   });
 
   describe('#processJob', async () => {
-    it('should process the job if the queue is unlocked and not empty', async () => {
+    it('should process the job if the queue is available', async () => {
       const fakeJob = new ProductSyncJob(ProductSyncJobType.UPDATE_INVENTORY);
 
-      const jobQueue = new ProductSyncQueue();
-      jobQueue.enqueue(fakeJob);
+      when(mockProductSyncQueueService.isLocked()).thenReturn(false);
+      when(mockProductSyncQueueService.isEmpty()).thenReturn(false);
+      when(mockProductSyncQueueService.dequeue()).thenReturn(fakeJob);
 
-      when(mockProductSyncQueueService.readProductSyncQueue()).thenReturn(
-        jobQueue
-      );
-
-      await productSyncManager.processJob();
+      await productSyncJobProcessor.processJob();
 
       verify(mockProductSyncJobMarshller.marshallJob(fakeJob)).called();
     });
@@ -61,11 +60,10 @@ describe('ProductSyncManager tests', () => {
       const jobQueue = new ProductSyncQueue();
       jobQueue.lock();
 
-      when(mockProductSyncQueueService.readProductSyncQueue()).thenReturn(
-        jobQueue
-      );
+      when(mockProductSyncQueueService.isEmpty()).thenReturn(false);
+      when(mockProductSyncQueueService.isLocked()).thenReturn(true);
 
-      await productSyncManager.processJob();
+      await productSyncJobProcessor.processJob();
 
       verify(
         mockProductSyncJobMarshller.marshallJob(anyOfClass(ProductSyncJob))
@@ -74,27 +72,12 @@ describe('ProductSyncManager tests', () => {
 
     it('should not process the job if the queue is empty', async () => {
       const jobQueue = new ProductSyncQueue();
-
-      when(mockProductSyncQueueService.readProductSyncQueue()).thenReturn(
-        jobQueue
-      );
-
-      await productSyncManager.processJob();
-
-      verify(
-        mockProductSyncJobMarshller.marshallJob(anyOfClass(ProductSyncJob))
-      ).never();
-    });
-
-    it('should not process the job if the queue is empty and locked', async () => {
-      const jobQueue = new ProductSyncQueue();
       jobQueue.lock();
 
-      when(mockProductSyncQueueService.readProductSyncQueue()).thenReturn(
-        jobQueue
-      );
+      when(mockProductSyncQueueService.isEmpty()).thenReturn(true);
+      when(mockProductSyncQueueService.isLocked()).thenReturn(false);
 
-      await productSyncManager.processJob();
+      await productSyncJobProcessor.processJob();
 
       verify(
         mockProductSyncJobMarshller.marshallJob(anyOfClass(ProductSyncJob))

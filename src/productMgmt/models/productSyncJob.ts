@@ -8,7 +8,7 @@ export class ProductSyncJob {
   private jobType: ProductSyncJobType;
   private args: object[];
 
-  constructor(jobType: ProductSyncJobType, args: object[] = []) {
+  constructor(jobType: ProductSyncJobType, ...args: object[]) {
     this.jobId = '1';
     this.timeQueued = new Date();
     this.jobType = jobType;

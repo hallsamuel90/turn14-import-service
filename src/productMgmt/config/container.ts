@@ -6,7 +6,12 @@ import { AmqpProJson } from '../../util/ampqPro/ampqProJson';
 import { WcRestApiProvider } from '../../woocommerce/clients/wcRestApiProvider';
 import { BrandActivationSequence } from '../jobs/brandActivationSequence';
 import { ProductMgmtService } from '../services/productMgmtService';
-import { WcMapperProvider } from '../services/wcMapperProvider';
+import { WcMapperFactory } from '../services/wcMapperFactory';
+import { ProductSyncJobMarshaller } from '../services/productSyncJobMarshaller';
+import { ProductSyncJobWorker } from '../services/productSyncJobWorker';
+import { ProductSyncJobProcessor } from '../services/productSyncJobProcessor';
+import { ProductSyncQueueService } from '../services/productSyncQueueService';
+import { ProductSyncQueueRepository } from '../repositories/productSyncQueueRepository';
 
 /**
  * Configures the container dependencies for the product management module.
@@ -19,7 +24,13 @@ export default (): void => {
   Container.get(ApiUserService);
   Container.get(ProductMgmtService);
   Container.get(BrandsService);
-  Container.get(WcMapperProvider);
+  Container.get(WcMapperFactory);
   Container.get(BrandActivationSequence);
   Container.get(AmqpProJson);
+
+  Container.get(ProductSyncJobMarshaller);
+  Container.get(ProductSyncJobWorker);
+  Container.get(ProductSyncJobProcessor);
+  Container.get(ProductSyncQueueService);
+  Container.get(ProductSyncQueueRepository);
 };
