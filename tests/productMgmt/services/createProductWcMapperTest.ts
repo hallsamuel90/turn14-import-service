@@ -2,11 +2,11 @@
 import { expect } from 'chai';
 import { anyString, mock, when } from 'ts-mockito';
 import { WcCategoriesCache } from '../../../src/productMgmt/caches/wcCategoriesCache';
-import { WcMapper } from '../../../src/productMgmt/services/wcMapper';
+import { CreateProductWcMapper } from '../../../src/productMgmt/services/createProductWcMapper';
 import { WcCategoryIdDTO } from '../../../src/woocommerce/dtos/wcCategoryIdDto';
 import { WcMapperTestUtil } from './wcMapperTestUtil';
 describe('WcMapper tests', () => {
-  let instance: WcMapper;
+  let instance: CreateProductWcMapper;
 
   beforeEach(() => {
     const fakeCategoryId = 5;
@@ -21,35 +21,35 @@ describe('WcMapper tests', () => {
       mockWcCategoriesCache.getSubCategory(anyString(), anyString())
     ).thenResolve(fakeWcCategoryIdDto);
 
-    instance = new WcMapper(mockWcCategoriesCache);
+    instance = new CreateProductWcMapper(mockWcCategoriesCache);
   });
 
-  describe('#turn14AttributesToWc', () => {
-    it('should not return null', () => {
+  describe('#turn14ToWc', () => {
+    it('should not return null attributes', async () => {
       const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
-      const itemAttributes = fakeTurn14ProductDto?.item['attributes'];
 
-      const wcCreateProductDto = instance.turn14AttributesToWc(itemAttributes);
+      const wcCreateProductDto = await instance.turn14ToWc(
+        fakeTurn14ProductDto
+      );
 
-      expect(wcCreateProductDto).to.not.be.null;
+      expect(wcCreateProductDto.attributes).to.not.be.null;
     });
 
-    it('should not die when itemAttributes is undefined', () => {
+    it('should not die when itemAttributes is undefined', async () => {
       const undefinedItemAttributesTurn14ProductDto = WcMapperTestUtil.getUndefinedItemAttributesProductDTO();
-      const itemAttributes =
-        undefinedItemAttributesTurn14ProductDto?.item['attributes'];
 
-      const wcCreateProductDto = instance.turn14AttributesToWc(itemAttributes);
+      const wcCreateProductDto = await instance.turn14ToWc(
+        undefinedItemAttributesTurn14ProductDto
+      );
 
       expect(wcCreateProductDto).to.not.be.null;
     });
 
     it('should return correctly mapped attributes for WcCreateProductDTO', async () => {
       const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
-      const itemAttributes = fakeTurn14ProductDto?.item['attributes'];
 
-      const wcCreateProductDtoAttributes = instance.turn14AttributesToWc(
-        itemAttributes
+      const wcCreateProductDtoAttributes = await instance.turn14ToWc(
+        fakeTurn14ProductDto
       );
 
       expect(wcCreateProductDtoAttributes.name).to.equal(
@@ -66,15 +66,12 @@ describe('WcMapper tests', () => {
       expect(wcCreateProductDtoAttributes.dimensions.height).to.equal(4);
       expect(wcCreateProductDtoAttributes.weight).to.equal(13);
     });
-  });
 
-  describe('#turn14InventoryToWc', () => {
-    it('should not return null', () => {
+    it('should not return null inventory', () => {
       const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
-      const itemInventory = fakeTurn14ProductDto?.itemInventory;
 
-      const wcCreateProductDtoInventory = instance.turn14InventoryToWc(
-        itemInventory
+      const wcCreateProductDtoInventory = instance.turn14ToWc(
+        fakeTurn14ProductDto
       );
 
       expect(wcCreateProductDtoInventory).to.not.be.null;
@@ -82,10 +79,9 @@ describe('WcMapper tests', () => {
 
     it('should return correctly mapped inventory for WcCreateProductDTO', async () => {
       const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
-      const itemInventory = fakeTurn14ProductDto?.itemInventory;
 
-      const wcCreateProductDtoInventory = instance.turn14InventoryToWc(
-        itemInventory
+      const wcCreateProductDtoInventory = await instance.turn14ToWc(
+        fakeTurn14ProductDto
       );
 
       expect(wcCreateProductDtoInventory.manage_stock).to.equal(true);

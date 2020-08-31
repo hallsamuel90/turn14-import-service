@@ -1,11 +1,13 @@
 import { ProductSyncQueueService } from './productSyncQueueService';
 import { ProductSyncJob } from '../models/productSyncJob';
 import { ProductSyncJobMarshaller } from './productSyncJobMarshaller';
+import { Service } from 'typedi';
 
 /**
  * Orchestrates the product synchronization jobs.
  */
-export class ProductSyncManager {
+@Service()
+export class ProductSyncJobProcessor {
   private readonly productSyncQueueService: ProductSyncQueueService;
   private readonly productSyncJobMarshller: ProductSyncJobMarshaller;
 
@@ -21,16 +23,21 @@ export class ProductSyncManager {
    * Kicks off jobs as they are available on the queue.
    */
   public async processJob(): Promise<void> {
-    const jobQueue = this.productSyncQueueService.readProductSyncQueue();
-
-    if (!jobQueue.isEmpty() && !jobQueue.isLocked()) {
+    if (this.queueIsReady()) {
       this.productSyncQueueService.lockQueue();
 
-      const job = jobQueue.dequeue();
+      const job = this.productSyncQueueService.dequeue();
       await this.marshallJob(job);
 
       this.productSyncQueueService.unlockQueue();
     }
+  }
+
+  private queueIsReady(): boolean {
+    return !(
+      this.productSyncQueueService.isLocked() ||
+      this.productSyncQueueService.isEmpty()
+    );
   }
 
   private async marshallJob(job: ProductSyncJob): Promise<void> {

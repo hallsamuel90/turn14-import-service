@@ -1,33 +1,60 @@
-import { ProductSyncQueue } from '../models/productSyncQueue';
+import { ProductSyncJob } from '../models/productSyncJob';
+import { ProductSyncQueueRepository } from '../repositories/productSyncQueueRepository';
+import { Service } from 'typedi';
 
 /**
  * Service class for operations on ProductSyncQueue
  */
+@Service()
 export class ProductSyncQueueService {
+  private productSyncQueueRepository: ProductSyncQueueRepository;
+
+  constructor(productSyncQueueRepository: ProductSyncQueueRepository) {
+    this.productSyncQueueRepository = productSyncQueueRepository;
+  }
+
   public lockQueue(): void {
-    const jobQueue = this.readProductSyncQueue();
+    const jobQueue = this.productSyncQueueRepository.fetchQueue();
 
     jobQueue.lock();
 
-    // repo.save;
+    this.productSyncQueueRepository.save(jobQueue);
   }
 
   public unlockQueue(): void {
-    const jobQueue = this.readProductSyncQueue();
+    const jobQueue = this.productSyncQueueRepository.fetchQueue();
 
     jobQueue.unLock();
 
-    // repo.save;
+    this.productSyncQueueRepository.save(jobQueue);
   }
 
-  /**
-   * Fetches the product sync job queue.
-   *
-   * @returns {ProductSyncQueue} the queue.
-   */
-  public readProductSyncQueue(): ProductSyncQueue {
-    // repo.findIt
+  public enqueue(productSyncJob: ProductSyncJob): void {
+    const jobQueue = this.productSyncQueueRepository.fetchQueue();
 
-    return new ProductSyncQueue();
+    jobQueue.enqueue(productSyncJob);
+
+    this.productSyncQueueRepository.save(jobQueue);
+  }
+
+  public dequeue(): ProductSyncJob {
+    const jobQueue = this.productSyncQueueRepository.fetchQueue();
+    const job = jobQueue.dequeue();
+
+    this.productSyncQueueRepository.save(jobQueue);
+
+    return job;
+  }
+
+  public isLocked(): boolean {
+    const jobQueue = this.productSyncQueueRepository.fetchQueue();
+
+    return jobQueue.isLocked();
+  }
+
+  public isEmpty(): boolean {
+    const jobQueue = this.productSyncQueueRepository.fetchQueue();
+
+    return jobQueue.isEmpty();
   }
 }

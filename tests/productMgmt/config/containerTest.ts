@@ -6,7 +6,7 @@ import { BrandsService } from '../../../src/brands/services/brandsService';
 import productMgmtContainerConfig from '../../../src/productMgmt/config/container';
 import { BrandActivationSequence } from '../../../src/productMgmt/jobs/brandActivationSequence';
 import { ProductMgmtService } from '../../../src/productMgmt/services/productMgmtService';
-import { WcMapperProvider } from '../../../src/productMgmt/services/wcMapperProvider';
+import { WcMapperFactory } from '../../../src/productMgmt/services/wcMapperFactory';
 import { Turn14RestApiProvider } from '../../../src/turn14/clients/turn14RestApiProvider';
 import { AmqpProJson } from '../../../src/util/ampqPro/ampqProJson';
 import { WcRestApiProvider } from '../../../src/woocommerce/clients/wcRestApiProvider';
@@ -50,7 +50,7 @@ describe('Product Management Container tests', () => {
     it('should add a WcMapperProvider to the Container', () => {
       productMgmtContainerConfig();
 
-      expect(Container.has(WcMapperProvider)).to.be.true;
+      expect(Container.has(WcMapperFactory)).to.be.true;
     });
 
     it('should add a BrandActivationSequence to the Container', () => {

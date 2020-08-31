@@ -1,16 +1,17 @@
 import _ from 'lodash';
 import { Inject, Service } from 'typedi';
-import { Keys } from '../../apiUsers/models/apiUser';
+import { Keys, ApiUser } from '../../apiUsers/models/apiUser';
 import { Turn14RestApi } from '../../turn14/clients/turn14RestApi';
 import { Turn14RestApiProvider } from '../../turn14/clients/turn14RestApiProvider';
 import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
 import { WcRestApi } from '../../woocommerce/clients/wcRestApi';
 import { WcRestApiProvider } from '../../woocommerce/clients/wcRestApiProvider';
 import { WcBatchDTO } from '../../woocommerce/dtos/wcBatchDto';
-import { WcCategoriesCache } from '../caches/wcCategoriesCache';
 import { PmgmtDTO } from '../dtos/pmgmtDto';
-import { WcMapper } from './wcMapper';
-import { WcMapperProvider } from './wcMapperProvider';
+import { CreateProductWcMapper } from './createProductWcMapper';
+import { WcMapperFactory } from './wcMapperFactory';
+import { WcMapperType } from './wcMapperType';
+import { UpdateInventoryWcMapper } from './updateInventoryWcMapper';
 
 /**
  * ProductMgmtService.
@@ -31,21 +32,21 @@ export class ProductMgmtService {
   private readonly wcRestApiProvider: WcRestApiProvider;
 
   @Inject()
-  private readonly wcMapperProvider: WcMapperProvider;
+  private readonly wcMapperFactory: WcMapperFactory;
 
   /**
    * Imports a Turn14 brand's products into the WC Store.
    *
    * @param {PmgmtDTO} pmgmtDto the product management data transer object.
    */
-  public async import(pmgmtDto: PmgmtDTO): Promise<void> {
+  public async importBrandProducts(pmgmtDto: PmgmtDTO): Promise<void> {
     const turn14Products = await this.getTurn14ProductsByBrand(
       pmgmtDto.turn14Keys,
       pmgmtDto.brandId
     );
 
     console.info(
-      `🔨 Import Products Job starting! Only ${turn14Products.length} products to go!`
+      `🔨 Import products job starting! Only ${turn14Products.length} products to go!`
     );
 
     const wcRestApi: WcRestApi = this.wcRestApiProvider.getWcRestApi(
@@ -54,39 +55,86 @@ export class ProductMgmtService {
       pmgmtDto.wcKeys.secret
     );
 
-    const wcCategoriesCache = new WcCategoriesCache(wcRestApi);
-    const wcMapper: WcMapper = this.wcMapperProvider.getWcMapper(
-      wcCategoriesCache
-    );
+    const wcMapper = this.wcMapperFactory.getWcMapper(
+      WcMapperType.CREATE_PRODUCT,
+      pmgmtDto.siteUrl,
+      pmgmtDto.wcKeys
+    ) as CreateProductWcMapper;
 
     const wcProducts = new WcBatchDTO();
     for (const turn14Product of turn14Products) {
-      const wcProduct = await wcMapper.turn14ToCreateWc(turn14Product);
+      const wcProduct = await wcMapper.turn14ToWc(turn14Product);
       wcProducts.create.push(wcProduct);
 
-      if (wcProducts.totalSize() == this.BATCH_SIZE) {
-        await this.pushWcProducts(wcProducts, wcRestApi);
-
-        wcProducts.create.length = 0;
-      }
+      this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
     }
 
-    if (wcProducts.totalSize() > 0) {
-      await wcRestApi.createProducts(wcProducts);
-    }
+    await this.pushRemainingProducts(wcProducts, wcRestApi);
 
     console.info('👍 Import complete!');
   }
 
-  public async updateInventory(): Promise<void> {
-    // for each user:
-    // get api credentials
-    // get updated inventories from Turn14
-    // map them by brand id
-    // for each brand id:
-    // get corresponding products from woocommerce
-    // update the inventories
-    // send back to woocommerce
+  /**
+   * Updates a user's active brands' inventory.
+   *
+   * @param {ApiUser} apiUser the user to update the inventory for.
+   */
+  public async updateUserActiveInventory(apiUser: ApiUser): Promise<void> {
+    const activeBrands = apiUser.brandIds;
+
+    if (activeBrands.length) {
+      await this.updateInventories(apiUser, activeBrands);
+    }
+  }
+
+  /**
+   * Updates a single brand's inventory for a given user.
+   *
+   * @param {ApiUser} apiUser the user's brand to update.
+   * @param {string} brandId the brand to update inventory for.
+   */
+  public async updateBrandInventory(
+    apiUser: ApiUser,
+    brandId: string
+  ): Promise<void> {
+    const turn14Products = await this.getTurn14ProductsByBrand(
+      apiUser.turn14Keys,
+      brandId
+    );
+    const turn14ProductsMap = _.map(turn14Products, 'mfr_part_number');
+
+    console.info(
+      `🔨 Upate inventory job starting! Only ${turn14Products.length} products to go!`
+    );
+
+    const wcRestApi = this.wcRestApiProvider.getWcRestApi(
+      apiUser.siteUrl,
+      apiUser.wcKeys.client,
+      apiUser.wcKeys.secret
+    );
+    const wcBrandProducts = await wcRestApi.fetchAllProductsByBrand(brandId);
+
+    const wcMapper = this.wcMapperFactory.getWcMapper(
+      WcMapperType.UPDATE_INVENTORY
+    ) as UpdateInventoryWcMapper;
+
+    const wcProducts = new WcBatchDTO();
+    for (const wcProduct of wcBrandProducts) {
+      const wcId = wcProduct?.['id'];
+      const partNumber = wcProduct?.['sku'];
+      const turn14Product = turn14ProductsMap[partNumber];
+
+      if (this.storeCarriesStock(turn14Product)) {
+        const wcUpdateInventoryDto = wcMapper.turn14ToWc(turn14Product, wcId);
+        wcProducts.update.push(wcUpdateInventoryDto);
+
+        await this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
+      }
+    }
+
+    await this.pushRemainingProducts(wcProducts, wcRestApi);
+
+    console.info('👍 Inventory update complete!');
   }
 
   /**
@@ -94,7 +142,7 @@ export class ProductMgmtService {
    *
    * @param {PmgmtDTO} pmgmtDto the product management object containing keys.
    */
-  public async delete(pmgmtDto: PmgmtDTO): Promise<void> {
+  public async deleteBrandProducts(pmgmtDto: PmgmtDTO): Promise<void> {
     const wcRestApi = this.wcRestApiProvider.getWcRestApi(
       pmgmtDto.siteUrl,
       pmgmtDto.wcKeys.client,
@@ -115,11 +163,11 @@ export class ProductMgmtService {
     for (const productId of productIds) {
       wcProducts.delete.push(productId);
 
-      if (wcProducts.totalSize() == this.BATCH_SIZE) {
-        await wcRestApi.deleteProducts(wcProducts);
-        wcProducts.delete.length = 0;
-      }
+      this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
     }
+
+    this.pushRemainingProducts(wcProducts, wcRestApi);
+
     console.info('👍 Deletion complete!');
   }
 
@@ -141,14 +189,51 @@ export class ProductMgmtService {
     return turn14Products;
   }
 
+  private async pushFullBatchOfWcProducts(
+    wcProductBatch: WcBatchDTO,
+    wcRestApi: WcRestApi
+  ): Promise<void> {
+    if (this.batchIsFull(wcProductBatch)) {
+      await this.pushWcProducts(wcProductBatch, wcRestApi);
+
+      wcProductBatch.reset();
+    }
+  }
+
+  private async pushRemainingProducts(
+    wcProducts: WcBatchDTO,
+    wcRestApi: WcRestApi
+  ): Promise<void> {
+    if (wcProducts.totalSize() > 0) {
+      await this.pushWcProducts(wcProducts, wcRestApi);
+    }
+  }
+
   private async pushWcProducts(
     wcProducts: WcBatchDTO,
     wcRestApi: WcRestApi
   ): Promise<void> {
     try {
-      await wcRestApi.createProducts(wcProducts);
+      await wcRestApi.batchModifyProducts(wcProducts);
     } catch (e) {
       console.error('🔥 ' + e);
     }
+  }
+
+  private async updateInventories(
+    apiUser: ApiUser,
+    activeBrands: string[]
+  ): Promise<void> {
+    for (const activeBrand of activeBrands) {
+      await this.updateBrandInventory(apiUser, activeBrand);
+    }
+  }
+
+  private batchIsFull(wcProductBatch: WcBatchDTO): boolean {
+    return wcProductBatch.totalSize() == this.BATCH_SIZE;
+  }
+
+  private storeCarriesStock(product: Turn14ProductDTO): boolean {
+    return product?.['manage_stock'];
   }
 }

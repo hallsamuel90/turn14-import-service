@@ -1,5 +1,6 @@
 import { ProductSyncJob } from './productSyncJob';
 import { ProductSyncQueueError } from '../errors/productSyncQueueError';
+import _ from 'lodash';
 
 /**
  * Data structure to queue product sync jobs.
@@ -25,8 +26,8 @@ export class ProductSyncQueue {
   }
 
   public dequeue(): ProductSyncJob {
-    if (!this.isLocked()) {
-      return this.jobQueue[this.jobQueue.length - 1];
+    if (!this.isLocked() && !this.isEmpty()) {
+      return this.popQueue();
     }
 
     throw new ProductSyncQueueError('The queue is locked! Cannot dequeue.');
@@ -34,5 +35,15 @@ export class ProductSyncQueue {
 
   public isEmpty(): boolean {
     return this.jobQueue.length == 0;
+  }
+
+  private popQueue(): ProductSyncJob {
+    const job = this.jobQueue.pop();
+
+    if (job) {
+      return job;
+    }
+
+    throw new Error('No jobs exist in the queue.');
   }
 }
