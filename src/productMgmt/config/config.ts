@@ -1,5 +1,6 @@
 import containerConfig from './container';
 import subscriberConfig from './subscriber';
+import jobQueueConfig from './jobQueueConfig';
 
 /**
  * Main configuration file for the product management module.
@@ -9,4 +10,5 @@ import subscriberConfig from './subscriber';
 export default (): void => {
   containerConfig();
   subscriberConfig();
+  jobQueueConfig();
 };

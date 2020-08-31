@@ -49,19 +49,14 @@ export class WcRestApi {
    * @param {WcBatchDTO} wcProducts the products to be sent to the store.
    * @returns {Promise<JSON>} the response from woocommerce.
    */
-  async createProducts(wcProducts: WcBatchDTO): Promise<JSON> {
+  async batchModifyProducts(wcProducts: WcBatchDTO): Promise<void> {
     try {
-      const response = await this.axiosClient.post(
+      await this.axiosClient.post(
         WcRestApi.BATCH_PRODUCTS_RESOURCE,
         wcProducts
       );
-      return response.data;
     } catch (e) {
       console.error('🔥 ' + e);
-
-      throw new WcError(
-        'createProducts(), something went wrong communicating with WooCommerce.'
-      );
     }
   }
 
@@ -114,29 +109,6 @@ export class WcRestApi {
 
       throw new WcError(
         'fetchCategories(), something went wrong communicating with WooCommerce.'
-      );
-    }
-  }
-
-  /**
-   * Batch creates, updates, and deletes woocomerce products,
-   * limited to 100 at a time.
-   *
-   * @param {WcBatchDTO} wcProducts the products to be sent to the store.
-   * @returns {Promise<JSON>} the response from woocommerce.
-   */
-  async deleteProducts(wcProducts: WcBatchDTO): Promise<JSON> {
-    try {
-      const response = await this.axiosClient.post(
-        WcRestApi.BATCH_PRODUCTS_RESOURCE,
-        wcProducts
-      );
-      return response.data;
-    } catch (e) {
-      console.error('🔥 ' + e);
-
-      throw new WcError(
-        'createProducts(), something went wrong communicating with WooCommerce.'
       );
     }
   }

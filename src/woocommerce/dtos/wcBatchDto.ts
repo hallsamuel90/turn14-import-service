@@ -23,7 +23,16 @@ export class WcBatchDTO {
    *
    * @returns {number} total number of objects
    */
-  totalSize(): number {
+  public totalSize(): number {
     return this.create.length + this.update.length + this.delete.length;
+  }
+
+  /**
+   * Resets the bathc of products to 0.
+   */
+  public reset(): void {
+    this.create.length = 0;
+    this.update.length = 0;
+    this.delete.length = 0;
   }
 }

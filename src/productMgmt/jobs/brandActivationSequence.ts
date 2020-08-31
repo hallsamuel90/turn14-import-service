@@ -1,9 +1,8 @@
-import _ from 'lodash';
 import { Service } from 'typedi';
-import { ApiUserService } from '../../apiUsers/services/apiUserService';
 import { ActiveBrandDTO } from '../dtos/activeBrandDto';
-import { PmgmtDTO } from '../dtos/pmgmtDto';
-import { ProductMgmtService } from '../services/productMgmtService';
+import { ProductSyncQueueService } from '../services/productSyncQueueService';
+import { ProductSyncJob } from '../models/productSyncJob';
+import { ProductSyncJobType } from '../models/proudctSyncJobType';
 
 /**
  * BrandActivationSequence.
@@ -12,57 +11,33 @@ import { ProductMgmtService } from '../services/productMgmtService';
  */
 @Service()
 export class BrandActivationSequence {
-  private readonly apiUserService: ApiUserService;
-  private readonly productMgmtService: ProductMgmtService;
+  private readonly productSyncQueueService: ProductSyncQueueService;
 
   /**
-   * Creates a new instance with the injected services.
    *
-   * @param {ApiUserService} apiUserService the injected apiUserService.
-   * @param {ProductMgmtService} productMgmtService the injected productMgmtService.
+   * @param productSyncQueueService
    */
-  constructor(
-    apiUserService: ApiUserService,
-    productMgmtService: ProductMgmtService
-  ) {
-    this.apiUserService = apiUserService;
-    this.productMgmtService = productMgmtService;
+  constructor(productSyncQueueService: ProductSyncQueueService) {
+    this.productSyncQueueService = productSyncQueueService;
   }
 
   /**
    * Handler for the product management operations.
    *
-   * @param {ActiveBrandDTO} activeBrandDto the data transfer object that
-   * contains the brand's active state.
+   * @param {ActiveBrandDTO} activeBrandDto the data transfer object that contains the brand's active state.
    */
   async handler(activeBrandDto: ActiveBrandDTO): Promise<void> {
-    const apiUser = await this.apiUserService.retrieve(activeBrandDto.userId);
+    const jobType = this.determineJobType(activeBrandDto);
 
-    const brandIds = apiUser.brandIds;
+    const activateBrandJob = new ProductSyncJob(jobType, activeBrandDto);
+    this.productSyncQueueService.enqueue(activateBrandJob);
+  }
 
-    const pmgmtDto = new PmgmtDTO(
-      apiUser.siteUrl,
-      apiUser.turn14Keys,
-      apiUser.wcKeys,
-      activeBrandDto.brandId
-    );
-
+  private determineJobType(activeBrandDto: ActiveBrandDTO): ProductSyncJobType {
     if (activeBrandDto.active) {
-      if (!brandIds.includes(activeBrandDto.brandId)) {
-        brandIds.push(activeBrandDto.brandId);
-        apiUser.brandIds = brandIds;
-        await this.apiUserService.update(apiUser.id, apiUser);
-
-        this.productMgmtService.import(pmgmtDto);
-      }
-    } else {
-      if (brandIds.includes(activeBrandDto.brandId)) {
-        _.pull(brandIds, activeBrandDto.brandId);
-        apiUser.brandIds = brandIds;
-        await this.apiUserService.update(apiUser.id, apiUser);
-
-        this.productMgmtService.delete(pmgmtDto);
-      }
+      return ProductSyncJobType.IMPORT_BRAND;
     }
+
+    return ProductSyncJobType.REMOVE_BRAND;
   }
 }
