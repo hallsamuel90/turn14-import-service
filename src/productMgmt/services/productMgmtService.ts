@@ -12,6 +12,7 @@ import { CreateProductWcMapper } from './createProductWcMapper';
 import { WcMapperFactory } from './wcMapperFactory';
 import { WcMapperType } from './wcMapperType';
 import { UpdateInventoryWcMapper } from './updateInventoryWcMapper';
+import { WcUpdateInventoryDTO } from '../../woocommerce/dtos/wcUpdateInventoryDto';
 
 /**
  * ProductMgmtService.
@@ -126,7 +127,10 @@ export class ProductMgmtService {
 
       if (this.storeCarriesStock(turn14Product)) {
         const wcUpdateInventoryDto = wcMapper.turn14ToWc(turn14Product, wcId);
-        wcProducts.update.push(wcUpdateInventoryDto);
+
+        if (this.stockHasChanged(wcUpdateInventoryDto, wcProduct)) {
+          wcProducts.update.push(wcUpdateInventoryDto);
+        }
 
         await this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
       }
@@ -235,5 +239,12 @@ export class ProductMgmtService {
 
   private storeCarriesStock(product: Turn14ProductDTO): boolean {
     return product?.['manage_stock'];
+  }
+
+  private stockHasChanged(
+    wcUpdateInventoryDto: WcUpdateInventoryDTO,
+    wcProduct: JSON
+  ): boolean {
+    return wcUpdateInventoryDto.stock_quantity != wcProduct?.['stock_quantity'];
   }
 }
