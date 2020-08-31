@@ -128,9 +128,11 @@ export class ProductMgmtService {
       if (this.storeCarriesStock(turn14Product)) {
         const wcUpdateInventoryDto = wcMapper.turn14ToWc(turn14Product, wcId);
 
-        if (this.stockHasChanged(wcUpdateInventoryDto, wcProduct)) {
-          wcProducts.update.push(wcUpdateInventoryDto);
-        }
+        // if (this.stockHasChanged(wcUpdateInventoryDto, wcProduct)) {
+        //   wcProducts.update.push(wcUpdateInventoryDto);
+        // }
+
+        wcProducts.update.push(wcUpdateInventoryDto);
 
         await this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
       }
