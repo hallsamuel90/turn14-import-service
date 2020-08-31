@@ -8,7 +8,7 @@ import { Service } from 'typedi';
  */
 @Service()
 export class ProductSyncJobScheduler {
-  private static UPDATE_INVENTORY_SEC = 3600; // 3600 sec in 1 hour.
+  private static UPDATE_INVENTORY_SEC = 20; // 3600 sec in 1 hour.
 
   private readonly productSyncQueueService: ProductSyncQueueService;
 
