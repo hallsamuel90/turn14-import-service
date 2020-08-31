@@ -24,12 +24,20 @@ export class ProductSyncJobScheduler {
       `⏲️  Scheduling inventory updates for all users every ${ProductSyncJobScheduler.UPDATE_INVENTORY_SEC} seconds.`
     );
 
-    setInterval(() => {
+    setTimeout(() => {
       const inventoryUpdateJob = new ProductSyncJob(
         ProductSyncJobType.UPDATE_INVENTORY
       );
 
       this.productSyncQueueService.enqueue(inventoryUpdateJob);
     }, ProductSyncJobScheduler.UPDATE_INVENTORY_SEC * 1000);
+
+    // setInterval(() => {
+    //   const inventoryUpdateJob = new ProductSyncJob(
+    //     ProductSyncJobType.UPDATE_INVENTORY
+    //   );
+
+    //   this.productSyncQueueService.enqueue(inventoryUpdateJob);
+    // }, ProductSyncJobScheduler.UPDATE_INVENTORY_SEC * 1000);
   }
 }
