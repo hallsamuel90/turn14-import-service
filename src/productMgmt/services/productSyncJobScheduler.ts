@@ -8,7 +8,7 @@ import { Service } from 'typedi';
  */
 @Service()
 export class ProductSyncJobScheduler {
-  private static UPDATE_INVENTORY_SEC = 20; // 3600 sec in 1 hour.
+  private static UPDATE_INVENTORY_SEC = 3600; // 3600 sec in 1 hour.
 
   private readonly productSyncQueueService: ProductSyncQueueService;
 
@@ -24,20 +24,12 @@ export class ProductSyncJobScheduler {
       `⏲️  Scheduling inventory updates for all users every ${ProductSyncJobScheduler.UPDATE_INVENTORY_SEC} seconds.`
     );
 
-    setTimeout(() => {
+    setInterval(() => {
       const inventoryUpdateJob = new ProductSyncJob(
         ProductSyncJobType.UPDATE_INVENTORY
       );
 
       this.productSyncQueueService.enqueue(inventoryUpdateJob);
     }, ProductSyncJobScheduler.UPDATE_INVENTORY_SEC * 1000);
-
-    // setInterval(() => {
-    //   const inventoryUpdateJob = new ProductSyncJob(
-    //     ProductSyncJobType.UPDATE_INVENTORY
-    //   );
-
-    //   this.productSyncQueueService.enqueue(inventoryUpdateJob);
-    // }, ProductSyncJobScheduler.UPDATE_INVENTORY_SEC * 1000);
   }
 }
