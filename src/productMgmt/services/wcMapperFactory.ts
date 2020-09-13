@@ -6,6 +6,7 @@ import { WcMapperType } from './wcMapperType';
 import { Keys } from '../../apiUsers/models/apiUser';
 import { WcRestApi } from '../../woocommerce/clients/wcRestApi';
 import { WcMapperFactoryError } from '../../woocommerce/errors/wcMapperFactoryError';
+import { UpdatePricingWcMapper } from './updatePricingWcMapper';
 
 /**
  * WcMapperProvider.
@@ -37,6 +38,8 @@ export class WcMapperFactory {
         );
       case WcMapperType.UPDATE_INVENTORY:
         return new UpdateInventoryWcMapper();
+      case WcMapperType.UPDATE_PRICING:
+        return new UpdatePricingWcMapper();
       default:
         throw this.invalidFactoryType(wcMapperType);
     }

@@ -13,6 +13,8 @@ import { WcMapperFactory } from './wcMapperFactory';
 import { WcMapperType } from './wcMapperType';
 import { UpdateInventoryWcMapper } from './updateInventoryWcMapper';
 import { WcUpdateInventoryDTO } from '../../woocommerce/dtos/wcUpdateInventoryDto';
+import { UpdatePricingWcMapper } from './updatePricingWcMapper';
+import { WcUpdatePricingDTO } from '../../woocommerce/dtos/wcUpdatePricingDto';
 
 /**
  * ProductMgmtService.
@@ -89,56 +91,16 @@ export class ProductMgmtService {
   }
 
   /**
-   * Updates a single brand's inventory for a given user.
+   * Updates a user's active brands' pricing.
    *
-   * @param {ApiUser} apiUser the user's brand to update.
-   * @param {string} brandId the brand to update inventory for.
+   * @param {ApiUser} apiUser the user to update the inventory for.
    */
-  public async updateBrandInventory(
-    apiUser: ApiUser,
-    brandId: string
-  ): Promise<void> {
-    const turn14Products = await this.getTurn14ProductsByBrand(
-      apiUser.turn14Keys,
-      brandId
-    );
-    const turn14ProductsMap = _.map(turn14Products, 'mfr_part_number');
+  public async updateUserActivePricing(apiUser: ApiUser): Promise<void> {
+    const activeBrands = apiUser.brandIds;
 
-    console.info(
-      `🔨 Upate inventory job starting! Only ${turn14Products.length} products to go!`
-    );
-
-    const wcRestApi = this.wcRestApiProvider.getWcRestApi(
-      apiUser.siteUrl,
-      apiUser.wcKeys.client,
-      apiUser.wcKeys.secret
-    );
-    const wcBrandProducts = await wcRestApi.fetchAllProductsByBrand(brandId);
-
-    const wcMapper = this.wcMapperFactory.getWcMapper(
-      WcMapperType.UPDATE_INVENTORY
-    ) as UpdateInventoryWcMapper;
-
-    const wcProducts = new WcBatchDTO();
-    for (const wcProduct of wcBrandProducts) {
-      const wcId = wcProduct?.['id'];
-      const partNumber = wcProduct?.['sku'];
-      const turn14Product = turn14ProductsMap[partNumber];
-
-      if (this.storeCarriesStock(turn14Product)) {
-        const wcUpdateInventoryDto = wcMapper.turn14ToWc(turn14Product, wcId);
-
-        if (this.stockHasChanged(wcUpdateInventoryDto, wcProduct)) {
-          wcProducts.update.push(wcUpdateInventoryDto);
-        }
-
-        await this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
-      }
+    if (activeBrands.length) {
+      await this.updatePricings(apiUser, activeBrands);
     }
-
-    await this.pushRemainingProducts(wcProducts, wcRestApi);
-
-    console.info('👍 Inventory update complete!');
   }
 
   /**
@@ -233,6 +195,53 @@ export class ProductMgmtService {
     }
   }
 
+  private async updateBrandInventory(
+    apiUser: ApiUser,
+    brandId: string
+  ): Promise<void> {
+    const turn14Products = await this.getTurn14ProductsByBrand(
+      apiUser.turn14Keys,
+      brandId
+    );
+    const turn14ProductsMap = _.map(turn14Products, 'mfr_part_number');
+
+    console.info(
+      `🔨 Upate inventory job starting! Only ${turn14Products.length} products to go!`
+    );
+
+    const wcRestApi = this.wcRestApiProvider.getWcRestApi(
+      apiUser.siteUrl,
+      apiUser.wcKeys.client,
+      apiUser.wcKeys.secret
+    );
+    const wcBrandProducts = await wcRestApi.fetchAllProductsByBrand(brandId);
+
+    const wcMapper = this.wcMapperFactory.getWcMapper(
+      WcMapperType.UPDATE_INVENTORY
+    ) as UpdateInventoryWcMapper;
+
+    const wcProducts = new WcBatchDTO();
+    for (const wcProduct of wcBrandProducts) {
+      const wcId = wcProduct?.['id'];
+      const partNumber = wcProduct?.['sku'];
+      const turn14Product = turn14ProductsMap[partNumber];
+
+      if (this.storeCarriesStock(turn14Product)) {
+        const wcUpdateInventoryDto = wcMapper.turn14ToWc(turn14Product, wcId);
+
+        if (this.stockHasChanged(wcUpdateInventoryDto, wcProduct)) {
+          wcProducts.update.push(wcUpdateInventoryDto);
+        }
+      }
+
+      await this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
+    }
+
+    await this.pushRemainingProducts(wcProducts, wcRestApi);
+
+    console.info('👍 Inventory update complete!');
+  }
+
   private batchIsFull(wcProductBatch: WcBatchDTO): boolean {
     return wcProductBatch.totalSize() == this.BATCH_SIZE;
   }
@@ -246,5 +255,71 @@ export class ProductMgmtService {
     wcProduct: JSON
   ): boolean {
     return wcUpdateInventoryDto.stock_quantity != wcProduct?.['stock_quantity'];
+  }
+
+  private async updatePricings(
+    apiUser: ApiUser,
+    activeBrands: string[]
+  ): Promise<void> {
+    for (const activeBrand of activeBrands) {
+      await this.updateBrandPricing(apiUser, activeBrand);
+    }
+  }
+
+  private async updateBrandPricing(
+    apiUser: ApiUser,
+    brandId: string
+  ): Promise<void> {
+    const turn14Products = await this.getTurn14ProductsByBrand(
+      apiUser.turn14Keys,
+      brandId
+    );
+    const turn14ProductsMap = _.map(turn14Products, 'mfr_part_number');
+
+    console.info(
+      `🔨 Upate pricing job starting! Only ${turn14Products.length} products to go!`
+    );
+
+    const wcRestApi = this.wcRestApiProvider.getWcRestApi(
+      apiUser.siteUrl,
+      apiUser.wcKeys.client,
+      apiUser.wcKeys.secret
+    );
+    const wcBrandProducts = await wcRestApi.fetchAllProductsByBrand(brandId);
+
+    const wcMapper = this.wcMapperFactory.getWcMapper(
+      WcMapperType.UPDATE_PRICING
+    ) as UpdatePricingWcMapper;
+
+    const wcProducts = new WcBatchDTO();
+    for (const wcProduct of wcBrandProducts) {
+      const wcId = wcProduct?.['id'];
+      const partNumber = wcProduct?.['sku'];
+      const turn14Product = turn14ProductsMap[partNumber];
+
+      const wcUpdatePricingDto = wcMapper.turn14ToWc(turn14Product, wcId);
+
+      if (this.pricingHasChanged(wcUpdatePricingDto, wcProduct)) {
+        wcProducts.update.push(wcUpdatePricingDto);
+      }
+
+      await this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
+    }
+
+    await this.pushRemainingProducts(wcProducts, wcRestApi);
+
+    console.info('👍 Pricing update complete!');
+  }
+
+  private pricingHasChanged(
+    wcUpdatePricingDto: WcUpdatePricingDTO,
+    wcProduct: JSON
+  ): boolean {
+    const regularPriceChanged =
+      wcUpdatePricingDto.regular_price != wcProduct?.['regular_price'];
+    const salePriceChanged =
+      wcUpdatePricingDto.sale_price != wcProduct?.['sale_price'];
+
+    return regularPriceChanged || salePriceChanged;
   }
 }

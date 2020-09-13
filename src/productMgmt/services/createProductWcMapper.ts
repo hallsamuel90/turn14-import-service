@@ -13,9 +13,6 @@ import { WcMapper } from './wcMapper';
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
 export class CreateProductWcMapper extends WcMapper {
-  private static MAP = 'MAP';
-  private static RETAIL = 'Retail';
-  private static JOBBER = 'Jobber';
   private static DESCRIPTION = 'Market Description';
   private static FITMENT = 'Application Summary';
   private static PRIMARY_IMAGE = 'Photo - Primary';
@@ -71,8 +68,8 @@ export class CreateProductWcMapper extends WcMapper {
     const itemPricing = turn14ProductDto?.itemPricing?.['attributes'];
     if (itemPricing) {
       const wcPricing = this.turn14PricingToWc(itemPricing);
-      wcProduct.regular_price = wcPricing.regular_price;
-      wcProduct.sale_price = wcPricing.sale_price;
+      wcProduct.regular_price = wcPricing.regularPrice;
+      wcProduct.sale_price = wcPricing.salePrice;
     }
 
     const itemInventory = turn14ProductDto?.itemInventory;
@@ -180,59 +177,6 @@ export class CreateProductWcMapper extends WcMapper {
     }
 
     return wcImageDtos;
-  }
-
-  private turn14PricingToWc(itemPricing: JSON): WcCreateProductDTO {
-    const wcPricing = new WcCreateProductDTO();
-
-    const priceList = itemPricing?.['pricelists'];
-    if (priceList) {
-      const priceListsByName = _.keyBy(itemPricing?.['pricelists'], 'name');
-
-      wcPricing.regular_price = this.turn14PricingToWcRegularPrice(
-        priceListsByName
-      );
-
-      wcPricing.sale_price = this.turn14PricingToWcSalePrice(priceListsByName);
-    }
-
-    return wcPricing;
-  }
-
-  private turn14PricingToWcRegularPrice(
-    priceListsByName: _.Dictionary<JSON>
-  ): string {
-    let regularPrice = '';
-
-    if (
-      priceListsByName[CreateProductWcMapper.RETAIL] &&
-      priceListsByName[CreateProductWcMapper.MAP]
-    ) {
-      regularPrice = priceListsByName[CreateProductWcMapper.RETAIL]?.['price'];
-    } else if (priceListsByName[CreateProductWcMapper.RETAIL]) {
-      regularPrice = priceListsByName[CreateProductWcMapper.RETAIL]?.['price'];
-    } else if (priceListsByName[CreateProductWcMapper.MAP]) {
-      regularPrice = priceListsByName[CreateProductWcMapper.MAP]?.['price'];
-    } else if (priceListsByName[CreateProductWcMapper.JOBBER]) {
-      regularPrice = priceListsByName[CreateProductWcMapper.JOBBER]?.['price'];
-    }
-
-    return regularPrice;
-  }
-
-  private turn14PricingToWcSalePrice(
-    priceListsByName: _.Dictionary<JSON>
-  ): string {
-    let salePrice = '';
-
-    if (
-      priceListsByName[CreateProductWcMapper.RETAIL] &&
-      priceListsByName[CreateProductWcMapper.MAP]
-    ) {
-      salePrice = priceListsByName[CreateProductWcMapper.MAP]?.['price'];
-    }
-
-    return salePrice;
   }
 
   private turn14InventoryToWc(itemInventory: JSON): WcCreateProductDTO {

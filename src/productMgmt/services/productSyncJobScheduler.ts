@@ -8,7 +8,10 @@ import { Service } from 'typedi';
  */
 @Service()
 export class ProductSyncJobScheduler {
-  private static UPDATE_INVENTORY_SEC = 3600; // 3600 sec in 1 hour.
+  private static ONE_HOUR_SEC = 3600; // 3600 sec in 1 hour.
+
+  private static UPDATE_INVENTORY_SEC = ProductSyncJobScheduler.ONE_HOUR_SEC;
+  private static UPDATE_PRICING_SEC = 24 * ProductSyncJobScheduler.ONE_HOUR_SEC;
 
   private readonly productSyncQueueService: ProductSyncQueueService;
 
@@ -24,12 +27,41 @@ export class ProductSyncJobScheduler {
       `⏲️  Scheduling inventory updates for all users every ${ProductSyncJobScheduler.UPDATE_INVENTORY_SEC} seconds.`
     );
 
-    setInterval(() => {
-      const inventoryUpdateJob = new ProductSyncJob(
-        ProductSyncJobType.UPDATE_INVENTORY
-      );
+    this.pushUpdateInventoryJob();
 
-      this.productSyncQueueService.enqueue(inventoryUpdateJob);
+    setInterval(() => {
+      this.pushUpdateInventoryJob();
     }, ProductSyncJobScheduler.UPDATE_INVENTORY_SEC * 1000);
+  }
+
+  /**
+   * Schedules the pricing update job to run once per day.
+   */
+  public async schedulePricingUpdate(): Promise<void> {
+    console.info(
+      `⏲️  Scheduling pricing updates for all users every ${ProductSyncJobScheduler.UPDATE_PRICING_SEC} seconds.`
+    );
+
+    this.pushUpdatePricingJob();
+
+    setInterval(() => {
+      this.pushUpdatePricingJob();
+    }, ProductSyncJobScheduler.UPDATE_PRICING_SEC * 1000);
+  }
+
+  private pushUpdateInventoryJob(): void {
+    const inventoryUpdateJob = new ProductSyncJob(
+      ProductSyncJobType.UPDATE_INVENTORY
+    );
+
+    this.productSyncQueueService.enqueue(inventoryUpdateJob);
+  }
+
+  private pushUpdatePricingJob(): void {
+    const pricingUpdateJob = new ProductSyncJob(
+      ProductSyncJobType.UPDATE_PRICING
+    );
+
+    this.productSyncQueueService.enqueue(pricingUpdateJob);
   }
 }

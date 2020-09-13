@@ -55,6 +55,17 @@ export class ProductSyncJobWorker {
     }
   }
 
+  /**
+   * Updates the pricing for each apiUser's active brands.
+   */
+  public async updateAllPricing(): Promise<void> {
+    const apiUsers = await this.apiUserService.retrieveAll();
+
+    for (const apiUser of apiUsers) {
+      await this.processPricingUpdate(apiUser);
+    }
+  }
+
   private async getApiUser(userId: string): Promise<ApiUser> {
     try {
       return await this.apiUserService.retrieve(userId);
@@ -152,6 +163,12 @@ export class ProductSyncJobWorker {
   private async processInventoryUpdate(apiUser: ApiUser): Promise<void> {
     if (this.userHasActiveBrands(apiUser)) {
       await this.productMgmtService.updateUserActiveInventory(apiUser);
+    }
+  }
+
+  private async processPricingUpdate(apiUser: ApiUser): Promise<void> {
+    if (this.userHasActiveBrands(apiUser)) {
+      await this.productMgmtService.updateUserActivePricing(apiUser);
     }
   }
 }
