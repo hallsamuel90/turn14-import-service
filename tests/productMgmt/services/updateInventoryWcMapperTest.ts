@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import { UpdateInventoryWcMapper } from '../../../src/productMgmt/services/updateInventoryWcMapper';
 import { WcMapperTestUtil } from './wcMapperTestUtil';
-describe('WcMapper tests', () => {
+describe('UpdateInventoryWcMapper tests', () => {
   let instance: UpdateInventoryWcMapper;
 
   beforeEach(() => {

@@ -8,4 +8,5 @@ export default (): void => {
 
   const productSyncJobScheduler = Container.get(ProductSyncJobScheduler);
   productSyncJobScheduler.scheduleInventoryUpdate();
+  productSyncJobScheduler.schedulePricingUpdate();
 };

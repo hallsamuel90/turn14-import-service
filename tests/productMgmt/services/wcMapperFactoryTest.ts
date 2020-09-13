@@ -4,6 +4,7 @@ import { WcMapperType } from '../../../src/productMgmt/services/wcMapperType';
 import { WcMapperFactoryError } from '../../../src/woocommerce/errors/wcMapperFactoryError';
 import { CreateProductWcMapper } from '../../../src/productMgmt/services/createProductWcMapper';
 import { UpdateInventoryWcMapper } from '../../../src/productMgmt/services/updateInventoryWcMapper';
+import { UpdatePricingWcMapper } from '../../../src/productMgmt/services/updatePricingWcMapper';
 
 describe('WcMapperProvider tests', () => {
   let instance: WcMapperFactory;
@@ -47,6 +48,14 @@ describe('WcMapperProvider tests', () => {
       );
 
       expect(updateInventoryWcMapper).to.be.instanceOf(UpdateInventoryWcMapper);
+    });
+
+    it('should return an instance of UpdatePricingWcMapper if params are valid', () => {
+      const updateInventoryWcMapper = instance.getWcMapper(
+        WcMapperType.UPDATE_PRICING
+      );
+
+      expect(updateInventoryWcMapper).to.be.instanceOf(UpdatePricingWcMapper);
     });
   });
 });
