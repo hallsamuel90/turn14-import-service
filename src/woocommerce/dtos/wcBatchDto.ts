@@ -9,9 +9,6 @@ export class WcBatchDTO {
   update: WcUpdateProductDTO[];
   delete: number[];
 
-  /**
-   *
-   */
   constructor() {
     this.create = [];
     this.update = [];
@@ -19,7 +16,7 @@ export class WcBatchDTO {
   }
 
   /**
-   * Determines the total number of objects
+   * Determines the total number of objects.
    *
    * @returns {number} total number of objects
    */
@@ -28,11 +25,11 @@ export class WcBatchDTO {
   }
 
   /**
-   * Resets the bathc of products to 0.
+   * Resets the batch of products.
    */
   public reset(): void {
-    this.create.length = 0;
-    this.update.length = 0;
-    this.delete.length = 0;
+    this.create = [];
+    this.update = [];
+    this.delete = [];
   }
 }
