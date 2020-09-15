@@ -246,7 +246,7 @@ export class ProductMgmtService {
   private mapProductsBySku(
     turn14Products: Turn14ProductDTO[]
   ): Dictionary<Turn14ProductDTO> {
-    return (_.map(
+    return (_.keyBy(
       turn14Products,
       'item.attributes.mfr_part_number'
     ) as unknown) as Dictionary<Turn14ProductDTO>;
