@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { Dictionary } from 'lodash';
 import { Inject, Service } from 'typedi';
 import { Keys, ApiUser } from '../../apiUsers/models/apiUser';
 import { Turn14RestApi } from '../../turn14/clients/turn14RestApi';
@@ -200,7 +200,7 @@ export class ProductMgmtService {
       apiUser.turn14Keys,
       brandId
     );
-    const turn14ProductsMap = _.map(turn14Products, 'mfr_part_number');
+    const turn14ProductsMap = this.mapProductsBySku(turn14Products);
 
     console.info(
       `🔨 Upate inventory job starting! Only ${turn14Products.length} products to go!`
@@ -243,6 +243,15 @@ export class ProductMgmtService {
     console.info('👍 Inventory update complete!');
   }
 
+  private mapProductsBySku(
+    turn14Products: Turn14ProductDTO[]
+  ): Dictionary<Turn14ProductDTO> {
+    return (_.map(
+      turn14Products,
+      'item.attributes.mfr_part_number'
+    ) as unknown) as Dictionary<Turn14ProductDTO>;
+  }
+
   private batchIsFull(wcProductBatch: WcBatchDTO): boolean {
     return wcProductBatch.totalSize() == this.BATCH_SIZE;
   }
@@ -275,7 +284,7 @@ export class ProductMgmtService {
       apiUser.turn14Keys,
       brandId
     );
-    const turn14ProductsMap = _.map(turn14Products, 'mfr_part_number');
+    const turn14ProductsMap = this.mapProductsBySku(turn14Products);
 
     console.info(
       `🔨 Upate pricing job starting! Only ${turn14Products.length} products to go!`
