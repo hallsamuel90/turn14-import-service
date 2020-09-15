@@ -223,7 +223,7 @@ export class ProductMgmtService {
       const partNumber = wcProduct?.['sku'];
       const turn14Product = turn14ProductsMap[partNumber];
 
-      if (this.storeCarriesStock(turn14Product)) {
+      if (this.storeCarriesStock(wcProduct)) {
         const wcUpdateInventoryDto = wcMapper.turn14ToWc(turn14Product, wcId);
 
         if (this.stockHasChanged(wcUpdateInventoryDto, wcProduct)) {
@@ -256,8 +256,8 @@ export class ProductMgmtService {
     return wcProductBatch.totalSize() == this.BATCH_SIZE;
   }
 
-  private storeCarriesStock(product: Turn14ProductDTO): boolean {
-    return product?.['manage_stock'];
+  private storeCarriesStock(wcProduct: JSON): boolean {
+    return wcProduct?.['manage_stock'];
   }
 
   private stockHasChanged(
