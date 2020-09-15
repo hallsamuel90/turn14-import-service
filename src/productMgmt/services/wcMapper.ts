@@ -16,7 +16,7 @@ export abstract class WcMapper {
   protected calculateTurn14StockQuantity(itemInventory: JSON): number {
     let totalStock = 0;
 
-    const warehouseStock = itemInventory['inventory'];
+    const warehouseStock = itemInventory?.['inventory'];
     if (warehouseStock) {
       for (const warehouseLocation in warehouseStock) {
         if (warehouseStock[warehouseLocation] > 0) {
@@ -25,7 +25,7 @@ export abstract class WcMapper {
       }
     }
 
-    const manufacturerStock = itemInventory['manufacturer'];
+    const manufacturerStock = itemInventory?.['manufacturer'];
     if (manufacturerStock?.stock > 0) {
       totalStock = totalStock + manufacturerStock.stock;
     }

@@ -223,12 +223,10 @@ export class ProductMgmtService {
       const partNumber = wcProduct?.['sku'];
       const turn14Product = turn14ProductsMap[partNumber];
 
-      if (this.storeCarriesStock(wcProduct)) {
-        const wcUpdateInventoryDto = wcMapper.turn14ToWc(turn14Product, wcId);
+      const wcUpdateInventoryDto = wcMapper.turn14ToWc(turn14Product, wcId);
 
-        if (this.stockHasChanged(wcUpdateInventoryDto, wcProduct)) {
-          wcProducts.update.push(wcUpdateInventoryDto);
-        }
+      if (this.stockHasChanged(wcUpdateInventoryDto, wcProduct)) {
+        wcProducts.update.push(wcUpdateInventoryDto);
       }
 
       if (this.batchIsFull(wcProducts)) {
