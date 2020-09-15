@@ -69,7 +69,11 @@ export class ProductMgmtService {
       const wcProduct = await wcMapper.turn14ToWc(turn14Product);
       wcProducts.create.push(wcProduct);
 
-      this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
+      if (this.batchIsFull(wcProducts)) {
+        await this.pushWcProducts(wcProducts, wcRestApi);
+
+        wcProducts.reset();
+      }
     }
 
     await this.pushRemainingProducts(wcProducts, wcRestApi);
@@ -129,7 +133,11 @@ export class ProductMgmtService {
     for (const productId of productIds) {
       wcProducts.delete.push(productId);
 
-      this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
+      if (this.batchIsFull(wcProducts)) {
+        await this.pushWcProducts(wcProducts, wcRestApi);
+
+        wcProducts.reset();
+      }
     }
 
     this.pushRemainingProducts(wcProducts, wcRestApi);
@@ -153,17 +161,6 @@ export class ProductMgmtService {
     );
 
     return turn14Products;
-  }
-
-  private async pushFullBatchOfWcProducts(
-    wcProductBatch: WcBatchDTO,
-    wcRestApi: WcRestApi
-  ): Promise<void> {
-    if (this.batchIsFull(wcProductBatch)) {
-      await this.pushWcProducts(wcProductBatch, wcRestApi);
-
-      wcProductBatch.reset();
-    }
   }
 
   private async pushRemainingProducts(
@@ -234,7 +231,11 @@ export class ProductMgmtService {
         }
       }
 
-      await this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
+      if (this.batchIsFull(wcProducts)) {
+        await this.pushWcProducts(wcProducts, wcRestApi);
+
+        wcProducts.reset();
+      }
     }
 
     await this.pushRemainingProducts(wcProducts, wcRestApi);
@@ -303,7 +304,11 @@ export class ProductMgmtService {
         wcProducts.update.push(wcUpdatePricingDto);
       }
 
-      await this.pushFullBatchOfWcProducts(wcProducts, wcRestApi);
+      if (this.batchIsFull(wcProducts)) {
+        await this.pushWcProducts(wcProducts, wcRestApi);
+
+        wcProducts.reset();
+      }
     }
 
     await this.pushRemainingProducts(wcProducts, wcRestApi);
