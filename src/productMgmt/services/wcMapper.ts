@@ -1,7 +1,7 @@
 import { WcProductDTO } from '../../woocommerce/dtos/wcProductDto';
 import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
 import { WcPricingDTO } from '../../woocommerce/dtos/wcPricingDto';
-import _ from 'lodash';
+import _, { Dictionary } from 'lodash';
 
 export abstract class WcMapper {
   private static MAP = 'MAP';
@@ -48,6 +48,15 @@ export abstract class WcMapper {
     }
 
     return wcPricing;
+  }
+
+  protected mapTurn14ProductsBySku(
+    turn14Products: Turn14ProductDTO[]
+  ): Dictionary<Turn14ProductDTO> {
+    return (_.keyBy(
+      turn14Products,
+      'item.attributes.mfr_part_number'
+    ) as unknown) as Dictionary<Turn14ProductDTO>;
   }
 
   private turn14PricingToWcRegularPrice(
