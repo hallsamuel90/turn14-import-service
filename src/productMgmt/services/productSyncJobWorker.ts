@@ -23,8 +23,9 @@ export class ProductSyncJobWorker {
   }
 
   /**
+   * Imports a brand's products into the store.
    *
-   * @param activeBrandDto somefin
+   * @param {ActiveBrandDTO} activeBrandDto the brand object to import.
    * @throws {ProductSyncJobError} if cannot run job.
    */
   public async importBrand(activeBrandDto: ActiveBrandDTO): Promise<void> {
@@ -34,8 +35,9 @@ export class ProductSyncJobWorker {
   }
 
   /**
+   * Removes a brand's products from the store.
    *
-   * @param activeBrandDto somefin
+   * @param {ActiveBrandDTO} activeBrandDto the brand object to remove.
    * @throws {ProductSyncJobError} if cannot run job.
    */
   public async removeBrand(activeBrandDto: ActiveBrandDTO): Promise<void> {
@@ -63,6 +65,17 @@ export class ProductSyncJobWorker {
 
     for (const apiUser of apiUsers) {
       await this.processPricingUpdate(apiUser);
+    }
+  }
+
+  /**
+   * Imports newly added products for each apiUser's active brands.
+   */
+  public async importAllNewProducts(): Promise<void> {
+    const apiUsers = await this.apiUserService.retrieveAll();
+
+    for (const apiUser of apiUsers) {
+      await this.processImportNewProducts(apiUser);
     }
   }
 
@@ -169,6 +182,12 @@ export class ProductSyncJobWorker {
   private async processPricingUpdate(apiUser: ApiUser): Promise<void> {
     if (this.userHasActiveBrands(apiUser)) {
       await this.productMgmtService.updateUserActivePricing(apiUser);
+    }
+  }
+
+  private async processImportNewProducts(apiUser: ApiUser): Promise<void> {
+    if (this.userHasActiveBrands(apiUser)) {
+      await this.productMgmtService.importNewProducts(apiUser);
     }
   }
 }

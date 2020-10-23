@@ -2,13 +2,11 @@
 import { Turn14ProductDTO } from '../../../src/turn14/dtos/turn14ProductDto';
 
 /**
- * WcMapperTestUtil.
+ * Turn14FakeData.
  *
- * Provides utility methods for testing WcMapper.
- *
- * @author Sam Hall <hallsamuel90@gmail.com>
+ * Provides utility methods for testing.
  */
-export class WcMapperTestUtil {
+export class Turn14FakeData {
   /**
    * Returns a new Turn14ProductDTO populated with fake data.
    *

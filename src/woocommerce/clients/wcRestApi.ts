@@ -61,11 +61,10 @@ export class WcRestApi {
   }
 
   /**
-   * Fetches all categories from woocommerce and returns them as
-   * a map of name:category
+   * Fetches all products of a given brand from woocommerce.
    *
    * @returns {Promise<Dictionary<JSON>>} the response from woocommerce.
-   * @param brandId
+   * @param {string} brandId the id of the brand.
    */
   async fetchAllProductsByBrand(brandId: string): Promise<JSON[]> {
     let allData: JSON[] = [];

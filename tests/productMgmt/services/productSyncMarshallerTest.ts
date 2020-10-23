@@ -79,6 +79,16 @@ describe('ProductSyncMarshaller tests', () => {
       verify(mockProductSyncJobWorker.updateAllPricing()).once();
     });
 
+    it('should marshall IMPORT_ADDED_PRODUCTS job correctly', async () => {
+      const fakeImportAddedProductsJob = new ProductSyncJob(
+        ProductSyncJobType.IMPORT_ADDED_PRODUCTS
+      );
+
+      await productSyncJobMarshaller.marshallJob(fakeImportAddedProductsJob);
+
+      verify(mockProductSyncJobWorker.importAllNewProducts()).once();
+    });
+
     it('should reject with ProductSyncJobError if job type is unknown', async () => {
       const invalidJob = new ProductSyncJob(5);
 

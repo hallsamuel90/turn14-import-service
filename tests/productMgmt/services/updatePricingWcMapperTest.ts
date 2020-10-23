@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { expect } from 'chai';
 import { UpdatePricingWcMapper } from '../../../src/productMgmt/services/updatePricingWcMapper';
-import { WcMapperTestUtil } from './wcMapperTestUtil';
+import { Turn14FakeData } from './turn14FakeData';
 describe('UpdatePricingWcMapper tests', () => {
   let instance: UpdatePricingWcMapper;
 
@@ -11,7 +11,7 @@ describe('UpdatePricingWcMapper tests', () => {
 
   describe('#turn14ToWc', () => {
     it('should return correctly mapped attributes for WcUpdatePricingDTO', async () => {
-      const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
+      const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
       const fakeTurn14ProductDtoRegularPrice = '12.36'; // see above method for sample data.
       const fakeWcId = '55';
 

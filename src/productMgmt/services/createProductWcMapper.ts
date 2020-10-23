@@ -32,6 +32,25 @@ export class CreateProductWcMapper extends WcMapper {
   }
 
   /**
+   * Converts a list of Turn14ProductDTO into wcCreateProductDTOs.
+   *
+   * @param turn14Products the turn14 products to be
+   * converted.
+   * @returns {Promise<WcCreateProductDTO[]>} converted woocommerce products.
+   */
+  public async turn14sToWcs(
+    turn14Products: Turn14ProductDTO[]
+  ): Promise<WcCreateProductDTO[]> {
+    const wcProducts: WcCreateProductDTO[] = [];
+    for (const turn14Product of turn14Products) {
+      const wcProduct = await this.turn14ToWc(turn14Product);
+      wcProducts.push(wcProduct);
+    }
+
+    return wcProducts;
+  }
+
+  /**
    * Converts a Turn14ProductDTO into a WcCreateProductDTO.
    *
    * @param {Turn14ProductDTO} turn14ProductDto the turn14 product to be
@@ -171,7 +190,6 @@ export class CreateProductWcMapper extends WcMapper {
           wcImageDtos.push(new WcImageDTO(lastLink['url']));
         }
       }
-      // TODO: other types of photos ie Photo - Mounted
     } else if (itemAttributes?.['thumbnail']) {
       wcImageDtos.push(new WcImageDTO(itemAttributes?.['thumbnail']));
     }
@@ -191,8 +209,6 @@ export class CreateProductWcMapper extends WcMapper {
           itemInventoryAttributes
         );
       }
-    } else {
-      // TODO: add special order attribute
     }
 
     return wcInventory;
