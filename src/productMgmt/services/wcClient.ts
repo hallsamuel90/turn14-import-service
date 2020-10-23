@@ -1,3 +1,4 @@
+import { Service } from 'typedi';
 import { Keys } from '../../apiUsers/models/apiUser';
 import { WcRestApi } from '../../woocommerce/clients/wcRestApi';
 import { WcRestApiProvider } from '../../woocommerce/clients/wcRestApiProvider';
@@ -5,6 +6,7 @@ import { WcBatchDTO } from '../../woocommerce/dtos/wcBatchDto';
 import { WcCreateProductDTO } from '../../woocommerce/dtos/wcCreateProductDto';
 import { WcUpdateProductDTO } from '../../woocommerce/dtos/wcUpdateProductDto';
 
+@Service()
 export class WcClient {
   private static readonly DEFAULT_BATCH_SIZE = 50;
 
