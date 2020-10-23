@@ -12,6 +12,8 @@ export class ProductSyncJobScheduler {
 
   private static UPDATE_INVENTORY_SEC = ProductSyncJobScheduler.ONE_HOUR_SEC;
   private static UPDATE_PRICING_SEC = 24 * ProductSyncJobScheduler.ONE_HOUR_SEC;
+  private static NEW_PRODUCT_SYNC_SEC =
+    24 * ProductSyncJobScheduler.ONE_HOUR_SEC;
 
   private readonly productSyncQueueService: ProductSyncQueueService;
 
@@ -49,6 +51,21 @@ export class ProductSyncJobScheduler {
     }, ProductSyncJobScheduler.UPDATE_PRICING_SEC * 1000);
   }
 
+  /**
+   * Schedules the new product sync job to run once per day.
+   */
+  public async scheduleNewProductSync(): Promise<void> {
+    console.info(
+      `⏲️  Scheduling new product sync for all users every ${ProductSyncJobScheduler.NEW_PRODUCT_SYNC_SEC} seconds.`
+    );
+
+    this.pushNewProductSyncJob();
+
+    setInterval(() => {
+      this.pushNewProductSyncJob();
+    }, ProductSyncJobScheduler.NEW_PRODUCT_SYNC_SEC * 1000);
+  }
+
   private pushUpdateInventoryJob(): void {
     const inventoryUpdateJob = new ProductSyncJob(
       ProductSyncJobType.UPDATE_INVENTORY
@@ -63,5 +80,13 @@ export class ProductSyncJobScheduler {
     );
 
     this.productSyncQueueService.enqueue(pricingUpdateJob);
+  }
+
+  private pushNewProductSyncJob(): void {
+    const newProductSyncJob = new ProductSyncJob(
+      ProductSyncJobType.IMPORT_ADDED_PRODUCTS
+    );
+
+    this.productSyncQueueService.enqueue(newProductSyncJob);
   }
 }

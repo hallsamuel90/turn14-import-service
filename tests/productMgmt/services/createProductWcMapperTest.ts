@@ -4,7 +4,7 @@ import { anyString, mock, when } from 'ts-mockito';
 import { WcCategoriesCache } from '../../../src/productMgmt/caches/wcCategoriesCache';
 import { CreateProductWcMapper } from '../../../src/productMgmt/services/createProductWcMapper';
 import { WcCategoryIdDTO } from '../../../src/woocommerce/dtos/wcCategoryIdDto';
-import { WcMapperTestUtil } from './wcMapperTestUtil';
+import { Turn14FakeData } from './turn14FakeData';
 describe('WcMapper tests', () => {
   let instance: CreateProductWcMapper;
 
@@ -26,7 +26,7 @@ describe('WcMapper tests', () => {
 
   describe('#turn14ToWc', () => {
     it('should not return null attributes', async () => {
-      const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
+      const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
 
       const wcCreateProductDto = await instance.turn14ToWc(
         fakeTurn14ProductDto
@@ -36,7 +36,7 @@ describe('WcMapper tests', () => {
     });
 
     it('should not die when itemAttributes is undefined', async () => {
-      const undefinedItemAttributesTurn14ProductDto = WcMapperTestUtil.getUndefinedItemAttributesProductDTO();
+      const undefinedItemAttributesTurn14ProductDto = Turn14FakeData.getUndefinedItemAttributesProductDTO();
 
       const wcCreateProductDto = await instance.turn14ToWc(
         undefinedItemAttributesTurn14ProductDto
@@ -46,7 +46,7 @@ describe('WcMapper tests', () => {
     });
 
     it('should return correctly mapped attributes for WcCreateProductDTO', async () => {
-      const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
+      const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
 
       const wcCreateProductDtoAttributes = await instance.turn14ToWc(
         fakeTurn14ProductDto
@@ -68,7 +68,7 @@ describe('WcMapper tests', () => {
     });
 
     it('should not return null inventory', () => {
-      const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
+      const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
 
       const wcCreateProductDtoInventory = instance.turn14ToWc(
         fakeTurn14ProductDto
@@ -78,7 +78,7 @@ describe('WcMapper tests', () => {
     });
 
     it('should return correctly mapped inventory for WcCreateProductDTO', async () => {
-      const fakeTurn14ProductDto = WcMapperTestUtil.getFakeTurn14ProductDTO();
+      const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
 
       const wcCreateProductDtoInventory = await instance.turn14ToWc(
         fakeTurn14ProductDto

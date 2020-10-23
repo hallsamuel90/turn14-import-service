@@ -6,4 +6,5 @@ export enum ProductSyncJobType {
   REMOVE_BRAND,
   UPDATE_INVENTORY,
   UPDATE_PRICING,
+  IMPORT_ADDED_PRODUCTS,
 }

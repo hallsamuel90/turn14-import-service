@@ -40,6 +40,9 @@ export class ProductSyncJobMarshaller {
       case ProductSyncJobType.UPDATE_PRICING:
         await this.productSyncJobWorker.updateAllPricing();
         break;
+      case ProductSyncJobType.IMPORT_ADDED_PRODUCTS:
+        await this.productSyncJobWorker.importAllNewProducts();
+        break;
       default:
         throw new ProductSyncJobError(
           'Cannot run job with unknown type: ' + jobType
