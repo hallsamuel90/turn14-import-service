@@ -199,17 +199,13 @@ export class CreateProductWcMapper extends WcMapper {
 
   private turn14InventoryToWc(itemInventory: JSON): WcCreateProductDTO {
     const wcInventory = new WcCreateProductDTO();
-    if (itemInventory) {
-      const itemInventoryAttributes = itemInventory['attributes'];
+    wcInventory.manage_stock = true;
+    wcInventory.backorders = 'notify';
 
-      if (itemInventoryAttributes) {
-        wcInventory.manage_stock = true;
-        wcInventory.backorders = 'notify';
-        wcInventory.stock_quantity = this.calculateTurn14StockQuantity(
-          itemInventoryAttributes
-        );
-      }
-    }
+    const itemInventoryAttributes = itemInventory?.['attributes'];
+    wcInventory.stock_quantity = this.calculateTurn14StockQuantity(
+      itemInventoryAttributes
+    );
 
     return wcInventory;
   }
