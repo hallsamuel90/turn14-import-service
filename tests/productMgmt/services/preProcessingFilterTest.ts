@@ -1,11 +1,39 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { expect } from 'chai';
 import { PreProcessingFilter } from '../../../src/productMgmt/services/preProcessingFilter';
 import { WcCreateProductDTO } from '../../../src/woocommerce/dtos/wcCreateProductDto';
+import { WcUpdateInventoryDTO } from '../../../src/woocommerce/dtos/wcUpdateInventoryDto';
 describe('PreProcessingFilter tests', () => {
   let preProcessingFilter: PreProcessingFilter;
 
   beforeEach(() => {
     preProcessingFilter = new PreProcessingFilter();
+  });
+
+  describe('#filterUnchangedInventory', () => {
+    it("should filter out any products who's inventories have not changed", () => {
+      const fakeUpdateInventoryProduct1 = new WcUpdateInventoryDTO('1', 3);
+      const fakeUpdateInventoryProduct2 = new WcUpdateInventoryDTO('2', 4);
+
+      const fakeUpdateInventoryProducts = [
+        fakeUpdateInventoryProduct1,
+        fakeUpdateInventoryProduct2,
+      ];
+
+      const fakeExistingProduct1 = ({
+        sku: '1',
+        stock_quantity: 3,
+      } as unknown) as JSON;
+      const fakeExistingProducts = [fakeExistingProduct1];
+
+      const actual = preProcessingFilter.filterUnchangedInventory(
+        fakeUpdateInventoryProducts,
+        fakeExistingProducts
+      );
+
+      expect(actual).to.contain.members([fakeUpdateInventoryProduct2]);
+      expect(actual.length).to.eq(1);
+    });
   });
 
   describe('#filterExistingProducts', () => {
