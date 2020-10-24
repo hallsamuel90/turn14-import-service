@@ -295,19 +295,19 @@ export class Turn14RestApi {
           page: pageNumber,
         },
       });
+
       return response.data.data;
     } catch (e) {
-      if (e.response.status != undefined) {
-        if (e.response.status == 401) {
-          console.error(INVALID_CREDENTIALS);
-          await this.authenticate();
-          await this.fetchBrandItems(brandId, pageNumber);
-        }
+      if (e.response?.status == 401) {
+        console.error(INVALID_CREDENTIALS);
+
+        await this.authenticate();
+        await this.fetchBrandItems(brandId, pageNumber);
       } else {
         console.error('🔥 ' + e);
 
         throw new Turn14Error(
-          'fetchBrandInventory(), something went wrong communicating with Turn14.'
+          'Something went wrong communicating with Turn14.'
         );
       }
     }
