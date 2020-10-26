@@ -81,11 +81,11 @@ export class Turn14RestApi {
     while (true) {
       const responseData = await this.getRequest(resource, i);
 
+      allData = allData.concat(responseData['data']);
+
       if (this.isDonePaging(i, responseData['meta'])) {
         break;
       }
-
-      allData = allData.concat(responseData['data']);
 
       i++;
     }
