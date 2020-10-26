@@ -52,7 +52,7 @@ export class ProductMgmtService {
       pmgmtDto.wcKeys
     ) as CreateProductWcMapper;
 
-    const turn14Products = await this.turn14Client.getTurn14ProductsByBrand(
+    const turn14Products = await this.turn14Client.getProductsByBrand(
       pmgmtDto.turn14Keys,
       pmgmtDto.brandId
     );
@@ -149,7 +149,7 @@ export class ProductMgmtService {
       WcMapperType.UPDATE_INVENTORY
     ) as UpdateInventoryWcMapper;
 
-    const turn14Products = await this.turn14Client.getTurn14ProductsByBrand(
+    const turn14Products = await this.turn14Client.getProductsByBrand(
       apiUser.turn14Keys,
       brandId
     );
@@ -184,7 +184,7 @@ export class ProductMgmtService {
       WcMapperType.UPDATE_PRICING
     ) as UpdatePricingWcMapper;
 
-    const turn14Products = await this.turn14Client.getTurn14ProductsByBrand(
+    const turn14Products = await this.turn14Client.getProductsByBrand(
       apiUser.turn14Keys,
       brandId
     );
@@ -215,7 +215,7 @@ export class ProductMgmtService {
     apiUser: ApiUser,
     activeBrand: string
   ): Promise<void> {
-    const turn14Products = await this.turn14Client.getTurn14ProductsByBrand(
+    const turn14Products = await this.turn14Client.getProductsByBrand(
       apiUser.turn14Keys,
       activeBrand
     );
