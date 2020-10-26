@@ -1,10 +1,10 @@
 import _, { Dictionary } from 'lodash';
 import { Service } from 'typedi';
 import { Keys } from '../../apiUsers/models/apiUser';
-import { Turn14RestApi } from '../../turn14/clients/turn14RestApi';
-import { Turn14RestApiProvider } from '../../turn14/clients/turn14RestApiProvider';
-import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
-import { Turn14Brand } from '../../turn14/interfaces/turn14Brand';
+import { Turn14RestApi } from './turn14RestApi';
+import { Turn14RestApiProvider } from './turn14RestApiProvider';
+import { Turn14ProductDTO } from '../dtos/turn14ProductDto';
+import { Turn14Brand } from '../interfaces/turn14Brand';
 
 /**
  * Turn14Client for retrieving data from Turn14.
