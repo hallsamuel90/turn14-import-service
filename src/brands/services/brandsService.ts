@@ -1,16 +1,12 @@
 import { Service } from 'typedi';
 import { ApiUser } from '../../apiUsers/models/apiUser';
-import { Turn14Client } from '../../productMgmt/services/turn14Client';
+import { Turn14Client } from '../../turn14/clients/turn14Client';
 import { BrandDTO } from '../dtos/brandDto';
 import { BrandMapper } from './brandMapper';
 
 /**
- * BrandsService.
- *
- * Facade for fetching turn14 brands, converting them, and publishing to the
- * brands service.
- *
- * @author Sam Hall <hallsamuel90@gmail.com>
+ * BrandsService retrieves brands from Turn14 and coverts them into the appropriate
+ * format.
  */
 @Service()
 export class BrandsService {
@@ -27,8 +23,9 @@ export class BrandsService {
    * appropriate format.
    *
    * @param {ApiUser} apiUser the api user used for identification.
+   * @returns {Promise<BrandDTO[]>} a list of brands for the user.
    */
-  async retrieveBrands(apiUser: ApiUser): Promise<BrandDTO[]> {
+  public async retrieveBrands(apiUser: ApiUser): Promise<BrandDTO[]> {
     const turn14Brands = await this.turn14Client.getBrands(apiUser.turn14Keys);
 
     return this.brandMapper.turn14ToBrands(
