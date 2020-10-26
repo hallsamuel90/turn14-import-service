@@ -42,4 +42,32 @@ export class BrandDTO {
     this.firstPublished = firstPublished;
     this.lastUpdated = lastUpdated;
   }
+
+  public getUserId(): string {
+    return this.userId;
+  }
+
+  public getSiteId(): string {
+    return this.siteId;
+  }
+
+  public getBrandId(): string {
+    return this.brandId;
+  }
+
+  public getBrandName(): string {
+    return this.brandName;
+  }
+
+  public isActive(): boolean {
+    return this.active;
+  }
+
+  public getFirstPublished(): Date {
+    return this.firstPublished;
+  }
+
+  public getLastUpdated(): Date {
+    return this.lastUpdated;
+  }
 }

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Turn14ProductDTO } from '../../../src/turn14/dtos/turn14ProductDto';
+import { Turn14Brand } from '../../../src/turn14/interfaces/turn14Brand';
 
 /**
  * Turn14FakeData.
@@ -12,7 +13,7 @@ export class Turn14FakeData {
    *
    * @returns {Turn14ProductDTO} the created Turn14ProductDTO.
    */
-  static getFakeTurn14ProductDTO(): Turn14ProductDTO {
+  public static getFakeTurn14ProductDTO(): Turn14ProductDTO {
     const fakeItem = this.getFakeItem();
     const fakeItemData = this.getFakeItemData();
     const fakeItemPricing = this.getFakeItemPricing();
@@ -31,7 +32,7 @@ export class Turn14FakeData {
    *
    * @returns {Turn14ProductDTO} the created Turn14ProductDTO.
    */
-  static getUndefinedItemAttributesProductDTO(): Turn14ProductDTO {
+  public static getUndefinedItemAttributesProductDTO(): Turn14ProductDTO {
     const undefinedItemAttributesItem = this.getUndefinedAttributesItem();
     const fakeItemData = this.getFakeItemData();
     const fakeItemPricing = this.getFakeItemPricing();
@@ -92,6 +93,22 @@ export class Turn14FakeData {
 
     const jsonString = JSON.stringify(fakeItem);
     return JSON.parse(jsonString);
+  }
+
+  public static getFakeBrands(): Turn14Brand[] {
+    const brandsJson = [
+      {
+        id: '212',
+        type: 'Brand',
+        attributes: {
+          name: 'ACL',
+
+          AAIA: ['BBBV'],
+        },
+      },
+    ];
+
+    return brandsJson as Turn14Brand[];
   }
 
   private static getUndefinedAttributesItem(): JSON {
