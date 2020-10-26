@@ -6,7 +6,7 @@ import { WcUpdatePricingDTO } from '../../woocommerce/dtos/wcUpdatePricingDto';
 import { PmgmtDTO } from '../dtos/pmgmtDto';
 import { CreateProductWcMapper } from './createProductWcMapper';
 import { PreProcessingFilter } from './preProcessingFilter';
-import { Turn14Client } from './turn14Client';
+import { Turn14Client } from '../../turn14/clients/turn14Client';
 import { UpdateInventoryWcMapper } from './updateInventoryWcMapper';
 import { UpdatePricingWcMapper } from './updatePricingWcMapper';
 import { WcClient } from './wcClient';
