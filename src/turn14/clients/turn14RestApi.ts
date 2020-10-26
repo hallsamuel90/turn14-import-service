@@ -24,7 +24,7 @@ export class Turn14RestApi {
   public async fetchBrands(): Promise<JSON[]> {
     const BRANDS_RESOURCE = 'brands';
 
-    return await this.getRequest(BRANDS_RESOURCE);
+    return await this.getRequest(BRANDS_RESOURCE)?.['data'];
   }
 
   /**
@@ -79,13 +79,13 @@ export class Turn14RestApi {
     let allData: JSON[] = [];
     let i = 1;
     while (true) {
-      const pageData = await this.getRequest(resource, i);
+      const responseData = await this.getRequest(resource, i);
 
-      if (this.isDonePaging(pageData)) {
+      if (this.isDonePaging(i, responseData['meta'])) {
         break;
       }
 
-      allData = allData.concat(pageData);
+      allData = allData.concat(responseData['data']);
 
       i++;
     }
@@ -93,21 +93,18 @@ export class Turn14RestApi {
     return allData;
   }
 
-  private async getRequest(resource: string): Promise<JSON[]>;
+  private async getRequest(resource: string): Promise<JSON>;
 
-  private async getRequest(
-    resource: string,
-    pageNumber: number
-  ): Promise<JSON[]>;
+  private async getRequest(resource: string, pageNumber: number): Promise<JSON>;
 
   private async getRequest(
     resource: string,
     pageNumber?: number
-  ): Promise<JSON[]> {
+  ): Promise<JSON> {
     try {
       const response = await this.get(pageNumber, resource);
 
-      return response.data?.['data'];
+      return response.data;
     } catch (e) {
       const errorJsonString = JSON.stringify(e.toJSON());
 
@@ -120,8 +117,8 @@ export class Turn14RestApi {
   private async get(
     pageNumber: number | undefined,
     resource: string
-  ): Promise<AxiosResponse<JSON[]>> {
-    let response: AxiosResponse<JSON[]>;
+  ): Promise<AxiosResponse<JSON>> {
+    let response: AxiosResponse<JSON>;
     if (pageNumber) {
       response = await this.axiosClient.get(resource, {
         params: {
@@ -135,7 +132,7 @@ export class Turn14RestApi {
     return response;
   }
 
-  private isDonePaging(pageData: JSON[]): boolean {
-    return !Array.isArray(pageData) || !pageData.length;
+  private isDonePaging(i: number, meta: JSON): boolean {
+    return i == meta['total_pages'];
   }
 }
