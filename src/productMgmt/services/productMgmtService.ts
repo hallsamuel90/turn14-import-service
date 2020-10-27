@@ -130,7 +130,7 @@ export class ProductMgmtService {
       pmgmtDto.brandId
     );
 
-    const productIds: number[] = _.map(brandProducts, 'id');
+    const productIds: number[] = this.extractProductIds(brandProducts);
 
     this.wcClient.postBatchDeleteWcProducts(
       pmgmtDto.siteUrl,
@@ -139,6 +139,17 @@ export class ProductMgmtService {
     );
 
     console.info('👍 Deletion complete!');
+  }
+
+  public async removeStaleProducts(apiUser: ApiUser): Promise<void> {
+    console.info('🔨 Stale product deletion job starting!');
+
+    const activeBrands = apiUser.brandIds;
+    for (const activeBrand of activeBrands) {
+      await this.removeStaleProductsForBrand(apiUser, activeBrand);
+    }
+
+    console.info('👍 Stale product removal complete!');
   }
 
   private async updateInventoryForBrand(
@@ -244,5 +255,36 @@ export class ProductMgmtService {
       apiUser.wcKeys,
       filteredWcCreateProductsDtos
     );
+  }
+
+  private async removeStaleProductsForBrand(
+    apiUser: ApiUser,
+    activeBrand: string
+  ): Promise<void> {
+    const turn14Products = await this.turn14Client.getProductsByBrand(
+      apiUser.turn14Keys,
+      activeBrand
+    );
+
+    const fetchedWcProducts = await this.wcClient.getWcProductsByBrand(
+      apiUser.siteUrl,
+      apiUser.wcKeys,
+      activeBrand
+    );
+
+    const removedProducts = this.preProcessingFilter.filterCarriedProducts(
+      turn14Products,
+      fetchedWcProducts
+    );
+
+    this.wcClient.postBatchDeleteWcProducts(
+      apiUser.siteUrl,
+      apiUser.wcKeys,
+      removedProducts
+    );
+  }
+
+  private extractProductIds(fetchedWcProducts: JSON[]): number[] {
+    return _.map(fetchedWcProducts, 'id');
   }
 }

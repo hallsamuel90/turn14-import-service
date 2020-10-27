@@ -6,6 +6,8 @@ import { ApiUser } from '../../apiUsers/models/apiUser';
 import { ProductSyncJobError } from '../errors/productSyncJobError';
 import { Service } from 'typedi';
 
+type ProductMgmtServiceCallback = (apiUser: ApiUser) => Promise<void>;
+
 /**
  * Runs jobs.
  */
@@ -53,7 +55,10 @@ export class ProductSyncJobWorker {
     const apiUsers = await this.apiUserService.retrieveAll();
 
     for (const apiUser of apiUsers) {
-      await this.processInventoryUpdate(apiUser);
+      await this.processIfUserHasActiveBrands(
+        apiUser,
+        this.productMgmtService.updateUserActiveInventory
+      );
     }
   }
 
@@ -64,7 +69,10 @@ export class ProductSyncJobWorker {
     const apiUsers = await this.apiUserService.retrieveAll();
 
     for (const apiUser of apiUsers) {
-      await this.processPricingUpdate(apiUser);
+      await this.processIfUserHasActiveBrands(
+        apiUser,
+        this.productMgmtService.updateUserActivePricing
+      );
     }
   }
 
@@ -75,7 +83,25 @@ export class ProductSyncJobWorker {
     const apiUsers = await this.apiUserService.retrieveAll();
 
     for (const apiUser of apiUsers) {
-      await this.processImportNewProducts(apiUser);
+      await this.processIfUserHasActiveBrands(
+        apiUser,
+        this.productMgmtService.importNewProducts
+      );
+    }
+  }
+
+  /**
+   * Removes discontinued or products that are no longer carried for each
+   * apiUser's active brands.
+   */
+  public async removeAllStaleProducts(): Promise<void> {
+    const apiUsers = await this.apiUserService.retrieveAll();
+
+    for (const apiUser of apiUsers) {
+      await this.processIfUserHasActiveBrands(
+        apiUser,
+        this.productMgmtService.removeStaleProducts
+      );
     }
   }
 
@@ -173,21 +199,12 @@ export class ProductSyncJobWorker {
     return false;
   }
 
-  private async processInventoryUpdate(apiUser: ApiUser): Promise<void> {
+  private async processIfUserHasActiveBrands(
+    apiUser: ApiUser,
+    pmgmtServiceCallback: ProductMgmtServiceCallback
+  ): Promise<void> {
     if (this.userHasActiveBrands(apiUser)) {
-      await this.productMgmtService.updateUserActiveInventory(apiUser);
-    }
-  }
-
-  private async processPricingUpdate(apiUser: ApiUser): Promise<void> {
-    if (this.userHasActiveBrands(apiUser)) {
-      await this.productMgmtService.updateUserActivePricing(apiUser);
-    }
-  }
-
-  private async processImportNewProducts(apiUser: ApiUser): Promise<void> {
-    if (this.userHasActiveBrands(apiUser)) {
-      await this.productMgmtService.importNewProducts(apiUser);
+      await pmgmtServiceCallback(apiUser);
     }
   }
 }

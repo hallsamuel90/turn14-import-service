@@ -3,6 +3,8 @@ import { expect } from 'chai';
 import { PreProcessingFilter } from '../../../src/productMgmt/services/preProcessingFilter';
 import { WcCreateProductDTO } from '../../../src/woocommerce/dtos/wcCreateProductDto';
 import { WcUpdateInventoryDTO } from '../../../src/woocommerce/dtos/wcUpdateInventoryDto';
+import { Turn14FakeData } from './turn14FakeData';
+
 describe('PreProcessingFilter tests', () => {
   let preProcessingFilter: PreProcessingFilter;
 
@@ -93,6 +95,76 @@ describe('PreProcessingFilter tests', () => {
         fakeCreateProduct2,
       ]);
       expect(actual.length).to.eq(2);
+    });
+  });
+
+  describe('#filterCarriedProducts', () => {
+    it('should return an empty array if all products are carried', () => {
+      const fakeTurn14Product1 = Turn14FakeData.getFakeTurn14ProductDTO('mf01');
+      const fakeTurn14Product2 = Turn14FakeData.getFakeTurn14ProductDTO('mf02');
+      const fakeTurn14Products = [fakeTurn14Product1, fakeTurn14Product2];
+
+      const fakeExistingProduct1 = ({
+        id: '1',
+        sku: 'mf01',
+      } as unknown) as JSON;
+      const fakeExistingProduct2 = ({
+        id: '2',
+        sku: 'mf02',
+      } as unknown) as JSON;
+      const fakeExistingProducts = [fakeExistingProduct1, fakeExistingProduct2];
+
+      const actual = preProcessingFilter.filterCarriedProducts(
+        fakeTurn14Products,
+        fakeExistingProducts
+      );
+
+      expect(actual).to.be.an('array').that.is.empty;
+    });
+
+    it('should return the all products if they are all no longer carried', () => {
+      const fakeTurn14Products = [];
+
+      const fakeExistingProduct1 = ({
+        id: '1',
+        sku: 'mf01',
+      } as unknown) as JSON;
+      const fakeExistingProduct2 = ({
+        id: '2',
+        sku: 'mf02',
+      } as unknown) as JSON;
+      const fakeExistingProducts = [fakeExistingProduct1, fakeExistingProduct2];
+
+      const actual = preProcessingFilter.filterCarriedProducts(
+        fakeTurn14Products,
+        fakeExistingProducts
+      );
+
+      expect(actual).to.contain.members(['1', '2']);
+      expect(actual.length).to.eq(2);
+    });
+
+    it('should filter out any products that are no longer carried', () => {
+      const fakeTurn14Product1 = Turn14FakeData.getFakeTurn14ProductDTO('mf01');
+      const fakeTurn14Products = [fakeTurn14Product1];
+
+      const fakeExistingProduct1 = ({
+        id: '1',
+        sku: 'mf01',
+      } as unknown) as JSON;
+      const fakeExistingProduct2 = ({
+        id: '2',
+        sku: 'mf02',
+      } as unknown) as JSON;
+      const fakeExistingProducts = [fakeExistingProduct1, fakeExistingProduct2];
+
+      const actual = preProcessingFilter.filterCarriedProducts(
+        fakeTurn14Products,
+        fakeExistingProducts
+      );
+
+      expect(actual).to.contain.members(['2']);
+      expect(actual.length).to.eq(1);
     });
   });
 });

@@ -8,13 +8,17 @@ import { Turn14Brand } from '../../../src/turn14/interfaces/turn14Brand';
  * Provides utility methods for testing.
  */
 export class Turn14FakeData {
+  public static getFakeTurn14ProductDTO(): Turn14ProductDTO;
+  public static getFakeTurn14ProductDTO(sku): Turn14ProductDTO;
+
   /**
    * Returns a new Turn14ProductDTO populated with fake data.
    *
+   * @param {string} partNumber optionally specified partNumber id.
    * @returns {Turn14ProductDTO} the created Turn14ProductDTO.
    */
-  public static getFakeTurn14ProductDTO(): Turn14ProductDTO {
-    const fakeItem = this.getFakeItem();
+  public static getFakeTurn14ProductDTO(partNumber?: string): Turn14ProductDTO {
+    const fakeItem = this.getFakeItem(partNumber);
     const fakeItemData = this.getFakeItemData();
     const fakeItemPricing = this.getFakeItemPricing();
     const fakeItemInventory = this.getFakeItemInventory();
@@ -46,14 +50,14 @@ export class Turn14FakeData {
     );
   }
 
-  private static getFakeItem(): JSON {
+  private static getFakeItem(partNumber?: string): JSON {
     const fakeItem = {
       id: '10030',
       type: 'Item',
       attributes: {
         product_name: 'DBA 4000 Slot&Drill Rotors',
         part_number: 'DBA4583XS',
-        mfr_part_number: '4583XS',
+        mfr_part_number: partNumber || '4583XS',
         part_description:
           'DBA 92-95 MR-2 Turbo Rear Drilled & Slotted 4000 Series Rotor',
         category: 'Brake',
