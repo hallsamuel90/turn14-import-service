@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import https from 'https';
 import _, { Dictionary } from 'lodash';
 import { WcBatchDTO } from '../dtos/wcBatchDto';
@@ -102,13 +102,10 @@ export class WcRestApi {
           page: pageNumber,
         },
       });
+
       return response.data;
     } catch (e) {
-      console.error('🔥 ' + e);
-
-      throw new WcError(
-        'fetchCategories(), something went wrong communicating with WooCommerce.'
-      );
+      throw this.buildWcError(e);
     }
   }
 
@@ -129,6 +126,7 @@ export class WcRestApi {
       allData = allData.concat(pageData);
       i++;
     }
+
     return _.keyBy(allData, 'name');
   }
 
@@ -148,13 +146,10 @@ export class WcRestApi {
           },
         }
       );
+
       return response.data;
     } catch (e) {
-      console.error('🔥 ' + e);
-
-      throw new WcError(
-        'fetchCategories(), something went wrong communicating with WooCommerce.'
-      );
+      throw this.buildWcError(e);
     }
   }
 
@@ -173,11 +168,15 @@ export class WcRestApi {
       );
       return response.data;
     } catch (e) {
-      console.error('🔥 ' + e);
-
-      throw new WcError(
-        'createCategory(), something went wrong communicating with WooCommerce.'
-      );
+      throw this.buildWcError(e);
     }
+  }
+
+  private buildWcError(e: AxiosError): WcError {
+    const errorJsonString = JSON.stringify(e.toJSON());
+
+    return new WcError(
+      `Something went wrong communicating with WooCommerce. ${errorJsonString}`
+    );
   }
 }
