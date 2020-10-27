@@ -55,10 +55,7 @@ export class ProductSyncJobWorker {
     const apiUsers = await this.apiUserService.retrieveAll();
 
     for (const apiUser of apiUsers) {
-      await this.processIfUserHasActiveBrands(
-        apiUser,
-        this.productMgmtService.updateUserActiveInventory
-      );
+      await this.processInventoryUpdate(apiUser);
     }
   }
 
@@ -69,10 +66,7 @@ export class ProductSyncJobWorker {
     const apiUsers = await this.apiUserService.retrieveAll();
 
     for (const apiUser of apiUsers) {
-      await this.processIfUserHasActiveBrands(
-        apiUser,
-        this.productMgmtService.updateUserActivePricing
-      );
+      await this.processPricingUpdate(apiUser);
     }
   }
 
@@ -83,10 +77,7 @@ export class ProductSyncJobWorker {
     const apiUsers = await this.apiUserService.retrieveAll();
 
     for (const apiUser of apiUsers) {
-      await this.processIfUserHasActiveBrands(
-        apiUser,
-        this.productMgmtService.importNewProducts
-      );
+      await this.processImportNewProducts(apiUser);
     }
   }
 
@@ -98,10 +89,7 @@ export class ProductSyncJobWorker {
     const apiUsers = await this.apiUserService.retrieveAll();
 
     for (const apiUser of apiUsers) {
-      await this.processIfUserHasActiveBrands(
-        apiUser,
-        this.productMgmtService.removeStaleProducts
-      );
+      await this.processRemoveStaleProducts(apiUser);
     }
   }
 
@@ -199,12 +187,27 @@ export class ProductSyncJobWorker {
     return false;
   }
 
-  private async processIfUserHasActiveBrands(
-    apiUser: ApiUser,
-    pmgmtServiceCallback: ProductMgmtServiceCallback
-  ): Promise<void> {
+  private async processInventoryUpdate(apiUser: ApiUser): Promise<void> {
     if (this.userHasActiveBrands(apiUser)) {
-      await pmgmtServiceCallback(apiUser);
+      await this.productMgmtService.updateUserActiveInventory(apiUser);
+    }
+  }
+
+  private async processPricingUpdate(apiUser: ApiUser): Promise<void> {
+    if (this.userHasActiveBrands(apiUser)) {
+      await this.productMgmtService.updateUserActivePricing(apiUser);
+    }
+  }
+
+  private async processImportNewProducts(apiUser: ApiUser): Promise<void> {
+    if (this.userHasActiveBrands(apiUser)) {
+      await this.productMgmtService.importNewProducts(apiUser);
+    }
+  }
+
+  private async processRemoveStaleProducts(apiUser: ApiUser): Promise<void> {
+    if (this.userHasActiveBrands(apiUser)) {
+      await this.productMgmtService.removeStaleProducts(apiUser);
     }
   }
 }
