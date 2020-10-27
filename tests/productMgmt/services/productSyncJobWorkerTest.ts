@@ -348,4 +348,58 @@ describe('ProductSyncJobWorker tests', () => {
       verify(mockProductMgmtService.importNewProducts(fakeApiUser2)).once();
     });
   });
+
+  describe('#removeStaleProducts', async () => {
+    it('should not call productMgmtService if there are not any users.', async () => {
+      const emptyApiUsers: ApiUser[] = [];
+
+      when(mockApiUserService.retrieveAll()).thenResolve(emptyApiUsers);
+
+      await productSyncJobWorker.removeAllStaleProducts();
+
+      const anyApiUser = (anything as unknown) as ApiUser;
+
+      verify(mockProductMgmtService.removeStaleProducts(anyApiUser)).never();
+    });
+
+    it('should not call productMgmtService if the user does not have any active brands.', async () => {
+      const fakeApiUser = ({ brandIds: [] } as unknown) as ApiUser;
+
+      const apiUsers: ApiUser[] = [fakeApiUser];
+      when(mockApiUserService.retrieveAll()).thenResolve(apiUsers);
+
+      await productSyncJobWorker.removeAllStaleProducts();
+
+      verify(mockProductMgmtService.removeStaleProducts(fakeApiUser)).never();
+    });
+
+    it("should not call productMgmtService if the user's active brands property is missing.", async () => {
+      const fakeApiUser = ({} as unknown) as ApiUser;
+
+      const apiUsers: ApiUser[] = [fakeApiUser];
+      when(mockApiUserService.retrieveAll()).thenResolve(apiUsers);
+
+      await productSyncJobWorker.removeAllStaleProducts();
+
+      verify(mockProductMgmtService.removeStaleProducts(fakeApiUser)).never();
+    });
+
+    it('should call productMgmtService when a user has active brands to update.', async () => {
+      const fakeApiUser1 = ({
+        brandIds: ['fakeBrandId1', 'fakeBrandId2'],
+      } as unknown) as ApiUser;
+
+      const fakeApiUser2 = ({
+        brandIds: ['fakeBrandId1', 'fakeBrandId2'],
+      } as unknown) as ApiUser;
+
+      const apiUsers: ApiUser[] = [fakeApiUser1, fakeApiUser2];
+      when(mockApiUserService.retrieveAll()).thenResolve(apiUsers);
+
+      await productSyncJobWorker.removeAllStaleProducts();
+
+      verify(mockProductMgmtService.removeStaleProducts(fakeApiUser1)).once();
+      verify(mockProductMgmtService.removeStaleProducts(fakeApiUser2)).once();
+    });
+  });
 });

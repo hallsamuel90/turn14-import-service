@@ -1,4 +1,5 @@
 import _, { Dictionary } from 'lodash';
+import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
 import { WcCreateProductDTO } from '../../woocommerce/dtos/wcCreateProductDto';
 import { WcUpdateInventoryDTO } from '../../woocommerce/dtos/wcUpdateInventoryDto';
 import { WcUpdatePricingDTO } from '../../woocommerce/dtos/wcUpdatePricingDto';
@@ -73,6 +74,32 @@ export class PreProcessingFilter {
     return filteredWcProducts;
   }
 
+  /**
+   * Filters out products that are still carried, returning those that are deemed
+   * stale.
+   *
+   * @param {Turn14ProductDTO[]} turn14Products the products that turn14 carries.
+   * @param { JSON[] } existingWcProducts the existing products to compare against.
+   * @returns {number[]} the id's of the products that are no longer carried.
+   */
+  public filterCarriedProducts(
+    turn14Products: Turn14ProductDTO[],
+    existingWcProducts: JSON[]
+  ): number[] {
+    const turn14ProductsBySku: Dictionary<Turn14ProductDTO> = this.keyProductsByMfrPartNumber(
+      turn14Products
+    );
+
+    const removedProducts: number[] = [];
+    for (const existingWcProduct of existingWcProducts) {
+      if (!this.doesTurn14Carry(turn14ProductsBySku, existingWcProduct)) {
+        removedProducts.push(existingWcProduct['id']);
+      }
+    }
+
+    return removedProducts;
+  }
+
   private stockHasChanged(
     wcUpdateInventoryDto: WcUpdateInventoryDTO,
     wcProducts: JSON[]
@@ -116,5 +143,20 @@ export class PreProcessingFilter {
     }
 
     return false;
+  }
+
+  private doesTurn14Carry(
+    turn14ProductsBySku: Dictionary<Turn14ProductDTO>,
+    wcProduct: JSON
+  ): boolean {
+    return turn14ProductsBySku[wcProduct['sku']] != undefined;
+  }
+
+  private keyProductsByMfrPartNumber(
+    turn14Products: Turn14ProductDTO[]
+  ): _.Dictionary<Turn14ProductDTO> {
+    return _.keyBy(turn14Products, (turn14ProductDto) => {
+      return turn14ProductDto.item?.['attributes']?.['mfr_part_number'];
+    }) as Dictionary<Turn14ProductDTO>;
   }
 }
