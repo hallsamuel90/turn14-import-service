@@ -53,7 +53,7 @@ describe('WcMapper tests', () => {
       );
 
       expect(wcCreateProductDtoAttributes.name).to.equal(
-        'DBA 4000 Slot&Drill Rotors'
+        'DBA 92-95 MR-2 Turbo Rear Drilled & Slotted 4000 Series Rotor'
       );
       expect(wcCreateProductDtoAttributes.type).to.equal('simple');
       expect(wcCreateProductDtoAttributes.shortDescription).to.equal(
@@ -87,6 +87,18 @@ describe('WcMapper tests', () => {
       expect(wcCreateProductDtoInventory.manage_stock).to.equal(true);
       expect(wcCreateProductDtoInventory.backorders).to.equal('notify');
       expect(wcCreateProductDtoInventory.stock_quantity).to.equal(7);
+    });
+
+    it('should return WcCreateProductDTO using the short description if no other is available', async () => {
+      const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTONoLongDescription();
+
+      const wcCreateProductDtoInventory = await instance.turn14ToWc(
+        fakeTurn14ProductDto
+      );
+
+      expect(wcCreateProductDtoInventory.description).to.equal(
+        'Baja Designs 40in OnX6 Racer Arc Series Driving Pattern Wide LED Light Bar'
+      );
     });
   });
 });
