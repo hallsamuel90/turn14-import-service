@@ -32,6 +32,18 @@ export class Turn14FakeData {
   }
 
   /**
+   * Returns a new Turn14ProductDTO populated with fake data.
+   *
+   * @returns {Turn14ProductDTO} the created Turn14ProductDTO.
+   */
+  public static getFakeTurn14ProductDTONoLongDescription(): Turn14ProductDTO {
+    const turn14Product = this.getFakeTurn14ProductDTO();
+    turn14Product.itemData = this.getFakeItemDataNoLongDescription();
+
+    return turn14Product;
+  }
+
+  /**
    * Returns a new Turn14ProductDTO populated with arbitrary fox brand data.
    *
    * @returns {Turn14ProductDTO} the created Turn14ProductDTO.
@@ -150,6 +162,13 @@ export class Turn14FakeData {
               width: 200,
               asset_size: 'M',
             },
+            {
+              url:
+                'https://d32vzsop7y1h3k.cloudfront.net/40df3ff8361b556415ce2df87ac9c9ee.JPG',
+              height: 132,
+              width: 200,
+              asset_size: 'L',
+            },
           ],
         },
         {
@@ -175,6 +194,73 @@ export class Turn14FakeData {
           type: 'Product Description - Long',
           description:
             'Cylinder Head; BB Chrysler; Performer RPM; 440ci; 88cc Chamber; For Hydraulic Ro',
+        },
+      ],
+      relationships: {
+        vehicle_fitments: {
+          links: {
+            self: '/v1/items/fitment/1234567',
+          },
+        },
+      },
+    };
+
+    const jsonString = JSON.stringify(fakeItemData);
+    return JSON.parse(jsonString);
+  }
+
+  private static getFakeItemDataNoLongDescription(): JSON {
+    const fakeItemData = {
+      id: '10030',
+      type: 'ProductData',
+      files: [
+        {
+          id: 123456780,
+          type: 'Image',
+          file_extension: 'JPG',
+          media_content: 'Photo - Primary',
+          links: [
+            {
+              url:
+                'https://d32vzsop7y1h3k.cloudfront.net/40df3ff8361b556415ce2df87ac9c9ee.JPG',
+              height: 66,
+              width: 100,
+              asset_size: 'S',
+            },
+            {
+              url:
+                'https://d32vzsop7y1h3k.cloudfront.net/40df3ff8361b556415ce2df87ac9c9ee.JPG',
+              height: 132,
+              width: 200,
+              asset_size: 'M',
+            },
+            {
+              url:
+                'https://d32vzsop7y1h3k.cloudfront.net/40df3ff8361b556415ce2df87ac9c9ee.JPG',
+              height: 132,
+              width: 200,
+              asset_size: 'L',
+            },
+          ],
+        },
+        {
+          id: 123456781,
+          type: 'Other',
+          file_extension: 'PDF',
+          media_content: 'Instruction Manual',
+          links: [
+            {
+              url:
+                'https://d32vzsop7y1h3k.cloudfront.net/40df3ff8361b556415ce2df87ac9c9ee.PDF',
+            },
+          ],
+        },
+      ],
+      descriptions: [
+        {
+          type: 'Product Description - Short',
+          description:
+            'Baja Designs 40in OnX6 Racer Arc Series Driving Pattern Wide LED Light Bar',
         },
       ],
       relationships: {

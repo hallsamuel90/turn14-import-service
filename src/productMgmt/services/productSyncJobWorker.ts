@@ -6,8 +6,6 @@ import { ApiUser } from '../../apiUsers/models/apiUser';
 import { ProductSyncJobError } from '../errors/productSyncJobError';
 import { Service } from 'typedi';
 
-type ProductMgmtServiceCallback = (apiUser: ApiUser) => Promise<void>;
-
 /**
  * Runs jobs.
  */
