@@ -16,10 +16,18 @@ export class WcClient {
     this.wcRestApiProvider = wcRestApiProvider;
   }
 
+  /**
+   * Fetches the WooCommerce products for a given brand.
+   *
+   * @param {string} siteUrl the url of the store.
+   * @param {Keys} wcApiKeys the keys to the store.
+   * @param {string} brandId the id of the brand.
+   * @returns {Promise<JSON[]>} of products.
+   */
   public async getWcProductsByBrand(
     siteUrl: string,
     wcApiKeys: Keys,
-    activeBrand: string
+    brandId: string
   ): Promise<JSON[]> {
     const wcRestApi = this.wcRestApiProvider.getWcRestApi(
       siteUrl,
@@ -27,9 +35,16 @@ export class WcClient {
       wcApiKeys.secret
     );
 
-    return await wcRestApi.fetchAllProductsByBrand(activeBrand);
+    return await wcRestApi.fetchAllProductsByBrand(brandId);
   }
 
+  /**
+   * Posts a batch of products to be created.
+   *
+   * @param {string} siteUrl the url of the store.
+   * @param {Keys} wcApiKeys the keys to the store.
+   * @param {WcCreateProductDTO} wcCreateProductDtos the products to be created.
+   */
   public async postBatchCreateWcProducts(
     siteUrl: string,
     wcApiKeys: Keys,
@@ -55,6 +70,13 @@ export class WcClient {
     await this.pushRemainingProducts(productBatch, wcRestApi);
   }
 
+  /**
+   * Posts a batch of products to be deleted.
+   *
+   * @param {string} siteUrl the url of the store.
+   * @param {Keys} wcApiKeys the keys to the store.
+   * @param {number[]} productIds the ids of the products to be deleted.
+   */
   public async postBatchDeleteWcProducts(
     siteUrl: string,
     wcApiKeys: Keys,
@@ -80,6 +102,13 @@ export class WcClient {
     await this.pushRemainingProducts(productBatch, wcRestApi);
   }
 
+  /**
+   * Posts a batch of products to be updated.
+   *
+   * @param {string} siteUrl the url of the store.
+   * @param {Keys} wcApiKeys the keys to the store.
+   * @param {WcUpdateProductDTO[][]} wcUpdateProductDtos the products to be updated.
+   */
   public async postBatchUpdateWcProducts(
     siteUrl: string,
     wcApiKeys: Keys,

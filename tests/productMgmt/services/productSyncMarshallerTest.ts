@@ -89,8 +89,18 @@ describe('ProductSyncMarshaller tests', () => {
       verify(mockProductSyncJobWorker.importAllNewProducts()).once();
     });
 
+    it('should marshall REMOVE_STALE_PRODUCTS job correctly', async () => {
+      const fakeRemoveStaleProductsJob = new ProductSyncJob(
+        ProductSyncJobType.REMOVE_STALE_PRODUCTS
+      );
+
+      await productSyncJobMarshaller.marshallJob(fakeRemoveStaleProductsJob);
+
+      verify(mockProductSyncJobWorker.removeAllStaleProducts()).once();
+    });
+
     it('should reject with ProductSyncJobError if job type is unknown', async () => {
-      const invalidJob = new ProductSyncJob(5);
+      const invalidJob = new ProductSyncJob(500);
 
       expect(
         productSyncJobMarshaller.marshallJob(invalidJob)

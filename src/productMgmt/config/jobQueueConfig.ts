@@ -10,4 +10,5 @@ export default (): void => {
   productSyncJobScheduler.scheduleInventoryUpdate();
   productSyncJobScheduler.schedulePricingUpdate();
   productSyncJobScheduler.scheduleNewProductSync();
+  productSyncJobScheduler.scheduleRemoveStaleProducts();
 };
