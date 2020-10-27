@@ -4,7 +4,7 @@ import { mock } from 'ts-mockito';
 import { expect } from 'chai';
 import { ProductSyncJob } from '../../../src/productMgmt/models/productSyncJob';
 
-describe('ProductSyncJobProcessor tests', () => {
+describe('ProductSyncQueueService tests', () => {
   let productSyncQueueService: ProductSyncQueueService;
 
   let inMemoryProductSyncQueueRepository: ProductSyncQueueRepository;

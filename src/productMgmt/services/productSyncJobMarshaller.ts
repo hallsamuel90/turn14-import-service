@@ -43,6 +43,9 @@ export class ProductSyncJobMarshaller {
       case ProductSyncJobType.IMPORT_ADDED_PRODUCTS:
         await this.productSyncJobWorker.importAllNewProducts();
         break;
+      case ProductSyncJobType.REMOVE_STALE_PRODUCTS:
+        await this.productSyncJobWorker.removeAllStaleProducts();
+        break;
       default:
         throw new ProductSyncJobError(
           'Cannot run job with unknown type: ' + jobType
