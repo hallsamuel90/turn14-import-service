@@ -14,6 +14,7 @@ import { WcMapper } from './wcMapper';
  */
 export class CreateProductWcMapper extends WcMapper {
   private static DESCRIPTION = 'Market Description';
+  private static SHORT_DESCRIPTION = 'Product Description - Short';
   private static FITMENT = 'Application Summary';
   private static PRIMARY_IMAGE = 'Photo - Primary';
 
@@ -34,8 +35,7 @@ export class CreateProductWcMapper extends WcMapper {
   /**
    * Converts a list of Turn14ProductDTO into wcCreateProductDTOs.
    *
-   * @param turn14Products the turn14 products to be
-   * converted.
+   * @param {Turn14ProductDTO[]} turn14Products the turn14 products to be converted.
    * @returns {Promise<WcCreateProductDTO[]>} converted woocommerce products.
    */
   public async turn14sToWcs(
@@ -65,7 +65,7 @@ export class CreateProductWcMapper extends WcMapper {
     const itemAttributes = turn14ProductDto?.item?.['attributes'];
     if (itemAttributes) {
       const wcProductAttributes = this.turn14AttributesToWc(itemAttributes);
-      wcProduct.name = wcProductAttributes.name;
+      wcProduct.name = wcProductAttributes.shortDescription;
       wcProduct.sku = wcProductAttributes.sku;
       wcProduct.brand_id = wcProductAttributes.brand_id;
       wcProduct.shortDescription = wcProductAttributes.shortDescription;
@@ -157,6 +157,9 @@ export class CreateProductWcMapper extends WcMapper {
 
       if (descriptions[CreateProductWcMapper.DESCRIPTION]) {
         return descriptions[CreateProductWcMapper.DESCRIPTION].description;
+      } else if (descriptions[CreateProductWcMapper.SHORT_DESCRIPTION]) {
+        return descriptions[CreateProductWcMapper.SHORT_DESCRIPTION]
+          .description;
       }
     }
 
