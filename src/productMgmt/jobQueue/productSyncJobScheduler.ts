@@ -1,7 +1,7 @@
-import { ProductSyncQueueService } from './productSyncQueueService';
-import { ProductSyncJob } from '../models/productSyncJob';
-import { ProductSyncJobType } from '../models/proudctSyncJobType';
 import { Service } from 'typedi';
+import { ProductSyncJobType } from './productSyncJobType';
+import { ProductSyncJobFactory } from './services/productSyncJobFactory';
+import { ProductSyncQueueService } from './services/productSyncQueueService';
 
 /**
  * Schedules various cron jobs via adding them to the queue.
@@ -12,9 +12,14 @@ export class ProductSyncJobScheduler {
   private static ONE_DAY_SEC = 24 * ProductSyncJobScheduler.ONE_HOUR_SEC;
 
   private readonly productSyncQueueService: ProductSyncQueueService;
+  private readonly productSyncJobFactory: ProductSyncJobFactory;
 
-  constructor(productSyncQueueService: ProductSyncQueueService) {
+  constructor(
+    productSyncQueueService: ProductSyncQueueService,
+    productSyncJobFactory: ProductSyncJobFactory
+  ) {
     this.productSyncQueueService = productSyncQueueService;
+    this.productSyncJobFactory = productSyncJobFactory;
   }
 
   /**
@@ -78,7 +83,7 @@ export class ProductSyncJobScheduler {
   }
 
   private pushJob(jobType: ProductSyncJobType): void {
-    const job = new ProductSyncJob(jobType);
+    const job = this.productSyncJobFactory.create(jobType);
 
     this.productSyncQueueService.enqueue(job);
   }

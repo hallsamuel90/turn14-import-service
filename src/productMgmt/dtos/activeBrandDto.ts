@@ -2,20 +2,25 @@
  *
  */
 export class ActiveBrandDTO {
-  userId: string;
-  brandId: string;
-  active: boolean;
+  private readonly userId: string;
+  private readonly brandId: string;
+  private readonly active: boolean;
 
-  /**
-   * All args constructor
-   *
-   * @param {string} userId
-   * @param {string} brandId
-   * @param {boolean} active
-   */
   constructor(userId: string, brandId: string, active: boolean) {
     this.userId = userId;
     this.brandId = brandId;
     this.active = active;
+  }
+
+  public getUserId(): string {
+    return this.userId;
+  }
+
+  public getBrandId(): string {
+    return this.brandId;
+  }
+
+  public isActive(): boolean {
+    return this.active;
   }
 }

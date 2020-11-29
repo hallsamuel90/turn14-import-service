@@ -1,34 +1,41 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { expect } from 'chai';
-import { anyString, mock, when } from 'ts-mockito';
+import { instance, mock, when } from 'ts-mockito';
 import { WcCategoriesCache } from '../../../src/productMgmt/caches/wcCategoriesCache';
 import { CreateProductWcMapper } from '../../../src/productMgmt/services/createProductWcMapper';
 import { WcCategoryIdDTO } from '../../../src/woocommerce/dtos/wcCategoryIdDto';
 import { Turn14FakeData } from './turn14FakeData';
 describe('WcMapper tests', () => {
-  let instance: CreateProductWcMapper;
+  let createProductWcMapper: CreateProductWcMapper;
 
   beforeEach(() => {
+    const mockWcCategoriesCache: WcCategoriesCache = mock(WcCategoriesCache);
+    const mockWcCategoriesCacheInstance = instance(mockWcCategoriesCache);
+
     const fakeCategoryId = 5;
     const fakeWcCategoryIdDto = new WcCategoryIdDTO(fakeCategoryId);
-    const mockWcCategoriesCache: WcCategoriesCache = mock(WcCategoriesCache);
-
-    when(mockWcCategoriesCache.getCategory(anyString())).thenResolve(
+    when(mockWcCategoriesCache.getCategory('Brake')).thenResolve(
       fakeWcCategoryIdDto
     );
 
+    const fakeSubCategoryId = 3;
+    const fakeSubCategoryIdDto = new WcCategoryIdDTO(fakeSubCategoryId);
     when(
-      mockWcCategoriesCache.getSubCategory(anyString(), anyString())
-    ).thenResolve(fakeWcCategoryIdDto);
+      mockWcCategoriesCache.getSubCategory('Drums and Rotors', 'Brake')
+    ).thenResolve(fakeSubCategoryIdDto);
 
-    instance = new CreateProductWcMapper(mockWcCategoriesCache);
+    when(mockWcCategoriesCache.getBrand('DBA')).thenResolve(18);
+
+    createProductWcMapper = new CreateProductWcMapper(
+      mockWcCategoriesCacheInstance
+    );
   });
 
   describe('#turn14ToWc', () => {
     it('should not return null attributes', async () => {
       const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
 
-      const wcCreateProductDto = await instance.turn14ToWc(
+      const wcCreateProductDto = await createProductWcMapper.turn14ToWc(
         fakeTurn14ProductDto
       );
 
@@ -38,7 +45,7 @@ describe('WcMapper tests', () => {
     it('should not die when itemAttributes is undefined', async () => {
       const undefinedItemAttributesTurn14ProductDto = Turn14FakeData.getUndefinedItemAttributesProductDTO();
 
-      const wcCreateProductDto = await instance.turn14ToWc(
+      const wcCreateProductDto = await createProductWcMapper.turn14ToWc(
         undefinedItemAttributesTurn14ProductDto
       );
 
@@ -48,7 +55,7 @@ describe('WcMapper tests', () => {
     it('should return correctly mapped attributes for WcCreateProductDTO', async () => {
       const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
 
-      const wcCreateProductDtoAttributes = await instance.turn14ToWc(
+      const wcCreateProductDtoAttributes = await createProductWcMapper.turn14ToWc(
         fakeTurn14ProductDto
       );
 
@@ -70,7 +77,7 @@ describe('WcMapper tests', () => {
     it('should not return null inventory', () => {
       const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
 
-      const wcCreateProductDtoInventory = instance.turn14ToWc(
+      const wcCreateProductDtoInventory = createProductWcMapper.turn14ToWc(
         fakeTurn14ProductDto
       );
 
@@ -80,7 +87,7 @@ describe('WcMapper tests', () => {
     it('should return correctly mapped inventory for WcCreateProductDTO', async () => {
       const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
 
-      const wcCreateProductDtoInventory = await instance.turn14ToWc(
+      const wcCreateProductDtoInventory = await createProductWcMapper.turn14ToWc(
         fakeTurn14ProductDto
       );
 
@@ -92,7 +99,7 @@ describe('WcMapper tests', () => {
     it('should return WcCreateProductDTO using the short description if no other is available', async () => {
       const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTONoLongDescription();
 
-      const wcCreateProductDtoInventory = await instance.turn14ToWc(
+      const wcCreateProductDtoInventory = await createProductWcMapper.turn14ToWc(
         fakeTurn14ProductDto
       );
 
@@ -100,5 +107,25 @@ describe('WcMapper tests', () => {
         'Baja Designs 40in OnX6 Racer Arc Series Driving Pattern Wide LED Light Bar'
       );
     });
+
+    it('should return WcCreateProductDTO with properly mapped categories', async () => {
+      const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
+
+      const actual = await createProductWcMapper.turn14ToWc(
+        fakeTurn14ProductDto
+      );
+
+      expect(actual.categories).to.have.lengthOf(2);
+      expect(actual.categories).to.deep.include.members([{ id: 5 }, { id: 3 }]);
+    });
+  });
+
+  it('should return WcCreateProductDTO with properly mapped brand(s)', async () => {
+    const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
+
+    const actual = await createProductWcMapper.turn14ToWc(fakeTurn14ProductDto);
+
+    expect(actual.brands).to.have.lengthOf(1);
+    expect(actual.brands).to.include.members([18]);
   });
 });

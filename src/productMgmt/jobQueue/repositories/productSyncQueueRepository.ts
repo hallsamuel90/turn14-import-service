@@ -1,5 +1,5 @@
-import { ProductSyncQueue } from '../models/productSyncQueue';
 import { Service } from 'typedi';
+import { ProductSyncQueue } from '../models/productSyncQueue';
 
 @Service()
 export class ProductSyncQueueRepository {

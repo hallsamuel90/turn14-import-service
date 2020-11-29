@@ -1,6 +1,6 @@
-import { ProductSyncJobPoller } from '../services/productSyncJobPoller';
 import Container from 'typedi';
-import { ProductSyncJobScheduler } from '../services/productSyncJobScheduler';
+import { ProductSyncJobPoller } from '../jobQueue/productSyncJobPoller';
+import { ProductSyncJobScheduler } from '../jobQueue/productSyncJobScheduler';
 
 export default (): void => {
   const productSyncJobPoller = Container.get(ProductSyncJobPoller);
