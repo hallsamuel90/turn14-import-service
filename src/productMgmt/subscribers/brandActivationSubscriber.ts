@@ -1,4 +1,5 @@
 import { AmqpPro } from '../../util/ampqPro/ampqPro';
+import { ActiveBrandDTO } from '../dtos/activeBrandDto';
 import { BrandActivationSequence } from './brandActivationSequence';
 
 /**
@@ -43,7 +44,7 @@ export class BrandActivationSubscriber {
     this.amqpUtil.subscribe(
       channel,
       BrandActivationSubscriber.ACTIVATE_BRANDS_CHANNEL,
-      (msg) => {
+      (msg: JSON) => {
         this.brandActivationSequence.handler(msg);
       }
     );
