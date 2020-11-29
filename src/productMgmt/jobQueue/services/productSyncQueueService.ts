@@ -1,6 +1,6 @@
-import { ProductSyncJob } from '../models/productSyncJob';
 import { ProductSyncQueueRepository } from '../repositories/productSyncQueueRepository';
 import { Service } from 'typedi';
+import { ProductSyncJob } from '../models/productSyncJob';
 
 /**
  * Service class for operations on ProductSyncQueue

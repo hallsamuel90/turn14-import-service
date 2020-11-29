@@ -9,9 +9,9 @@ import { PreProcessingFilter } from './preProcessingFilter';
 import { Turn14Client } from '../../turn14/clients/turn14Client';
 import { UpdateInventoryWcMapper } from './updateInventoryWcMapper';
 import { UpdatePricingWcMapper } from './updatePricingWcMapper';
-import { WcClient } from './wcClient';
 import { WcMapperFactory } from './wcMapperFactory';
 import { WcMapperType } from './wcMapperType';
+import { WcClient } from '../../woocommerce/clients/wcClient';
 
 /**
  * ProductMgmtService.

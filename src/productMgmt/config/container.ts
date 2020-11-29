@@ -4,14 +4,12 @@ import { BrandsService } from '../../brands/services/brandsService';
 import { Turn14RestApiProvider } from '../../turn14/clients/turn14RestApiProvider';
 import { AmqpProJson } from '../../util/ampqPro/ampqProJson';
 import { WcRestApiProvider } from '../../woocommerce/clients/wcRestApiProvider';
-import { BrandActivationSequence } from '../jobs/brandActivationSequence';
+import { BrandActivationSequence } from '../subscribers/brandActivationSequence';
 import { ProductMgmtService } from '../services/productMgmtService';
 import { WcMapperFactory } from '../services/wcMapperFactory';
-import { ProductSyncJobMarshaller } from '../services/productSyncJobMarshaller';
-import { ProductSyncJobWorker } from '../services/productSyncJobWorker';
-import { ProductSyncJobProcessor } from '../services/productSyncJobProcessor';
-import { ProductSyncQueueService } from '../services/productSyncQueueService';
-import { ProductSyncQueueRepository } from '../repositories/productSyncQueueRepository';
+import { ProductSyncJobProcessor } from '../jobQueue/productSyncJobProcessor';
+import { ProductSyncQueueService } from '../jobQueue/services/productSyncQueueService';
+import { ProductSyncQueueRepository } from '../jobQueue/repositories/productSyncQueueRepository';
 
 /**
  * Configures the container dependencies for the product management module.
@@ -28,8 +26,6 @@ export default (): void => {
   Container.get(BrandActivationSequence);
   Container.get(AmqpProJson);
 
-  Container.get(ProductSyncJobMarshaller);
-  Container.get(ProductSyncJobWorker);
   Container.get(ProductSyncJobProcessor);
   Container.get(ProductSyncQueueService);
   Container.get(ProductSyncQueueRepository);

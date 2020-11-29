@@ -75,6 +75,7 @@ export class CreateProductWcMapper extends WcMapper {
       wcProduct.weight = wcProductAttributes.weight;
     }
 
+    wcProduct.brands = await this.turn14BrandToWc(itemAttributes?.['brand']);
     wcProduct.categories = await this.turn14CategoriesToWc(itemAttributes);
 
     const itemMedia = turn14ProductDto?.itemData;
@@ -119,6 +120,12 @@ export class CreateProductWcMapper extends WcMapper {
     return wcProductAttributes;
   }
 
+  private async turn14BrandToWc(brandName: string): Promise<number[]> {
+    const brandId = await this.categoriesCache.getBrand(brandName);
+
+    return [brandId];
+  }
+
   private async turn14CategoriesToWc(
     itemAttributes: JSON
   ): Promise<WcCategoryIdDTO[]> {
@@ -138,14 +145,6 @@ export class CreateProductWcMapper extends WcMapper {
 
     if (subCategory) {
       wcCategoryDtos.push(subCategory);
-    }
-
-    const brandCategory = await this.categoriesCache.getCategory(
-      itemAttributes?.['brand']
-    );
-
-    if (brandCategory) {
-      wcCategoryDtos.push(brandCategory);
     }
 
     return wcCategoryDtos;

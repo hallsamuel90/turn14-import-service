@@ -9,8 +9,9 @@ import { WcCategoryIdDTO } from '../../woocommerce/dtos/wcCategoryIdDto';
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
 export class WcCategoriesCache {
-  private cache: Dictionary<JSON>;
-  private wcRestApi: WcRestApi;
+  private readonly wcRestApi: WcRestApi;
+  private categories: Dictionary<JSON>;
+  private brands: Dictionary<JSON>;
 
   /**
    * Creates a new WcCategories cache with the provided WcRestApi.
@@ -28,12 +29,12 @@ export class WcCategoriesCache {
    * @param {string} categoryName name of the category.
    * @returns {WcCategoryIdDTO} dto containing the category id.
    */
-  async getCategory(categoryName: string): Promise<WcCategoryIdDTO> {
+  public async getCategory(categoryName: string): Promise<WcCategoryIdDTO> {
     await this.checkCacheInitialized();
 
-    const encodedCategoryName = this.encodeCategoryName(categoryName);
+    const encodedCategoryName = this.sanitizeName(categoryName);
 
-    let category = this.cache[encodedCategoryName];
+    let category = this.categories[encodedCategoryName];
 
     if (!category) {
       category = await this.createCategory(categoryName);
@@ -49,20 +50,18 @@ export class WcCategoriesCache {
    * @param {string} parentCategoryName the name of the parent category.
    * @returns {Promise<WcCategoryIdDTO>} dto containing the category id.
    */
-  async getSubCategory(
+  public async getSubCategory(
     subCategoryName: string,
     parentCategoryName: string
   ): Promise<WcCategoryIdDTO> {
     await this.checkCacheInitialized();
 
-    const encodedSubCategoryName = this.encodeCategoryName(subCategoryName);
+    const encodedSubCategoryName = this.sanitizeName(subCategoryName);
 
-    let subCategory = this.cache[encodedSubCategoryName];
+    let subCategory = this.categories[encodedSubCategoryName];
 
     if (!subCategory) {
-      const encodedParentCategoryName = this.encodeCategoryName(
-        parentCategoryName
-      );
+      const encodedParentCategoryName = this.sanitizeName(parentCategoryName);
 
       const parentCategory = await this.getCategory(encodedParentCategoryName);
 
@@ -76,11 +75,50 @@ export class WcCategoriesCache {
   }
 
   /**
+   * Fetches the brand from the cache, if it does not exist a new one is created
+   *
+   * @param {string} brandName the name of the brand.
+   * @returns {Promise<number>} the brand id.
+   */
+  public async getBrand(brandName: string): Promise<number> {
+    await this.checkCacheInitialized();
+
+    const sanitizedBrandName = this.sanitizeName(brandName);
+
+    let brand = this.getBrandFromCache(sanitizedBrandName);
+    if (brand) {
+      return this.getBrandIdFromBrand(brand);
+    }
+
+    brand = await this.createBrand(sanitizedBrandName);
+    return this.getBrandIdFromBrand(brand);
+  }
+
+  private getBrandFromCache(sanitizedBrandName: string): JSON | undefined {
+    return this.brands[sanitizedBrandName];
+  }
+
+  private async createBrand(sanitizedBrandName: string): Promise<JSON> {
+    const brand = await this.wcRestApi.createBrand(sanitizedBrandName);
+    this.addBrandToCache(brand);
+
+    return brand;
+  }
+
+  private addBrandToCache(brand: JSON): void {
+    this.brands[brand?.['name']] = brand;
+  }
+
+  private getBrandIdFromBrand(brand: JSON): number | PromiseLike<number> {
+    return brand['term_id'] ? brand?.['term_id'] : brand?.['id'];
+  }
+
+  /**
    * Checks to see if the cache has been initialized. If it hasn't initialize
    * it.
    */
   private async checkCacheInitialized(): Promise<void> {
-    if (this.cache == null) {
+    if (this.categories == null && this.brands == null) {
       await this.initCache();
     }
   }
@@ -89,7 +127,8 @@ export class WcCategoriesCache {
    * Initializes the cache.
    */
   private async initCache(): Promise<void> {
-    this.cache = await this.wcRestApi.fetchAllCategories();
+    this.categories = await this.wcRestApi.fetchAllCategories();
+    this.brands = await this.wcRestApi.fetchAllBrands();
   }
 
   /**
@@ -103,7 +142,7 @@ export class WcCategoriesCache {
       const newCategory = await this.wcRestApi.createCategory(
         new WcCategoryDTO(categoryName)
       );
-      this.cache[newCategory['name']] = newCategory;
+      this.categories[newCategory['name']] = newCategory;
 
       return newCategory;
     } catch (e) {
@@ -128,7 +167,7 @@ export class WcCategoriesCache {
       const newSubCategory = await this.wcRestApi.createCategory(
         new WcCategoryDTO(subCategoryName, parentCategoryId)
       );
-      this.cache[newSubCategory['name']] = newSubCategory;
+      this.categories[newSubCategory['name']] = newSubCategory;
       return newSubCategory;
     } catch (e) {
       console.error('🔥 ' + e);
@@ -137,7 +176,7 @@ export class WcCategoriesCache {
     }
   }
 
-  private encodeCategoryName(categoryName: string): string {
+  private sanitizeName(categoryName: string): string {
     return categoryName.replace('&', '&amp;');
   }
 }
