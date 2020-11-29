@@ -32,7 +32,7 @@ export class BrandActivationSequence {
    * contains the brand's active state.
    */
   async handler(activeBrandDto: ActiveBrandDTO): Promise<void> {
-    const job = this.productSyncJobFactory.create(activeBrandDto);
+    const job = this.productSyncJobFactory.createFromBrandDto(activeBrandDto);
     this.productSyncQueueService.enqueue(job);
   }
 }

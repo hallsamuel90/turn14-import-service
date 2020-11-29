@@ -83,7 +83,7 @@ export class ProductSyncJobScheduler {
   }
 
   private pushJob(jobType: ProductSyncJobType): void {
-    const job = this.productSyncJobFactory.create(jobType);
+    const job = this.productSyncJobFactory.createFromJobType(jobType);
 
     this.productSyncQueueService.enqueue(job);
   }

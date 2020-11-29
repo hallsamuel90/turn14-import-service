@@ -25,20 +25,7 @@ export class ProductSyncJobFactory {
     this.pmgmtService = pmgmtService;
   }
 
-  public create(jobType: ProductSyncJobType): ProductSyncJob;
-  public create(activeBrandDto: ActiveBrandDTO): ProductSyncJob;
-
-  public create(
-    overload1: ProductSyncJobType | ActiveBrandDTO
-  ): ProductSyncJob {
-    if (overload1 instanceof ActiveBrandDTO) {
-      return this.createFromBrandDto(overload1);
-    }
-
-    return this.createFromJobType(overload1);
-  }
-
-  private createFromBrandDto(activeBrandDto: ActiveBrandDTO): ProductSyncJob {
+  public createFromBrandDto(activeBrandDto: ActiveBrandDTO): ProductSyncJob {
     if (activeBrandDto.isActive()) {
       return new ImportProductsJob(
         this.apiUserService,
@@ -54,7 +41,7 @@ export class ProductSyncJobFactory {
     );
   }
 
-  private createFromJobType(jobType: ProductSyncJobType): ProductSyncJob {
+  public createFromJobType(jobType: ProductSyncJobType): ProductSyncJob {
     switch (jobType) {
       case ProductSyncJobType.UPDATE_INVENTORY:
         return new UpdateInventoryJob(this.apiUserService, this.pmgmtService);

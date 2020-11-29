@@ -26,7 +26,7 @@ describe('ProductSyncJobFactory tests', () => {
     );
   });
 
-  describe('#create', () => {
+  describe('#createFromBrandDto', () => {
     it('should return import job when the brand is active', () => {
       const activeBrandDto = new ActiveBrandDTO(
         'fakeUserId',
@@ -34,7 +34,9 @@ describe('ProductSyncJobFactory tests', () => {
         true
       );
 
-      const actualJob = productSyncJobFactory.create(activeBrandDto);
+      const actualJob = productSyncJobFactory.createFromBrandDto(
+        activeBrandDto
+      );
 
       expect(actualJob).to.be.instanceOf(ImportProductsJob);
     });
@@ -46,13 +48,17 @@ describe('ProductSyncJobFactory tests', () => {
         false
       );
 
-      const actualJob = productSyncJobFactory.create(activeBrandDto);
+      const actualJob = productSyncJobFactory.createFromBrandDto(
+        activeBrandDto
+      );
 
       expect(actualJob).to.be.instanceOf(DeleteProductsJob);
     });
+  });
 
+  describe('#createFromJobType', () => {
     it('should return update inventory job based on job type', () => {
-      const actualJob = productSyncJobFactory.create(
+      const actualJob = productSyncJobFactory.createFromJobType(
         ProductSyncJobType.UPDATE_INVENTORY
       );
 
@@ -60,7 +66,7 @@ describe('ProductSyncJobFactory tests', () => {
     });
 
     it('should return update pricing job based on job type', () => {
-      const actualJob = productSyncJobFactory.create(
+      const actualJob = productSyncJobFactory.createFromJobType(
         ProductSyncJobType.UPDATE_PRICING
       );
 
@@ -68,7 +74,7 @@ describe('ProductSyncJobFactory tests', () => {
     });
 
     it('should return import added products job based on job type', () => {
-      const actualJob = productSyncJobFactory.create(
+      const actualJob = productSyncJobFactory.createFromJobType(
         ProductSyncJobType.IMPORT_ADDED_PRODUCTS
       );
 
@@ -76,7 +82,7 @@ describe('ProductSyncJobFactory tests', () => {
     });
 
     it('should return remove stale products job based on job type', () => {
-      const actualJob = productSyncJobFactory.create(
+      const actualJob = productSyncJobFactory.createFromJobType(
         ProductSyncJobType.REMOVE_STALE_PRODUCTS
       );
 
@@ -85,7 +91,10 @@ describe('ProductSyncJobFactory tests', () => {
 
     it('should throw an error if invalid type', () => {
       expect(
-        productSyncJobFactory.create.bind(productSyncJobFactory, 5000)
+        productSyncJobFactory.createFromJobType.bind(
+          productSyncJobFactory,
+          5000
+        )
       ).to.throw(ProductSyncJobError);
     });
   });
