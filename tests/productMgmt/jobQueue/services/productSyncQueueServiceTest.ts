@@ -1,8 +1,8 @@
-import { ProductSyncQueueService } from '../../../src/productMgmt/services/productSyncQueueService';
-import { ProductSyncQueueRepository } from '../../../src/productMgmt/repositories/productSyncQueueRepository';
 import { mock } from 'ts-mockito';
 import { expect } from 'chai';
-import { ProductSyncJob } from '../../../src/productMgmt/models/productSyncJob';
+import { ProductSyncJob } from '../../../../src/productMgmt/jobQueue/models/productSyncJob';
+import { ProductSyncQueueRepository } from '../../../../src/productMgmt/jobQueue/repositories/productSyncQueueRepository';
+import { ProductSyncQueueService } from '../../../../src/productMgmt/jobQueue/services/productSyncQueueService';
 
 describe('ProductSyncQueueService tests', () => {
   let productSyncQueueService: ProductSyncQueueService;
@@ -59,6 +59,10 @@ describe('ProductSyncQueueService tests', () => {
       productSyncQueueService.dequeue();
 
       expect(productSyncQueueService.isEmpty()).to.be.true;
+    });
+
+    it('should throw an error there are no jobs in the queue', () => {
+      expect(productSyncQueueService.dequeue).to.throw(Error);
     });
   });
 });

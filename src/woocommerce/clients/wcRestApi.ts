@@ -18,6 +18,7 @@ export class WcRestApi {
   private static BATCH_PRODUCTS_RESOURCE = 'wp-json/wc/v3/products/batch';
   private static PRODUCT_CATEOGORIES_RESOURCE =
     'wp-json/wc/v3/products/categories';
+  private static BRANDS_RESOURCE = 'wp-json/wc/v3/brands';
 
   private axiosClient: AxiosInstance;
 
@@ -35,7 +36,6 @@ export class WcRestApi {
         username: wcClient,
         password: wcSecret,
       },
-      // TODO: remove in production. skips ssl for local dev -SH
       httpsAgent: new https.Agent({
         rejectUnauthorized: false,
       }),
@@ -49,7 +49,7 @@ export class WcRestApi {
    * @param {WcBatchDTO} wcProducts the products to be sent to the store.
    * @returns {Promise<JSON>} the response from woocommerce.
    */
-  async batchModifyProducts(wcProducts: WcBatchDTO): Promise<void> {
+  public async batchModifyProducts(wcProducts: WcBatchDTO): Promise<void> {
     try {
       await this.axiosClient.post(
         WcRestApi.BATCH_PRODUCTS_RESOURCE,
@@ -66,7 +66,7 @@ export class WcRestApi {
    * @returns {Promise<Dictionary<JSON>>} the response from woocommerce.
    * @param {string} brandId the id of the brand.
    */
-  async fetchAllProductsByBrand(brandId: string): Promise<JSON[]> {
+  public async fetchAllProductsByBrand(brandId: string): Promise<JSON[]> {
     let allData: JSON[] = [];
 
     let pageNumber = 1;
@@ -88,10 +88,10 @@ export class WcRestApi {
    * Fetches all products of a particular brand.
    *
    * @param {string} brandId the unique id of the brand.
-   * @param pageNumber
+   * @param {number} pageNumber the page number for pagination.
    * @returns {Promise<JSON[]>} the response from woocommerce.
    */
-  async fetchProductsByBrand(
+  public async fetchProductsByBrand(
     brandId: string,
     pageNumber: number
   ): Promise<JSON[]> {
@@ -115,7 +115,7 @@ export class WcRestApi {
    *
    * @returns {Promise<Dictionary<JSON>>} the response from woocommerce.
    */
-  async fetchAllCategories(): Promise<Dictionary<JSON>> {
+  public async fetchAllCategories(): Promise<Dictionary<JSON>> {
     let allData: JSON[] = [];
     let i = 1;
     while (true) {
@@ -136,7 +136,7 @@ export class WcRestApi {
    * @param {number} pageNumber the page number to query.
    * @returns {Promise<JSON[]>} the response from woocommerce.
    */
-  async fetchCategories(pageNumber: number): Promise<JSON[]> {
+  public async fetchCategories(pageNumber: number): Promise<JSON[]> {
     try {
       const response = await this.axiosClient.get(
         WcRestApi.PRODUCT_CATEOGORIES_RESOURCE,
@@ -160,12 +160,73 @@ export class WcRestApi {
    * @returns {Promise<JSON>} the response from woocommerce or an empy response
    * if there is an error.
    */
-  async createCategory(wcCategoryDto: WcCategoryDTO): Promise<JSON> {
+  public async createCategory(wcCategoryDto: WcCategoryDTO): Promise<JSON> {
     try {
       const response = await this.axiosClient.post(
         WcRestApi.PRODUCT_CATEOGORIES_RESOURCE,
         wcCategoryDto
       );
+      return response.data;
+    } catch (e) {
+      throw this.buildWcError(e);
+    }
+  }
+
+  /**
+   * Fetches all brands from woocommerce and returns them as
+   * a map of name:brand
+   *
+   * @returns {Promise<Dictionary<JSON>>} the response from woocommerce.
+   */
+  public async fetchAllBrands(): Promise<Dictionary<JSON>> {
+    let allData: JSON[] = [];
+    let i = 1;
+    while (true) {
+      const pageData = await this.fetchBrands(i);
+      if (!Array.isArray(pageData) || !pageData.length) {
+        break;
+      }
+      allData = allData.concat(pageData);
+      i++;
+    }
+
+    return _.keyBy(allData, 'name');
+  }
+
+  /**
+   * Fetches all brands. Requires the QuadLayers Perfect WooCommerce Brands
+   * Plugin: https://github.com/quadlayers/perfect-woocommerce-brands
+   *
+   * @param {number} pageNumber the page of paginated brands.
+   * @returns {JSON[]} of existing brands.
+   */
+  public async fetchBrands(pageNumber: number): Promise<JSON[]> {
+    try {
+      const response = await this.axiosClient.get(WcRestApi.BRANDS_RESOURCE, {
+        params: {
+          page: pageNumber,
+        },
+      });
+      return response.data;
+    } catch (e) {
+      throw this.buildWcError(e);
+    }
+  }
+
+  /**
+   * Creates a new Brand using the provided brandName. Requires the QuadLayers
+   * Perfect WooCommerce Brands Plugin:
+   * https://github.com/quadlayers/perfect-woocommerce-brands
+   *
+   * @param {string} brandName the name of the brand to create.
+   * @returns {Promise<JSON>} the response containing the created brands data.
+   */
+  public async createBrand(brandName: string): Promise<JSON> {
+    try {
+      const response = await this.axiosClient.post(WcRestApi.BRANDS_RESOURCE, {
+        name: brandName,
+        slug: brandName,
+      });
       return response.data;
     } catch (e) {
       throw this.buildWcError(e);

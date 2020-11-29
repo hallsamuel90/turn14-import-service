@@ -1,6 +1,6 @@
 import Container from 'typedi';
 import { AmqpProJson } from '../../util/ampqPro/ampqProJson';
-import { BrandActivationSequence } from '../jobs/brandActivationSequence';
+import { BrandActivationSequence } from '../subscribers/brandActivationSequence';
 import { BrandActivationSubscriber } from '../subscribers/brandActivationSubscriber';
 
 export default (): void => {

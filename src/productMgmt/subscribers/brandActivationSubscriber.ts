@@ -1,5 +1,5 @@
 import { AmqpPro } from '../../util/ampqPro/ampqPro';
-import { BrandActivationSequence } from '../jobs/brandActivationSequence';
+import { BrandActivationSequence } from './brandActivationSequence';
 
 /**
  * BrandActivationSubscriber.

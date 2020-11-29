@@ -21,6 +21,7 @@ export class WcCreateProductDTO extends WcProductDTO {
   description: string;
   sku: string;
   brand_id: number;
+  brands: number[];
   ymm_fitment: string;
   regular_price: string;
   sale_price: string;
@@ -46,6 +47,7 @@ export class WcCreateProductDTO extends WcProductDTO {
     this.shortDescription = '';
     this.description = '';
     this.sku = '';
+    this.brands = [];
     this.regular_price = '';
     this.sale_price = '';
     this.categories = [];
