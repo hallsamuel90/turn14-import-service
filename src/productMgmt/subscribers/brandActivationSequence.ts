@@ -28,11 +28,21 @@ export class BrandActivationSequence {
   /**
    * Handler for the product management operations.
    *
-   * @param {ActiveBrandDTO} activeBrandDto the data transfer object that
+   * @param {JSON} jsonMsg the data transfer object that
    * contains the brand's active state.
    */
-  async handler(activeBrandDto: ActiveBrandDTO): Promise<void> {
-    const job = this.productSyncJobFactory.createFromBrandDto(activeBrandDto);
+  async handler(jsonMsg: JSON): Promise<void> {
+    const brandDto = this.convertJson(jsonMsg);
+    const job = this.productSyncJobFactory.createFromBrandDto(brandDto);
+
     this.productSyncQueueService.enqueue(job);
+  }
+
+  private convertJson(msg: JSON): ActiveBrandDTO {
+    return new ActiveBrandDTO(
+      msg?.['userId'],
+      msg?.['brandId'],
+      msg?.['active']
+    );
   }
 }
