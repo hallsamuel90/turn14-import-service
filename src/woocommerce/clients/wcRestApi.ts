@@ -179,18 +179,10 @@ export class WcRestApi {
    * @returns {Promise<Dictionary<JSON>>} the response from woocommerce.
    */
   public async fetchAllBrands(): Promise<Dictionary<JSON>> {
-    let allData: JSON[] = [];
-    let i = 1;
-    while (true) {
-      const pageData = await this.fetchBrands(i);
-      if (!Array.isArray(pageData) || !pageData.length) {
-        break;
-      }
-      allData = allData.concat(pageData);
-      i++;
-    }
+    // currently brands is not paginated, so pass page 1 only.
+    const pageData = await this.fetchBrands(1);
 
-    return _.keyBy(allData, 'name');
+    return _.keyBy(pageData, 'name');
   }
 
   /**
