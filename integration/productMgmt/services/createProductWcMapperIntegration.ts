@@ -6,9 +6,9 @@ import { Turn14FakeData } from '../../../tests/productMgmt/services/turn14FakeDa
 
 describe('CreateProductWcMapper Integration tests', () => {
   // can't get env variables to load. Should be replaced at some point with env
-  const INT_TEST_URL = 'https://198.199.75.46';
-  const INT_TEST_WCCLIENT = 'ck_894e4efda107f6b0b0ee0834dde813f0c8577d6c';
-  const INT_TEST_WCSECRET = 'cs_20b5258134aee26a76c7c33fc1992956774516f8';
+  const INT_TEST_URL = '';
+  const INT_TEST_WCCLIENT = '';
+  const INT_TEST_WCSECRET = '';
 
   let createProductWcMapper: CreateProductWcMapper;
 
