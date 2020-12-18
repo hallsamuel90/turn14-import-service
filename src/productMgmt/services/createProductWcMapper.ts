@@ -20,7 +20,7 @@ export class CreateProductWcMapper extends WcMapper {
 
   private categoriesCache: WcCategoriesCache;
 
-  private static readonly IMAGE_SIZE_THRESHOLD = 7500;
+  private static readonly IMAGE_SIZE_THRESHOLD = 3000;
 
   /**
    * Creates a new instance of WcMapper with the provided WcCategoriesCache.
