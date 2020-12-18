@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import axios, { AxiosError, AxiosInstance } from 'axios';
-import https from 'https';
+import { AxiosError, AxiosInstance } from 'axios';
 import _, { Dictionary } from 'lodash';
 import { WcBatchDTO } from '../dtos/wcBatchDto';
 import { WcCategoryDTO } from '../dtos/wcCategoryDto';
@@ -20,26 +19,10 @@ export class WcRestApi {
     'wp-json/wc/v3/products/categories';
   private static BRANDS_RESOURCE = 'wp-json/wc/v3/brands';
 
-  private axiosClient: AxiosInstance;
+  private readonly axiosClient: AxiosInstance;
 
-  /**
-   * Creates a new instance of WcRestApi with the provided parameters.
-   *
-   * @param {string} wcUrl the target url of the woocommerce store.
-   * @param {string} wcClient the client key for communicating with the api.
-   * @param {string} wcSecret the secret key for communicating with the api.
-   */
-  constructor(wcUrl: string, wcClient: string, wcSecret: string) {
-    this.axiosClient = axios.create({
-      baseURL: wcUrl,
-      auth: {
-        username: wcClient,
-        password: wcSecret,
-      },
-      httpsAgent: new https.Agent({
-        rejectUnauthorized: false,
-      }),
-    });
+  constructor(axiosClient: AxiosInstance) {
+    this.axiosClient = axiosClient;
   }
 
   /**

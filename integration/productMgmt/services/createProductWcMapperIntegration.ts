@@ -3,22 +3,26 @@ import { WcCategoriesCache } from '../../../src/productMgmt/caches/wcCategoriesC
 import { CreateProductWcMapper } from '../../../src/productMgmt/services/createProductWcMapper';
 import { WcRestApiProvider } from '../../../src/woocommerce/clients/wcRestApiProvider';
 import { Turn14FakeData } from '../../../tests/productMgmt/services/turn14FakeData';
+import path from 'path';
+
+const envPath = path.resolve('.env');
+console.log(envPath);
+require('dotenv').config({ path: envPath });
+
+const INT_URL: string = process.env.INT_URL ?? '';
+const INT_WC_CLIENT: string = process.env.INT_WC_CLIENT ?? '';
+const INT_WC_SECRET: string = process.env.INT_WC_SECRET ?? '';
 
 describe('CreateProductWcMapper Integration tests', () => {
-  // can't get env variables to load. Should be replaced at some point with env
-  const INT_TEST_URL = '';
-  const INT_TEST_WCCLIENT = '';
-  const INT_TEST_WCSECRET = '';
-
   let createProductWcMapper: CreateProductWcMapper;
 
   const wcRestApiProvider = new WcRestApiProvider();
 
   beforeEach(() => {
     const wcRestApi = wcRestApiProvider.getWcRestApi(
-      INT_TEST_URL,
-      INT_TEST_WCCLIENT,
-      INT_TEST_WCSECRET
+      INT_URL,
+      INT_WC_CLIENT,
+      INT_WC_SECRET
     );
     const wcCache = new WcCategoriesCache(wcRestApi);
 
