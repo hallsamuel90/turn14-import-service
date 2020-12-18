@@ -9,6 +9,9 @@ import productMgmtConfig from './productMgmt/config/config';
 // load env variables
 dotenv.config();
 
+// log ts files instead of js
+require('source-map-support').install();
+
 mongoConfig();
 
 apiUsersConfig();
