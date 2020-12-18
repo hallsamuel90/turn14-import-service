@@ -128,4 +128,40 @@ describe('WcMapper tests', () => {
     expect(actual.brands).to.have.lengthOf(1);
     expect(actual.brands).to.include.members([18]);
   });
+
+  it('should set primary image', async () => {
+    const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
+
+    const actual = await createProductWcMapper.turn14ToWc(fakeTurn14ProductDto);
+
+    expect(actual.images).to.have.lengthOf(1);
+    expect(actual.images[0]).to.have.property(
+      'src',
+      'https://d32vzsop7y1h3k.cloudfront.net/cf5fe9a38d8506d29ecfa29b1034c25b.JPG'
+    );
+  });
+
+  it('should set primary image to thumbnail if unavailable', async () => {
+    const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTOWithNoImage();
+
+    const actual = await createProductWcMapper.turn14ToWc(fakeTurn14ProductDto);
+
+    expect(actual.images).to.have.lengthOf(1);
+    expect(actual.images[0]).to.have.property(
+      'src',
+      'https://d5otzd52uv6zz.cloudfront.net/be0798de'
+    );
+  });
+
+  it('should default to thumbnail if primary image is too big', async () => {
+    const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTOWithBigImage();
+
+    const actual = await createProductWcMapper.turn14ToWc(fakeTurn14ProductDto);
+
+    expect(actual.images).to.have.lengthOf(1);
+    expect(actual.images[0]).to.have.property(
+      'src',
+      'https://d5otzd52uv6zz.cloudfront.net/be0798de'
+    );
+  });
 });

@@ -20,6 +20,8 @@ export class CreateProductWcMapper extends WcMapper {
 
   private categoriesCache: WcCategoriesCache;
 
+  private static readonly IMAGE_SIZE_THRESHOLD = 7500;
+
   /**
    * Creates a new instance of WcMapper with the provided WcCategoriesCache.
    *
@@ -182,18 +184,11 @@ export class CreateProductWcMapper extends WcMapper {
     turn14Media: JSON
   ): WcImageDTO[] {
     const wcImageDtos: WcImageDTO[] = [];
-    if (turn14Media['files']) {
-      const files = _.keyBy(turn14Media['files'], 'media_content');
-      if (files[CreateProductWcMapper.PRIMARY_IMAGE]) {
-        const imageLinks: JSON[] =
-          files[CreateProductWcMapper.PRIMARY_IMAGE]?.links;
-        const lastLink = _.last(imageLinks);
-        if (lastLink != null) {
-          wcImageDtos.push(new WcImageDTO(lastLink['url']));
-        }
-      }
-    } else if (itemAttributes?.['thumbnail']) {
-      wcImageDtos.push(new WcImageDTO(itemAttributes?.['thumbnail']));
+
+    if (this.hasValidPrimaryImage(turn14Media)) {
+      wcImageDtos.push(new WcImageDTO(this.getPrimaryImageLink(turn14Media)));
+    } else if (this.hasThumbnail(itemAttributes)) {
+      wcImageDtos.push(new WcImageDTO(this.getThumbnailLink(itemAttributes)));
     }
 
     return wcImageDtos;
@@ -210,5 +205,60 @@ export class CreateProductWcMapper extends WcMapper {
     );
 
     return wcInventory;
+  }
+
+  private getThumbnailLink(itemAttributes: JSON): string {
+    return itemAttributes?.['thumbnail'];
+  }
+
+  private hasThumbnail(itemAttributes: JSON): boolean {
+    return itemAttributes?.['thumbnail'] != null;
+  }
+
+  private getPrimaryImageLink(turn14Media: JSON): string {
+    if (turn14Media['files']) {
+      const files = _.keyBy(turn14Media['files'], 'media_content');
+      if (files[CreateProductWcMapper.PRIMARY_IMAGE]) {
+        const imageLinks: JSON[] =
+          files[CreateProductWcMapper.PRIMARY_IMAGE]?.links;
+        const lastLink = _.last(imageLinks);
+        if (lastLink != null) {
+          if (lastLink?.['height'] < 10000 && lastLink?.['width'] < 10000) {
+            return lastLink['url'];
+          }
+        }
+      }
+    }
+
+    return '';
+  }
+
+  private hasValidPrimaryImage(turn14Media: JSON): boolean {
+    if (turn14Media['files']) {
+      const files = _.keyBy(turn14Media['files'], 'media_content');
+      if (files[CreateProductWcMapper.PRIMARY_IMAGE]) {
+        const imageLinks: JSON[] =
+          files[CreateProductWcMapper.PRIMARY_IMAGE]?.links;
+        const lastLink = _.last(imageLinks);
+        if (this.imageIsNotTooBig(lastLink)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  private imageIsNotTooBig(lastLink: JSON | undefined): boolean {
+    const result =
+      lastLink &&
+      lastLink?.['height'] < CreateProductWcMapper.IMAGE_SIZE_THRESHOLD &&
+      lastLink?.['width'] < CreateProductWcMapper.IMAGE_SIZE_THRESHOLD;
+
+    if (result == undefined) {
+      return false;
+    }
+
+    return result;
   }
 }
