@@ -43,6 +43,20 @@ export class Turn14FakeData {
     return turn14Product;
   }
 
+  public static getFakeTurn14ProductDTOWithNoImage(): Turn14ProductDTO {
+    const turn14Product = this.getFakeTurn14ProductDTO();
+    turn14Product.itemData = this.getFakeItemDataNoPrimaryImage();
+
+    return turn14Product;
+  }
+
+  public static getFakeTurn14ProductDTOWithBigImage(): Turn14ProductDTO {
+    const turn14Product = this.getFakeTurn14ProductDTO();
+    turn14Product.itemData = this.getFakeItemDataBigImage();
+
+    return turn14Product;
+  }
+
   /**
    * Returns a new Turn14ProductDTO populated with arbitrary fox brand data.
    *
@@ -165,7 +179,7 @@ export class Turn14FakeData {
             {
               url:
                 'https://d32vzsop7y1h3k.cloudfront.net/cf5fe9a38d8506d29ecfa29b1034c25b.JPG',
-              height: 11214.0,
+              height: 800.0,
               width: 800.0,
               asset_size: 'L',
             },
@@ -261,6 +275,116 @@ export class Turn14FakeData {
           type: 'Product Description - Short',
           description:
             'Baja Designs 40in OnX6 Racer Arc Series Driving Pattern Wide LED Light Bar',
+        },
+      ],
+      relationships: {
+        vehicle_fitments: {
+          links: {
+            self: '/v1/items/fitment/1234567',
+          },
+        },
+      },
+    };
+
+    const jsonString = JSON.stringify(fakeItemData);
+    return JSON.parse(jsonString);
+  }
+
+  private static getFakeItemDataNoPrimaryImage(): JSON {
+    const fakeItemData = {
+      id: '10030',
+      type: 'ProductData',
+      files: [
+        {
+          id: 123456781,
+          type: 'Other',
+          file_extension: 'PDF',
+          media_content: 'Instruction Manual',
+          links: [
+            {
+              url:
+                'https://d32vzsop7y1h3k.cloudfront.net/40df3ff8361b556415ce2df87ac9c9ee.PDF',
+            },
+          ],
+        },
+      ],
+      descriptions: [
+        {
+          type: 'Product Description - Short',
+          description:
+            'Baja Designs 40in OnX6 Racer Arc Series Driving Pattern Wide LED Light Bar',
+        },
+      ],
+      relationships: {
+        vehicle_fitments: {
+          links: {
+            self: '/v1/items/fitment/1234567',
+          },
+        },
+      },
+    };
+
+    const jsonString = JSON.stringify(fakeItemData);
+    return JSON.parse(jsonString);
+  }
+
+  private static getFakeItemDataBigImage(): JSON {
+    const fakeItemData = {
+      id: '10030',
+      type: 'ProductData',
+      files: [
+        {
+          id: 123456780,
+          type: 'Image',
+          file_extension: 'JPG',
+          media_content: 'Photo - Primary',
+          links: [
+            {
+              url:
+                'https://d32vzsop7y1h3k.cloudfront.net/40df3ff8361b556415ce2df87ac9c9ee.JPG',
+              height: 66,
+              width: 100,
+              asset_size: 'S',
+            },
+            {
+              url:
+                'https://d32vzsop7y1h3k.cloudfront.net/40df3ff8361b556415ce2df87ac9c9ee.JPG',
+              height: 132,
+              width: 200,
+              asset_size: 'M',
+            },
+            {
+              url:
+                'https://d32vzsop7y1h3k.cloudfront.net/cf5fe9a38d8506d29ecfa29b1034c25b.JPG',
+              height: 11214.0,
+              width: 800.0,
+              asset_size: 'L',
+            },
+          ],
+        },
+        {
+          id: 123456781,
+          type: 'Other',
+          file_extension: 'PDF',
+          media_content: 'Instruction Manual',
+          links: [
+            {
+              url:
+                'https://d32vzsop7y1h3k.cloudfront.net/40df3ff8361b556415ce2df87ac9c9ee.PDF',
+            },
+          ],
+        },
+      ],
+      descriptions: [
+        {
+          type: 'Market Description',
+          description:
+            'Cylinder Head Specifications: Combustion chamber volume: 75cc / 84cc / 88cc; Intake runner volume: 210cc; Exhaust runner volume: 70cc; Intake valve diameter: 2.140\\"; Exhaust valve diameter: 1.81\\"; Valve stem diameter: 11/32\\"; Valve guides: Manganese bronze; Deck thickness: 5/8\\"; Valve spring diameter: 1.55\\"; Valve spring maximum lift: .600\\"; Rocker stud: N/A; Guideplate: N/A; Pushrod diameter: 3/8\\"; Valve angle: 15°; Exhaust port location: Stock; Spark plug fitment: 14mm x 3/4 reach, gasket seat. * For headers, contact TTI (951) 371-4878. Vacuum advance distributor may not clear cylinder head. Deck thickness: 5/8\\", pushrod diameter: 3/8\\".',
+        },
+        {
+          type: 'Product Description - Long',
+          description:
+            'Cylinder Head; BB Chrysler; Performer RPM; 440ci; 88cc Chamber; For Hydraulic Ro',
         },
       ],
       relationships: {
