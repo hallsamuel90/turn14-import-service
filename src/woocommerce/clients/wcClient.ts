@@ -31,7 +31,7 @@ export class WcClient {
     wcApiKeys: Keys,
     brandId: string
   ): Promise<JSON[]> {
-    const wcRestApi = this.wcRestApiProvider.getWcRestApi(
+    const wcRestApi = this.wcRestApiProvider.getRateLimitedWcRestApi(
       siteUrl,
       wcApiKeys.client,
       wcApiKeys.secret
@@ -52,7 +52,7 @@ export class WcClient {
     wcApiKeys: Keys,
     wcCreateProductDtos: WcCreateProductDTO[]
   ): Promise<void> {
-    const wcRestApi = this.wcRestApiProvider.getWcRestApi(
+    const wcRestApi = this.wcRestApiProvider.getRateLimitedWcRestApi(
       siteUrl,
       wcApiKeys.client,
       wcApiKeys.secret
@@ -84,7 +84,7 @@ export class WcClient {
     wcApiKeys: Keys,
     productIds: number[]
   ): Promise<void> {
-    const wcRestApi = this.wcRestApiProvider.getWcRestApi(
+    const wcRestApi = this.wcRestApiProvider.getRateLimitedWcRestApi(
       siteUrl,
       wcApiKeys.client,
       wcApiKeys.secret
@@ -116,7 +116,7 @@ export class WcClient {
     wcApiKeys: Keys,
     wcUpdateProductDtos: WcUpdateProductDTO[]
   ): Promise<void> {
-    const wcRestApi = this.wcRestApiProvider.getWcRestApi(
+    const wcRestApi = this.wcRestApiProvider.getRateLimitedWcRestApi(
       siteUrl,
       wcApiKeys.client,
       wcApiKeys.secret
