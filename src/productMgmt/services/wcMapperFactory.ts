@@ -4,16 +4,24 @@ import { UpdateInventoryWcMapper } from './updateInventoryWcMapper';
 import { WcMapper } from './wcMapper';
 import { WcMapperType } from './wcMapperType';
 import { Keys } from '../../apiUsers/models/apiUser';
-import { WcRestApi } from '../../woocommerce/clients/wcRestApi';
 import { WcMapperFactoryError } from '../../woocommerce/errors/wcMapperFactoryError';
 import { UpdatePricingWcMapper } from './updatePricingWcMapper';
+import { Service } from 'typedi';
+import { WcRestApiProvider } from '../../woocommerce/clients/wcRestApiProvider';
 
 /**
  * WcMapperProvider.
  *
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
+@Service()
 export class WcMapperFactory {
+  private readonly wcRestApiProvider: WcRestApiProvider;
+
+  constructor(wcRestApiProvider: WcRestApiProvider) {
+    this.wcRestApiProvider = wcRestApiProvider;
+  }
+
   public getWcMapper(wcMapperType: WcMapperType): WcMapper;
 
   public getWcMapper(
@@ -49,7 +57,11 @@ export class WcMapperFactory {
     wcSiteUrl: string,
     wcKeys: Keys
   ): CreateProductWcMapper {
-    const wcRestClient = new WcRestApi(wcSiteUrl, wcKeys.client, wcKeys.secret);
+    const wcRestClient = this.wcRestApiProvider.getWcRestApi(
+      wcSiteUrl,
+      wcKeys.client,
+      wcKeys.secret
+    );
     const categoriesCache = new WcCategoriesCache(wcRestClient);
 
     return new CreateProductWcMapper(categoriesCache);

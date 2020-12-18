@@ -164,9 +164,9 @@ export class Turn14FakeData {
             },
             {
               url:
-                'https://d32vzsop7y1h3k.cloudfront.net/40df3ff8361b556415ce2df87ac9c9ee.JPG',
-              height: 132,
-              width: 200,
+                'https://d32vzsop7y1h3k.cloudfront.net/cf5fe9a38d8506d29ecfa29b1034c25b.JPG',
+              height: 11214.0,
+              width: 800.0,
               asset_size: 'L',
             },
           ],

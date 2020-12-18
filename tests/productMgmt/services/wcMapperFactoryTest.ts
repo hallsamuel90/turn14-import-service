@@ -5,12 +5,16 @@ import { WcMapperFactoryError } from '../../../src/woocommerce/errors/wcMapperFa
 import { CreateProductWcMapper } from '../../../src/productMgmt/services/createProductWcMapper';
 import { UpdateInventoryWcMapper } from '../../../src/productMgmt/services/updateInventoryWcMapper';
 import { UpdatePricingWcMapper } from '../../../src/productMgmt/services/updatePricingWcMapper';
+import { WcRestApiProvider } from '../../../src/woocommerce/clients/wcRestApiProvider';
 
-describe('WcMapperProvider tests', () => {
+describe('WcMapperFactory tests', () => {
   let instance: WcMapperFactory;
 
+  let wcRestApiProvider: WcRestApiProvider;
+
   beforeEach(() => {
-    instance = new WcMapperFactory();
+    wcRestApiProvider = new WcRestApiProvider();
+    instance = new WcMapperFactory(wcRestApiProvider);
   });
 
   describe('#getWcMapper', () => {

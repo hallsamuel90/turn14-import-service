@@ -8,7 +8,7 @@
     "debug": "node --inspect=0.0.0.0:7000 build/app.js",
     "start": "node build/app.js",
     "test": "nyc mocha -r ts-node/register 'tests/**/*.ts'",
-    "integration": "mocha --timeout 10000 -r ts-node/register 'integration/**/*.ts'",
+    "integration": "mocha --timeout 30000 -r ts-node/register 'integration/**/*.ts'",
     "build": "npm test && tsc",
     "contain": "sudo docker build -t pmgmt ."
   },
