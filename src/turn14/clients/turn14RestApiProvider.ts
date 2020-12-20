@@ -10,6 +10,7 @@ import { Turn14RestApi } from './turn14RestApi';
 export class Turn14RestApiProvider {
   private static readonly REQUEST_RATE = 4;
   private static readonly BASE_URL = 'https://apitest.turn14.com/v1';
+  private static readonly API_INIT_DELAY_MS = 500;
   /**
    * Creates and returns a pre-configured instance of Turn14RestApi with the provided
    * parameters.
@@ -22,6 +23,9 @@ export class Turn14RestApiProvider {
     client: string,
     secret: string
   ): Promise<Turn14RestApi> {
+    // avoid 429 from consecutive operations
+    await this.sleep(Turn14RestApiProvider.API_INIT_DELAY_MS);
+
     const axiosClient = await this.initializeAuthorizedRateLimitedClient(
       client,
       secret
@@ -71,5 +75,9 @@ export class Turn14RestApiProvider {
     } catch (e) {
       throw new Turn14Error(`Failed to authenticate with the API. ${e}`);
     }
+  }
+
+  private async sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
