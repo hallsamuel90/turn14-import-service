@@ -60,5 +60,20 @@ describe('ProductSyncJobProcessor tests', () => {
 
       verify(mockJob.run()).never();
     });
+
+    it('should unlock the queue if the job dies', async () => {
+      const mockJob = mock<ProductSyncJob>();
+      when(mockJob.run()).thenReject(Error());
+
+      when(mockProductSyncQueueService.isLocked()).thenReturn(false);
+      when(mockProductSyncQueueService.isEmpty()).thenReturn(false);
+      when(mockProductSyncQueueService.dequeue()).thenReturn(instance(mockJob));
+
+      await productSyncJobProcessor.processJob();
+
+      verify(mockJob.run()).called();
+
+      verify(mockProductSyncQueueService.unlockQueue()).once();
+    });
   });
 });
