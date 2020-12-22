@@ -1,5 +1,6 @@
 import { ProductSyncQueueService } from './services/productSyncQueueService';
 import { Service } from 'typedi';
+import { ProductSyncJob } from './models/productSyncJob';
 
 /**
  * Orchestrates the product synchronization jobs.
@@ -20,7 +21,7 @@ export class ProductSyncJobProcessor {
       this.productSyncQueueService.lockQueue();
 
       const job = this.productSyncQueueService.dequeue();
-      await job.run();
+      await this.runJob(job);
 
       this.productSyncQueueService.unlockQueue();
     }
@@ -31,5 +32,13 @@ export class ProductSyncJobProcessor {
       this.productSyncQueueService.isLocked() ||
       this.productSyncQueueService.isEmpty()
     );
+  }
+
+  private async runJob(job: ProductSyncJob): Promise<void> {
+    try {
+      await job.run();
+    } catch (e) {
+      console.error(`🔥: ${e}`);
+    }
   }
 }
