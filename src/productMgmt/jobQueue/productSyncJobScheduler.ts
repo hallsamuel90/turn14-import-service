@@ -10,7 +10,7 @@ import { ProductSyncQueueService } from './services/productSyncQueueService';
 export class ProductSyncJobScheduler {
   private static ONE_HOUR_SEC = 3600; // 3600 sec in 1 hour.
   private static ONE_DAY_SEC = 24 * ProductSyncJobScheduler.ONE_HOUR_SEC;
-  private static ONE_MONTH_SEC = 30 * ProductSyncJobScheduler.ONE_DAY_SEC;
+  private static ONE_MONTH = 2147483647; // max timeout ~ 24.8 days
 
   private readonly productSyncQueueService: ProductSyncQueueService;
   private readonly productSyncJobFactory: ProductSyncJobFactory;
@@ -88,14 +88,14 @@ export class ProductSyncJobScheduler {
    */
   public async scheduleProductResync(): Promise<void> {
     console.info(
-      `⏲️  Scheduling product resync for all users every ${ProductSyncJobScheduler.ONE_MONTH_SEC} seconds.`
+      `⏲️  Scheduling product resync for all users every ${ProductSyncJobScheduler.ONE_MONTH/1000} seconds.`
     );
 
     this.pushJob(ProductSyncJobType.RESYNC_PRODUCTS);
 
     setInterval(() => {
       this.pushJob(ProductSyncJobType.RESYNC_PRODUCTS);
-    }, ProductSyncJobScheduler.ONE_MONTH_SEC * 1000);
+    }, ProductSyncJobScheduler.ONE_MONTH);
   }
 
   private pushJob(jobType: ProductSyncJobType): void {
