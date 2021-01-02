@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import path from 'path';
 import { capture, instance, mock, spy, when } from 'ts-mockito';
+import { ApiUser } from '../../../src/apiUsers/models/apiUser';
 import { PmgmtDTO } from '../../../src/productMgmt/dtos/pmgmtDto';
 import { PreProcessingFilter } from '../../../src/productMgmt/services/preProcessingFilter';
 import { ProductMgmtService } from '../../../src/productMgmt/services/productMgmtService';
@@ -67,8 +68,45 @@ describe('ProductMgmtService Integration tests', () => {
       ).last();
 
       expect(urlArg).to.eq(INT_URL);
-      expect(keysArg).to.eq({ client: INT_WC_CLIENT, secret: INT_WC_SECRET });
+      expect(keysArg.client).to.eq(INT_WC_CLIENT);
+      expect(keysArg.secret).to.eq(INT_WC_SECRET);
       expect(productsArg).to.not.be.null; // just testing plumbing
+    });
+  });
+
+  describe('#resyncProducts', () => {
+    it('resync products that have changed', async () => {
+      const fakeApiUser = ({
+        siteUrl: INT_URL,
+        turn14Keys: { client: 'fakeTurn14Client', secret: 'fakeTurn14Secret' },
+        wcKeys: {
+          client: INT_WC_CLIENT,
+          secret: INT_WC_SECRET,
+        },
+        brandIds: ['18'],
+      } as unknown) as ApiUser;
+
+      when(
+        mockTurn14Client.getProductsByBrand(
+          fakeApiUser.turn14Keys,
+          fakeApiUser.brandIds[0]
+        )
+      ).thenResolve([Turn14FakeData.getFakeTurn14ProductDTO()]);
+
+      const spiedWcClient = spy(wcClient);
+
+      await pmgmtService.resyncProducts(fakeApiUser);
+
+      const [urlArg, keysArg, productsArg] = capture(
+        spiedWcClient.postBatchCreateWcProducts
+      ).last();
+
+      expect(urlArg).to.eq(INT_URL);
+      expect(keysArg.client).to.eq(INT_WC_CLIENT);
+      expect(keysArg.secret).to.eq(INT_WC_SECRET);
+
+      // this test assumes that this product is already in the store.
+      expect(productsArg).to.be.empty;
     });
   });
 });

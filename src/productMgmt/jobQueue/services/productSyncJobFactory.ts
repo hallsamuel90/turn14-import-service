@@ -6,6 +6,7 @@ import { ProductSyncJobError } from '../errors/productSyncJobError';
 import { DeleteProductsJob } from '../models/deleteProductsJob';
 import { ImportAddedProductsJob } from '../models/importAddedProductsJob';
 import { ImportProductsJob } from '../models/importProductsJob';
+import { ProductsResyncJob } from '../models/productsResyncJob';
 import { ProductSyncJob } from '../models/productSyncJob';
 import { RemoveStaleProductsJob } from '../models/removeStaleProductsJob';
 import { UpdateInventoryJob } from '../models/updateInventoryJob';
@@ -57,6 +58,8 @@ export class ProductSyncJobFactory {
           this.apiUserService,
           this.pmgmtService
         );
+      case ProductSyncJobType.RESYNC_PRODUCTS:
+        return new ProductsResyncJob(this.apiUserService, this.pmgmtService);
       default:
         throw new ProductSyncJobError(
           `Cannot create job with unknown type: ${jobType}`

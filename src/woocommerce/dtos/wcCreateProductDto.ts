@@ -17,7 +17,7 @@ import { WcProductDTO } from './wcProductDto';
 export class WcCreateProductDTO extends WcProductDTO {
   name: string;
   type: string;
-  shortDescription: string;
+  short_description: string;
   description: string;
   sku: string;
   brand_id: number;
@@ -44,7 +44,7 @@ export class WcCreateProductDTO extends WcProductDTO {
 
     this.name = '';
     this.type = 'simple';
-    this.shortDescription = '';
+    this.short_description = '';
     this.description = '';
     this.sku = '';
     this.brands = [];
