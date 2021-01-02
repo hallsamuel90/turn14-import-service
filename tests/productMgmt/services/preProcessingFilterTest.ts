@@ -167,4 +167,42 @@ describe('PreProcessingFilter tests', () => {
       expect(actual.length).to.eq(1);
     });
   });
+
+  describe('#filterUnchangedProducts', () => {
+    it('should remove duplicate products', () => {
+      const fakeCreateProduct1 = new WcCreateProductDTO();
+      fakeCreateProduct1.name = 'bob & tom';
+      fakeCreateProduct1.type = 'simple';
+      fakeCreateProduct1.sku = 'skuuby';
+      fakeCreateProduct1.regular_price = '3.50';
+      fakeCreateProduct1.sale_price = '1.00';
+      fakeCreateProduct1.weight = '1000';
+      fakeCreateProduct1.manage_stock = false;
+      fakeCreateProduct1.stock_quantity = 0;
+      fakeCreateProduct1.stock_status = 'instock';
+      fakeCreateProduct1.backorders = 'no';
+      fakeCreateProduct1.backorders_allowed = false;
+
+      const fakeExistingProduct1 = ({
+        name: 'bob &amp; tom',
+        type: 'simple',
+        sku: 'skuuby',
+        regular_price: '3.50',
+        sale_price: '1.00',
+        weight: '1000',
+        manage_stock: false,
+        stock_quantity: 0,
+        stock_status: 'instock',
+        backorders: 'no',
+        backorders_allowed: false,
+      } as unknown) as JSON;
+
+      const actual = preProcessingFilter.filterUnchangedProducts(
+        [fakeCreateProduct1],
+        [fakeExistingProduct1]
+      );
+
+      expect(actual).to.be.an('array').that.is.empty;
+    });
+  });
 });

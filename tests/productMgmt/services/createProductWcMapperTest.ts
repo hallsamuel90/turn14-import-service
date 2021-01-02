@@ -63,7 +63,7 @@ describe('WcMapper tests', () => {
         'DBA 92-95 MR-2 Turbo Rear Drilled & Slotted 4000 Series Rotor'
       );
       expect(wcCreateProductDtoAttributes.type).to.equal('simple');
-      expect(wcCreateProductDtoAttributes.shortDescription).to.equal(
+      expect(wcCreateProductDtoAttributes.short_description).to.equal(
         'DBA 92-95 MR-2 Turbo Rear Drilled & Slotted 4000 Series Rotor'
       );
       expect(wcCreateProductDtoAttributes.sku).to.equal('4583XS');
@@ -163,5 +163,14 @@ describe('WcMapper tests', () => {
       'src',
       'https://d5otzd52uv6zz.cloudfront.net/be0798de'
     );
+  });
+
+  it('should set backorders to notify if product is carried regularly but out of stock', async () => {
+    const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTOWithBigImage();
+
+    const actual = await createProductWcMapper.turn14ToWc(fakeTurn14ProductDto);
+
+    expect(actual.backorders).to.equal('notify');
+    expect(actual.backorders_allowed).to.equal(true);
   });
 });

@@ -8,7 +8,7 @@ import { Turn14RestApi } from './turn14RestApi';
  * Turn14RestApiProvider.
  */
 export class Turn14RestApiProvider {
-  private static readonly REQUEST_RATE = 4;
+  private static readonly REQUEST_RATE = 3;
   private static readonly BASE_URL = 'https://apitest.turn14.com/v1';
   private static readonly API_INIT_DELAY_MS = 500;
   /**
