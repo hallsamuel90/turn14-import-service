@@ -1,7 +1,7 @@
 import { mock, instance, when, anything, verify } from 'ts-mockito';
 import { ApiUser } from '../../../../src/apiUsers/models/apiUser';
 import { ApiUserService } from '../../../../src/apiUsers/services/apiUserService';
-import ProductsResyncJob from '../../../../src/productMgmt/jobQueue/models/productsResyncJob';
+import { ProductsResyncJob } from '../../../../src/productMgmt/jobQueue/models/productsResyncJob';
 import { ProductMgmtService } from '../../../../src/productMgmt/services/productMgmtService';
 
 describe('RemoveStaleProductsProductsJob tests', () => {
