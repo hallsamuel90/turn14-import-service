@@ -67,10 +67,10 @@ export class CreateProductWcMapper extends WcMapper {
     const itemAttributes = turn14ProductDto?.item?.['attributes'];
     if (itemAttributes) {
       const wcProductAttributes = this.turn14AttributesToWc(itemAttributes);
-      wcProduct.name = wcProductAttributes.shortDescription;
+      wcProduct.name = wcProductAttributes.short_description;
       wcProduct.sku = wcProductAttributes.sku;
       wcProduct.brand_id = wcProductAttributes.brand_id;
-      wcProduct.shortDescription = wcProductAttributes.shortDescription;
+      wcProduct.short_description = wcProductAttributes.short_description;
       wcProduct.dimensions.length = wcProductAttributes.dimensions.length;
       wcProduct.dimensions.width = wcProductAttributes.dimensions.width;
       wcProduct.dimensions.height = wcProductAttributes.dimensions.height;
@@ -99,6 +99,7 @@ export class CreateProductWcMapper extends WcMapper {
       const wcInventory = this.turn14InventoryToWc(itemInventory);
       wcProduct.manage_stock = wcInventory?.manage_stock;
       wcProduct.backorders = wcInventory?.backorders;
+      wcProduct.backorders_allowed = wcInventory?.backorders_allowed;
       wcProduct.stock_quantity = wcInventory?.stock_quantity;
     }
 
@@ -111,7 +112,7 @@ export class CreateProductWcMapper extends WcMapper {
     wcProductAttributes.name = itemAttributes?.product_name;
     wcProductAttributes.sku = itemAttributes?.mfr_part_number;
     wcProductAttributes.brand_id = itemAttributes?.brand_id;
-    wcProductAttributes.shortDescription = itemAttributes?.part_description;
+    wcProductAttributes.short_description = itemAttributes?.part_description;
     wcProductAttributes.dimensions.length =
       itemAttributes?.dimensions[0]?.length;
     wcProductAttributes.dimensions.width = itemAttributes?.dimensions[0]?.width;
@@ -198,6 +199,7 @@ export class CreateProductWcMapper extends WcMapper {
     const wcInventory = new WcCreateProductDTO();
     wcInventory.manage_stock = true;
     wcInventory.backorders = 'notify';
+    wcInventory.backorders_allowed = true;
 
     const itemInventoryAttributes = itemInventory?.['attributes'];
     wcInventory.stock_quantity = this.calculateTurn14StockQuantity(

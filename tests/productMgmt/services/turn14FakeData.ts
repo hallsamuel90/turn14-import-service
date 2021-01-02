@@ -57,6 +57,13 @@ export class Turn14FakeData {
     return turn14Product;
   }
 
+  public static getFakeTurn14ProductOutOfStock(): Turn14ProductDTO {
+    const turn14Product = this.getFakeTurn14ProductDTO();
+    turn14Product.itemInventory = this.getFakeItemInventoryOutOfStock();
+
+    return turn14Product;
+  }
+
   /**
    * Returns a new Turn14ProductDTO populated with arbitrary fox brand data.
    *
@@ -102,7 +109,7 @@ export class Turn14FakeData {
         price_group_id: 106,
         price_group: 'DBA',
         active: true,
-        regular_stock: false,
+        regular_stock: true,
         dropship_controller_id: 12,
         air_freight_prohibited: false,
         not_carb_approved: false,
@@ -433,6 +440,32 @@ export class Turn14FakeData {
         },
         manufacturer: {
           stock: 1,
+          esd: '2016-01-01',
+        },
+      },
+      relationships: {
+        item: {
+          links: '/v1/items/15074',
+        },
+      },
+    };
+
+    const jsonString = JSON.stringify(fakeItemInventory);
+    return JSON.parse(jsonString);
+  }
+
+  private static getFakeItemInventoryOutOfStock(): JSON {
+    const fakeItemInventory = {
+      type: 'InventoryItem',
+      id: '10030',
+      attributes: {
+        inventory: {
+          '59': 0,
+          '01': 0,
+          '02': 0,
+        },
+        manufacturer: {
+          stock: 0,
           esd: '2016-01-01',
         },
       },

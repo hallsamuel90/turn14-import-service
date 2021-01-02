@@ -58,7 +58,7 @@ export class PreProcessingFilter {
    *
    * @param {WcCreateProductDTO[]} wcProducts the product dtos to filter.
    * @param { JSON[] } existingWcProducts the existing products to compare against.
-   * @returns {WcUpdatePricingDTO[]} filtered wcUpdateInventoryDtos.
+   * @returns {WcCreateProductDTO[]} filtered wcCreateProductsDtos.
    */
   public filterExistingProducts(
     wcProducts: WcCreateProductDTO[],
@@ -98,6 +98,53 @@ export class PreProcessingFilter {
     }
 
     return removedProducts;
+  }
+
+  /**
+   * Filters out products that have not been changed, returns those that have.
+   *
+   * @param {WcCreateProductDTO[]} wcCreateProductsDtos the product dtos to filter.
+   * @param { JSON[] } existingWcProducts the existing products to compare against.
+   * @returns {WcCreateProductDTO[]} filtered wcCreateProductsDtos.
+   */
+  public filterUnchangedProducts(
+    wcCreateProductsDtos: WcCreateProductDTO[],
+    existingWcProducts: JSON[]
+  ): WcCreateProductDTO[] {
+    const filteredWcProducts: WcCreateProductDTO[] = [];
+    for (const wcProduct of wcCreateProductsDtos) {
+      if (this.productHasChanged(wcProduct, existingWcProducts)) {
+        filteredWcProducts.push(wcProduct);
+      }
+    }
+
+    return filteredWcProducts;
+  }
+
+  private productHasChanged(
+    wcProduct: WcCreateProductDTO,
+    existingWcProducts: JSON[]
+  ): boolean {
+    const existingWcProductMap = (_.keyBy(
+      existingWcProducts,
+      'sku'
+    ) as unknown) as Dictionary<JSON>;
+
+    const existingProduct = existingWcProductMap[wcProduct.sku];
+    if (!existingProduct) {
+      return true;
+    }
+
+    return !(
+      wcProduct.name == this.sanitizeName(existingProduct?.['name']) &&
+      wcProduct.type == existingProduct?.['type'] &&
+      wcProduct.regular_price == existingProduct?.['regular_price'] &&
+      wcProduct.sale_price == existingProduct?.['sale_price'] &&
+      wcProduct.weight == existingProduct?.['weight'] &&
+      wcProduct.manage_stock == existingProduct?.['manage_stock'] &&
+      wcProduct.backorders == existingProduct?.['backorders'] &&
+      wcProduct.backorders_allowed == existingProduct?.['backorders_allowed']
+    );
   }
 
   private stockHasChanged(
@@ -158,5 +205,9 @@ export class PreProcessingFilter {
     return _.keyBy(turn14Products, (turn14ProductDto) => {
       return turn14ProductDto.item?.['attributes']?.['mfr_part_number'];
     }) as Dictionary<Turn14ProductDTO>;
+  }
+
+  private sanitizeName(name: string): string {
+    return name.replace('&amp;', '&');
   }
 }

@@ -152,6 +152,38 @@ export class ProductMgmtService {
     console.info('👍 Stale product removal complete!');
   }
 
+  public async resyncProducts(apiUser: ApiUser): Promise<void> {
+    for (const brandId of apiUser.brandIds) {
+      const wcMapper = this.wcMapperFactory.getWcMapper(
+        WcMapperType.CREATE_PRODUCT,
+        apiUser.siteUrl,
+        apiUser.wcKeys
+      ) as CreateProductWcMapper;
+
+      const turn14Products = await this.turn14Client.getProductsByBrand(
+        apiUser.turn14Keys,
+        brandId
+      );
+
+      const wcCreateProductsDtos = await wcMapper.turn14sToWcs(turn14Products);
+      const fetchedWcProducts = await this.wcClient.getWcProductsByBrand(
+        apiUser.siteUrl,
+        apiUser.wcKeys,
+        brandId
+      );
+
+      const filteredWcCreateProductsDtos = this.preProcessingFilter.filterUnchangedProducts(
+        wcCreateProductsDtos,
+        fetchedWcProducts
+      );
+      await this.wcClient.postBatchCreateWcProducts(
+        apiUser.siteUrl,
+        apiUser.wcKeys,
+        filteredWcCreateProductsDtos
+      );
+    }
+  }
+
   private async updateInventoryForBrand(
     apiUser: ApiUser,
     brandId: string
