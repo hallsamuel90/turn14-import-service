@@ -99,10 +99,14 @@ export class WcCategoriesCache {
   }
 
   private async createBrand(sanitizedBrandName: string): Promise<JSON> {
-    const brand = await this.wcRestApi.createBrand(sanitizedBrandName);
-    this.addBrandToCache(brand);
+    try {
+      const brand = await this.wcRestApi.createBrand(sanitizedBrandName);
+      this.addBrandToCache(brand);
+    } catch (e) {
+      console.error('🔥 ' + e);
+    }
 
-    return brand;
+    return ({ id: 0 } as unknown) as JSON;
   }
 
   private addBrandToCache(brand: JSON): void {
