@@ -153,6 +153,8 @@ export class ProductMgmtService {
   }
 
   public async resyncProducts(apiUser: ApiUser): Promise<void> {
+    console.info(`🔨 Re-syncing products for ${apiUser.siteUrl}!`);
+
     for (const brandId of apiUser.brandIds) {
       const wcMapper = this.wcMapperFactory.getWcMapper(
         WcMapperType.CREATE_PRODUCT,
@@ -163,6 +165,10 @@ export class ProductMgmtService {
       const turn14Products = await this.turn14Client.getProductsByBrand(
         apiUser.turn14Keys,
         brandId
+      );
+
+      console.info(
+        `Re-syncing brand: ${turn14Products[0].item?.['attributes']?.['brand']}`
       );
 
       const wcCreateProductsDtos = await wcMapper.turn14sToWcs(turn14Products);
@@ -176,12 +182,15 @@ export class ProductMgmtService {
         wcCreateProductsDtos,
         fetchedWcProducts
       );
+
       await this.wcClient.postBatchCreateWcProducts(
         apiUser.siteUrl,
         apiUser.wcKeys,
         filteredWcCreateProductsDtos
       );
     }
+
+    console.info('👍 Product Resync complete!');
   }
 
   private async updateInventoryForBrand(
