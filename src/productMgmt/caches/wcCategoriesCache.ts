@@ -102,6 +102,8 @@ export class WcCategoriesCache {
     try {
       const brand = await this.wcRestApi.createBrand(sanitizedBrandName);
       this.addBrandToCache(brand);
+
+      return brand;
     } catch (e) {
       console.error('🔥 ' + e);
     }
