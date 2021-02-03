@@ -91,24 +91,13 @@ export class WcCategoriesCache {
     }
 
     brand = await this.createBrand(sanitizedBrandName);
+    this.addBrandToCache(brand);
+
     return this.getBrandIdFromBrand(brand);
   }
 
   private getBrandFromCache(sanitizedBrandName: string): JSON | undefined {
     return this.brands[sanitizedBrandName];
-  }
-
-  private async createBrand(sanitizedBrandName: string): Promise<JSON> {
-    try {
-      const brand = await this.wcRestApi.createBrand(sanitizedBrandName);
-      this.addBrandToCache(brand);
-
-      return brand;
-    } catch (e) {
-      console.error('🔥 ' + e);
-    }
-
-    return ({ id: 0 } as unknown) as JSON;
   }
 
   private addBrandToCache(brand: JSON): void {
@@ -133,8 +122,28 @@ export class WcCategoriesCache {
    * Initializes the cache.
    */
   private async initCache(): Promise<void> {
-    this.categories = await this.wcRestApi.fetchAllCategories();
-    this.brands = await this.wcRestApi.fetchAllBrands();
+    this.categories = await this.getAllCategories();
+    this.brands = await this.getAllBrands();
+  }
+
+  private async getAllCategories(): Promise<Dictionary<JSON>> {
+    try {
+      return await this.wcRestApi.fetchAllCategories();
+    } catch (e) {
+      console.error('🔥 ' + e);
+    }
+
+    return {};
+  }
+
+  private async getAllBrands(): Promise<Dictionary<JSON>> {
+    try {
+      return await this.wcRestApi.fetchAllBrands();
+    } catch (e) {
+      console.error('🔥 ' + e);
+    }
+
+    return {};
   }
 
   /**
@@ -180,6 +189,18 @@ export class WcCategoriesCache {
 
       return ({ id: 0 } as unknown) as JSON; // 'uncategorized'
     }
+  }
+
+  private async createBrand(sanitizedBrandName: string): Promise<JSON> {
+    try {
+      const brand = await this.wcRestApi.createBrand(sanitizedBrandName);
+
+      return brand;
+    } catch (e) {
+      console.error('🔥 ' + e);
+    }
+
+    return ({ id: 0 } as unknown) as JSON;
   }
 
   private sanitizeName(categoryName: string): string {
