@@ -140,7 +140,7 @@ export class WcRestApi {
    * Creates a new woocommerce category
    *
    * @param {WcCategoryDTO} wcCategoryDto the data transfer creation object.
-   * @returns {Promise<JSON>} the response from woocommerce or an empy response
+   * @returns {Promise<JSON>} the response from woocommerce or an empty response
    * if there is an error.
    */
   public async createCategory(wcCategoryDto: WcCategoryDTO): Promise<JSON> {
