@@ -172,16 +172,20 @@ export class ProductMgmtService {
       );
 
       const wcCreateProductsDtos = await wcMapper.turn14sToWcs(turn14Products);
+      console.debug(wcCreateProductsDtos);
+
       const fetchedWcProducts = await this.wcClient.getWcProductsByBrand(
         apiUser.siteUrl,
         apiUser.wcKeys,
         brandId
       );
+      console.debug(fetchedWcProducts);
 
       const filteredWcCreateProductsDtos = this.preProcessingFilter.filterUnchangedProducts(
         wcCreateProductsDtos,
         fetchedWcProducts
       );
+      console.debug(filteredWcCreateProductsDtos);
 
       await this.wcClient.postBatchCreateWcProducts(
         apiUser.siteUrl,
