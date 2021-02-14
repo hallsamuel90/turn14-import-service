@@ -54,7 +54,7 @@ export class WcRestApi {
 
     let pageNumber = 1;
     while (true) {
-      const pageData = await this.fetchProductsByBrand(brandId, pageNumber);
+      const pageData = await this.getProductsByPage(brandId, pageNumber);
 
       if (!Array.isArray(pageData) || !pageData.length) {
         break;
@@ -65,6 +65,19 @@ export class WcRestApi {
     }
 
     return allData;
+  }
+
+  private async getProductsByPage(
+    brandId: string,
+    pageNumber: number
+  ): Promise<JSON[]> {
+    try {
+      return await this.fetchProductsByBrand(brandId, pageNumber);
+    } catch (e) {
+      console.error('🔥 ' + e);
+
+      return [];
+    }
   }
 
   /**
@@ -209,10 +222,20 @@ export class WcRestApi {
   }
 
   private buildWcError(e: AxiosError): WcError {
-    const errorJsonString = JSON.stringify(e.toJSON());
+    console.error(this.getErrorMessage(e));
 
     return new WcError(
-      `Something went wrong communicating with WooCommerce. ${errorJsonString}`
+      `Something went wrong communicating with WooCommerce. ${this.getErrorMessage(
+        e
+      )}`
     );
+  }
+
+  private getErrorMessage(e: AxiosError): string {
+    try {
+      return JSON.stringify(e.toJSON());
+    } catch {
+      return e.message;
+    }
   }
 }
