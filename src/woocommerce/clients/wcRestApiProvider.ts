@@ -9,7 +9,7 @@ import { WcRestApi } from './wcRestApi';
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
 export class WcRestApiProvider {
-  private static readonly REQUEST_RATE = 4;
+  private static readonly REQUEST_RATE = 2;
   /**
    * Creates and returns a new instance of WcRestApi with the provided
    * parameters.
