@@ -173,16 +173,22 @@ export class ProductMgmtService {
 
       const wcCreateProductsDtos = await wcMapper.turn14sToWcs(turn14Products);
 
+      console.info('successfully mapped products.');
+
       const fetchedWcProducts = await this.wcClient.getWcProductsByBrand(
         apiUser.siteUrl,
         apiUser.wcKeys,
         brandId
       );
 
+      console.info('fetched existing products from woocommerce.');
+
       const filteredWcCreateProductsDtos = this.preProcessingFilter.filterUnchangedProducts(
         wcCreateProductsDtos,
         fetchedWcProducts
       );
+
+      console.info('filtered out unchanged products');
 
       await this.wcClient.postBatchCreateWcProducts(
         apiUser.siteUrl,
