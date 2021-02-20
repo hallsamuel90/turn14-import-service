@@ -156,12 +156,6 @@ export class ProductMgmtService {
     console.info(`🔨 Re-syncing products for ${apiUser.siteUrl}!`);
 
     for (const brandId of apiUser.brandIds) {
-      const wcMapper = this.wcMapperFactory.getWcMapper(
-        WcMapperType.CREATE_PRODUCT,
-        apiUser.siteUrl,
-        apiUser.wcKeys
-      ) as CreateProductWcMapper;
-
       const turn14Products = await this.turn14Client.getProductsByBrand(
         apiUser.turn14Keys,
         brandId
@@ -171,29 +165,20 @@ export class ProductMgmtService {
         `Re-syncing brand: ${turn14Products[0].item?.['attributes']?.['brand']}`
       );
 
+      const wcMapper = this.wcMapperFactory.getWcMapper(
+        WcMapperType.CREATE_PRODUCT,
+        apiUser.siteUrl,
+        apiUser.wcKeys
+      ) as CreateProductWcMapper;
+
       const wcCreateProductsDtos = await wcMapper.turn14sToWcs(turn14Products);
 
       console.info('successfully mapped products.');
 
-      const fetchedWcProducts = await this.wcClient.getWcProductsByBrand(
-        apiUser.siteUrl,
-        apiUser.wcKeys,
-        brandId
-      );
-
-      console.info('fetched existing products from woocommerce.');
-
-      const filteredWcCreateProductsDtos = this.preProcessingFilter.filterUnchangedProducts(
-        wcCreateProductsDtos,
-        fetchedWcProducts
-      );
-
-      console.info('filtered out unchanged products');
-
       await this.wcClient.postBatchCreateWcProducts(
         apiUser.siteUrl,
         apiUser.wcKeys,
-        filteredWcCreateProductsDtos
+        wcCreateProductsDtos
       );
     }
 
