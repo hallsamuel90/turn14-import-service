@@ -166,7 +166,15 @@ export class ProductMgmtService {
         apiUser.wcKeys
       ) as CreateProductWcMapper;
 
-      await this.importProducts({ ...apiUser, brandId: brandId }, wcMapper);
+      await this.importProducts(
+        {
+          ...apiUser,
+          turn14Keys: apiUser.turn14Keys,
+          wcKeys: apiUser.wcKeys,
+          brandId: brandId,
+        },
+        wcMapper
+      );
     }
 
     console.info('👍 Product Resync complete!');
