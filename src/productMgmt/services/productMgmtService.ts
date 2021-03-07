@@ -1,17 +1,14 @@
 import _ from 'lodash';
 import { Service } from 'typedi';
 import { ApiUser } from '../../apiUsers/models/apiUser';
-import { WcUpdateInventoryDTO } from '../../woocommerce/dtos/wcUpdateInventoryDto';
-import { WcUpdatePricingDTO } from '../../woocommerce/dtos/wcUpdatePricingDto';
+import { Turn14Client, Turn14Page } from '../../turn14/clients/turn14Client';
+import { Turn14RestApi } from '../../turn14/clients/turn14RestApi';
+import { WcClient } from '../../woocommerce/clients/wcClient';
 import { PmgmtDTO } from '../dtos/pmgmtDto';
 import { CreateProductWcMapper } from './createProductWcMapper';
 import { PreProcessingFilter } from './preProcessingFilter';
-import { Turn14Client } from '../../turn14/clients/turn14Client';
-import { UpdateInventoryWcMapper } from './updateInventoryWcMapper';
-import { UpdatePricingWcMapper } from './updatePricingWcMapper';
 import { WcMapperFactory } from './wcMapperFactory';
 import { WcMapperType } from './wcMapperType';
-import { WcClient } from '../../woocommerce/clients/wcClient';
 
 /**
  * ProductMgmtService.
@@ -52,18 +49,7 @@ export class ProductMgmtService {
       pmgmtDto.wcKeys
     ) as CreateProductWcMapper;
 
-    const turn14Products = await this.turn14Client.getProductsByBrand(
-      pmgmtDto.turn14Keys,
-      pmgmtDto.brandId
-    );
-
-    const wcProducts = await wcMapper.turn14sToWcs(turn14Products);
-
-    await this.wcClient.postBatchCreateWcProducts(
-      pmgmtDto.siteUrl,
-      pmgmtDto.wcKeys,
-      wcProducts
-    );
+    await this.importProducts(pmgmtDto, wcMapper);
 
     console.info('👍 Import complete!');
   }
@@ -74,11 +60,20 @@ export class ProductMgmtService {
    * @param {ApiUser} apiUser the user to update the inventory for.
    */
   public async updateUserActiveInventory(apiUser: ApiUser): Promise<void> {
-    console.info('🔨 Upate inventory job starting!');
+    console.info('🔨 Update inventory job starting!');
 
     const activeBrands = apiUser.brandIds;
     for (const activeBrand of activeBrands) {
-      await this.updateInventoryForBrand(apiUser, activeBrand);
+      const wcMapper = this.wcMapperFactory.getWcMapper(
+        WcMapperType.CREATE_PRODUCT,
+        apiUser.siteUrl,
+        apiUser.wcKeys
+      ) as CreateProductWcMapper;
+
+      await this.importProductInventory(
+        { ...apiUser, brandId: activeBrand },
+        wcMapper
+      );
     }
 
     console.info('👍 Inventory update complete!');
@@ -94,7 +89,16 @@ export class ProductMgmtService {
 
     const activeBrands = apiUser.brandIds;
     for (const activeBrand of activeBrands) {
-      await this.updatePricingForBrand(apiUser, activeBrand);
+      const wcMapper = this.wcMapperFactory.getWcMapper(
+        WcMapperType.CREATE_PRODUCT,
+        apiUser.siteUrl,
+        apiUser.wcKeys
+      ) as CreateProductWcMapper;
+
+      await this.importProductPricing(
+        { ...apiUser, brandId: activeBrand },
+        wcMapper
+      );
     }
 
     console.info('👍 Pricing update complete!');
@@ -156,103 +160,16 @@ export class ProductMgmtService {
     console.info(`🔨 Re-syncing products for ${apiUser.siteUrl}!`);
 
     for (const brandId of apiUser.brandIds) {
-      const turn14Products = await this.turn14Client.getProductsByBrand(
-        apiUser.turn14Keys,
-        brandId
-      );
-
-      console.info(
-        `Re-syncing brand: ${turn14Products[0].item?.['attributes']?.['brand']}`
-      );
-
       const wcMapper = this.wcMapperFactory.getWcMapper(
         WcMapperType.CREATE_PRODUCT,
         apiUser.siteUrl,
         apiUser.wcKeys
       ) as CreateProductWcMapper;
 
-      const wcCreateProductsDtos = await wcMapper.turn14sToWcs(turn14Products);
-
-      console.info('successfully mapped products.');
-
-      await this.wcClient.postBatchCreateWcProducts(
-        apiUser.siteUrl,
-        apiUser.wcKeys,
-        wcCreateProductsDtos
-      );
+      await this.importProducts({ ...apiUser, brandId: brandId }, wcMapper);
     }
 
     console.info('👍 Product Resync complete!');
-  }
-
-  private async updateInventoryForBrand(
-    apiUser: ApiUser,
-    brandId: string
-  ): Promise<void> {
-    const wcMapper = this.wcMapperFactory.getWcMapper(
-      WcMapperType.UPDATE_INVENTORY
-    ) as UpdateInventoryWcMapper;
-
-    const turn14Products = await this.turn14Client.getProductsByBrand(
-      apiUser.turn14Keys,
-      brandId
-    );
-    const fetchedWcProducts = await this.wcClient.getWcProductsByBrand(
-      apiUser.siteUrl,
-      apiUser.wcKeys,
-      brandId
-    );
-
-    const wcUpdateInventoryDtos: WcUpdateInventoryDTO[] = wcMapper.turn14sToWcs(
-      turn14Products,
-      fetchedWcProducts
-    );
-
-    const filteredWcUpdateInventoryDtos = this.preProcessingFilter.filterUnchangedInventory(
-      wcUpdateInventoryDtos,
-      fetchedWcProducts
-    );
-
-    this.wcClient.postBatchUpdateWcProducts(
-      apiUser.siteUrl,
-      apiUser.wcKeys,
-      filteredWcUpdateInventoryDtos
-    );
-  }
-
-  private async updatePricingForBrand(
-    apiUser: ApiUser,
-    brandId: string
-  ): Promise<void> {
-    const wcMapper = this.wcMapperFactory.getWcMapper(
-      WcMapperType.UPDATE_PRICING
-    ) as UpdatePricingWcMapper;
-
-    const turn14Products = await this.turn14Client.getProductsByBrand(
-      apiUser.turn14Keys,
-      brandId
-    );
-    const fetchedWcProducts = await this.wcClient.getWcProductsByBrand(
-      apiUser.siteUrl,
-      apiUser.wcKeys,
-      brandId
-    );
-
-    const wcUpdatePricingDtos: WcUpdatePricingDTO[] = wcMapper.turn14sToWcs(
-      turn14Products,
-      fetchedWcProducts
-    );
-
-    const filteredWcUpdatePricingDtos = this.preProcessingFilter.filterUnchangedPricing(
-      wcUpdatePricingDtos,
-      fetchedWcProducts
-    );
-
-    this.wcClient.postBatchUpdateWcProducts(
-      apiUser.siteUrl,
-      apiUser.wcKeys,
-      filteredWcUpdatePricingDtos
-    );
   }
 
   private async importNewProductsForBrand(
@@ -319,5 +236,95 @@ export class ProductMgmtService {
 
   private extractProductIds(fetchedWcProducts: JSON[]): number[] {
     return _.map(fetchedWcProducts, 'id');
+  }
+
+  private async importProducts(
+    pmgmtDto: PmgmtDTO,
+    wcMapper: CreateProductWcMapper
+  ): Promise<void> {
+    await this.importBaseProducts(pmgmtDto, wcMapper);
+    await this.importProductData(pmgmtDto, wcMapper);
+    await this.importProductPricing(pmgmtDto, wcMapper);
+    await this.importProductInventory(pmgmtDto, wcMapper);
+  }
+
+  private async importBaseProducts(
+    pmgmtDto: PmgmtDTO,
+    wcMapper: CreateProductWcMapper
+  ): Promise<void> {
+    await this.importTurn14(
+      pmgmtDto,
+      wcMapper,
+      this.turn14Client.getBaseProducts
+    );
+  }
+
+  private async importProductData(
+    pmgmtDto: PmgmtDTO,
+    wcMapper: CreateProductWcMapper
+  ): Promise<void> {
+    await this.importTurn14(
+      pmgmtDto,
+      wcMapper,
+      this.turn14Client.getProductData
+    );
+  }
+
+  private async importProductPricing(
+    pmgmtDto: PmgmtDTO,
+    wcMapper: CreateProductWcMapper
+  ): Promise<void> {
+    await this.importTurn14(
+      pmgmtDto,
+      wcMapper,
+      this.turn14Client.getProductPricing
+    );
+  }
+
+  private async importProductInventory(
+    pmgmtDto: PmgmtDTO,
+    wcMapper: CreateProductWcMapper
+  ): Promise<void> {
+    await this.importTurn14(
+      pmgmtDto,
+      wcMapper,
+      this.turn14Client.getProductInventory
+    );
+  }
+
+  private async importTurn14(
+    pmgmtDto: PmgmtDTO,
+    wcMapper: CreateProductWcMapper,
+    getPagedData: (
+      turn14RestApi: Turn14RestApi,
+      brandId: string,
+      page: number
+    ) => Promise<Turn14Page>
+  ): Promise<void> {
+    const turn14Api = await this.turn14Client.getApi(pmgmtDto.turn14Keys);
+    let i = 1;
+    while (true) {
+      const pageOfTurn14Items = await getPagedData(
+        turn14Api,
+        pmgmtDto.brandId,
+        i
+      );
+
+      const wcProducts = await wcMapper.turn14sToWcs(
+        pageOfTurn14Items.turn14Dtos
+      );
+
+      await this.wcClient.postBatchCreateWcProducts(
+        pmgmtDto.siteUrl,
+        pmgmtDto.wcKeys,
+        wcProducts
+      );
+
+      if (pageOfTurn14Items.pagesLeft === 0) {
+        break;
+      }
+
+      i = i + 1;
+    }
   }
 }

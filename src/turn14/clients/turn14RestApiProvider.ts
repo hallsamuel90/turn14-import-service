@@ -70,7 +70,6 @@ export class Turn14RestApiProvider {
         client_secret: turn14Secret,
       });
 
-      console.info('🔑 Authenticated Turn14 API!');
       return response.data.access_token;
     } catch (e) {
       throw new Turn14Error(`Failed to authenticate with the API. ${e}`);

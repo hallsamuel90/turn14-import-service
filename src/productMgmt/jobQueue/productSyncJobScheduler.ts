@@ -88,7 +88,9 @@ export class ProductSyncJobScheduler {
    */
   public async scheduleProductResync(): Promise<void> {
     console.info(
-      `⏲️  Scheduling product resync for all users every ${ProductSyncJobScheduler.ONE_MONTH/1000} seconds.`
+      `⏲️  Scheduling product resync for all users every ${
+        ProductSyncJobScheduler.ONE_MONTH / 1000
+      } seconds.`
     );
 
     this.pushJob(ProductSyncJobType.RESYNC_PRODUCTS);
