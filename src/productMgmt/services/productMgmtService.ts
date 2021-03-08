@@ -260,59 +260,103 @@ export class ProductMgmtService {
     pmgmtDto: PmgmtDTO,
     wcMapper: CreateProductWcMapper
   ): Promise<void> {
-    await this.importTurn14(
-      pmgmtDto,
-      wcMapper,
-      this.turn14Client.getBaseProducts
-    );
+    const turn14Api = await this.turn14Client.getApi(pmgmtDto.turn14Keys);
+    let i = 1;
+    while (true) {
+      const pageOfTurn14Items = await this.turn14Client.getBaseProducts(
+        turn14Api,
+        pmgmtDto.brandId,
+        i
+      );
+
+      const wcProducts = await wcMapper.turn14sToWcs(
+        pageOfTurn14Items.turn14Dtos
+      );
+
+      await this.wcClient.postBatchCreateWcProducts(
+        pmgmtDto.siteUrl,
+        pmgmtDto.wcKeys,
+        wcProducts
+      );
+
+      if (pageOfTurn14Items.pagesLeft === 0) {
+        break;
+      }
+
+      i = i + 1;
+    }
   }
 
   private async importProductData(
     pmgmtDto: PmgmtDTO,
     wcMapper: CreateProductWcMapper
   ): Promise<void> {
-    await this.importTurn14(
-      pmgmtDto,
-      wcMapper,
-      this.turn14Client.getProductData
-    );
+    const turn14Api = await this.turn14Client.getApi(pmgmtDto.turn14Keys);
+    let i = 1;
+    while (true) {
+      const pageOfTurn14Items = await this.turn14Client.getProductData(
+        turn14Api,
+        pmgmtDto.brandId,
+        i
+      );
+
+      const wcProducts = await wcMapper.turn14sToWcs(
+        pageOfTurn14Items.turn14Dtos
+      );
+
+      await this.wcClient.postBatchCreateWcProducts(
+        pmgmtDto.siteUrl,
+        pmgmtDto.wcKeys,
+        wcProducts
+      );
+
+      if (pageOfTurn14Items.pagesLeft === 0) {
+        break;
+      }
+
+      i = i + 1;
+    }
   }
 
   private async importProductPricing(
     pmgmtDto: PmgmtDTO,
     wcMapper: CreateProductWcMapper
   ): Promise<void> {
-    await this.importTurn14(
-      pmgmtDto,
-      wcMapper,
-      this.turn14Client.getProductPricing
-    );
+    const turn14Api = await this.turn14Client.getApi(pmgmtDto.turn14Keys);
+    let i = 1;
+    while (true) {
+      const pageOfTurn14Items = await this.turn14Client.getProductPricing(
+        turn14Api,
+        pmgmtDto.brandId,
+        i
+      );
+
+      const wcProducts = await wcMapper.turn14sToWcs(
+        pageOfTurn14Items.turn14Dtos
+      );
+
+      await this.wcClient.postBatchCreateWcProducts(
+        pmgmtDto.siteUrl,
+        pmgmtDto.wcKeys,
+        wcProducts
+      );
+
+      if (pageOfTurn14Items.pagesLeft === 0) {
+        break;
+      }
+
+      i = i + 1;
+    }
   }
 
   private async importProductInventory(
     pmgmtDto: PmgmtDTO,
     wcMapper: CreateProductWcMapper
   ): Promise<void> {
-    await this.importTurn14(
-      pmgmtDto,
-      wcMapper,
-      this.turn14Client.getProductInventory
-    );
-  }
-
-  private async importTurn14(
-    pmgmtDto: PmgmtDTO,
-    wcMapper: CreateProductWcMapper,
-    getPagedData: (
-      turn14RestApi: Turn14RestApi,
-      brandId: string,
-      page: number
-    ) => Promise<Turn14Page>
-  ): Promise<void> {
     const turn14Api = await this.turn14Client.getApi(pmgmtDto.turn14Keys);
     let i = 1;
     while (true) {
-      const pageOfTurn14Items = await getPagedData(
+      const pageOfTurn14Items = await this.turn14Client.getProductInventory(
         turn14Api,
         pmgmtDto.brandId,
         i

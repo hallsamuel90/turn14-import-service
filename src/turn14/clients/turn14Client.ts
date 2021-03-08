@@ -70,7 +70,12 @@ export class Turn14Client {
   ): Promise<Turn14Page> {
     const BRAND_ITEMS_RESOURCE = `items/brand/${brandId}`;
 
-    return this.getPagedTurn14Data(turn14RestApi, BRAND_ITEMS_RESOURCE, page);
+    return this.getPagedTurn14Data(
+      turn14RestApi,
+      BRAND_ITEMS_RESOURCE,
+      page,
+      'item'
+    );
   }
 
   public async getProductData(
@@ -83,7 +88,8 @@ export class Turn14Client {
     return this.getPagedTurn14Data(
       turn14RestApi,
       BRAND_ITEMS_DATA_RESOURCE,
-      page
+      page,
+      'itemData'
     );
   }
 
@@ -94,7 +100,12 @@ export class Turn14Client {
   ): Promise<Turn14Page> {
     const BRAND_PRICING_RESOURCE = `pricing/brand/${brandId}`;
 
-    return this.getPagedTurn14Data(turn14RestApi, BRAND_PRICING_RESOURCE, page);
+    return this.getPagedTurn14Data(
+      turn14RestApi,
+      BRAND_PRICING_RESOURCE,
+      page,
+      'itemPricing'
+    );
   }
 
   public async getProductInventory(
@@ -107,33 +118,40 @@ export class Turn14Client {
     return this.getPagedTurn14Data(
       turn14RestApi,
       BRAND_INVENTORY_RESOURCE,
-      page
+      page,
+      'itemInventory'
     );
   }
 
   private async getPagedTurn14Data(
     turn14RestApi: Turn14RestApi,
     resource: string,
-    page: number
+    page: number,
+    turn14Prop: string
   ): Promise<Turn14Page> {
     const responseData = await turn14RestApi.getRequest(resource, page);
 
     const turn14Dtos: Turn14ProductDTO[] = this.getDataFromResponse(
-      responseData
+      responseData,
+      turn14Prop
     );
     const pagesLeft = this.getPagesLeft(responseData, page);
 
     return { turn14Dtos: turn14Dtos, pagesLeft: pagesLeft };
   }
 
-  private getDataFromResponse(responseData: JSON): Turn14ProductDTO[] {
+  private getDataFromResponse(
+    responseData: JSON,
+    turn14Prop: string
+  ): Turn14ProductDTO[] {
     const items = responseData['data'] as JSON[];
 
     const turn14Dtos: Turn14ProductDTO[] = [];
     for (const item of items) {
-      turn14Dtos.push({
-        item: item,
-      });
+      const turn14Dto = {};
+      turn14Dto[turn14Prop] = item;
+
+      turn14Dtos.push(turn14Dto);
     }
     return turn14Dtos;
   }
