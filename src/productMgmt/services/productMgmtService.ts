@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import { Service } from 'typedi';
 import { ApiUser } from '../../apiUsers/models/apiUser';
-import { Turn14Client, Turn14Page } from '../../turn14/clients/turn14Client';
-import { Turn14RestApi } from '../../turn14/clients/turn14RestApi';
+import { Turn14Client } from '../../turn14/clients/turn14Client';
 import { WcClient } from '../../woocommerce/clients/wcClient';
 import { PmgmtDTO } from '../dtos/pmgmtDto';
 import { CreateProductWcMapper } from './createProductWcMapper';
@@ -168,7 +167,7 @@ export class ProductMgmtService {
 
       await this.importProducts(
         {
-          ...apiUser,
+          siteUrl: apiUser.siteUrl,
           turn14Keys: apiUser.turn14Keys,
           wcKeys: apiUser.wcKeys,
           brandId: brandId,

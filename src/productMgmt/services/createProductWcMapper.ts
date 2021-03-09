@@ -77,8 +77,17 @@ export class CreateProductWcMapper extends WcMapper {
       wcProduct.weight = wcProductAttributes.weight;
     }
 
-    wcProduct.brands = await this.turn14BrandToWc(itemAttributes?.['brand']);
-    wcProduct.categories = await this.turn14CategoriesToWc(itemAttributes);
+    const productHasBrands = itemAttributes?.['brand'] !== undefined;
+    if (productHasBrands) {
+      wcProduct.brands = await this.turn14BrandToWc(itemAttributes?.['brand']);
+    }
+
+    const productHasCategories =
+      itemAttributes?.['subcategory'] !== undefined ||
+      itemAttributes?.['category'] !== undefined;
+    if (productHasCategories) {
+      wcProduct.categories = await this.turn14CategoriesToWc(itemAttributes);
+    }
 
     const itemMedia = turn14ProductDto?.itemData;
     if (itemMedia) {
