@@ -6,11 +6,6 @@ import { Turn14RestApiProvider } from './turn14RestApiProvider';
 import { Turn14ProductDTO } from '../dtos/turn14ProductDto';
 import { Turn14Brand } from '../interfaces/turn14Brand';
 
-export interface Turn14Page {
-  turn14Dtos: Turn14ProductDTO[];
-  pagesLeft: number;
-}
-
 /**
  * Turn14Client for retrieving data from Turn14.
  */
@@ -54,112 +49,6 @@ export class Turn14Client {
     );
 
     return await this.getAllBrandProductData(turn14RestApi, Number(brandId));
-  }
-
-  public async getApi(turn14Keys: Keys): Promise<Turn14RestApi> {
-    return await this.turn14RestApiProvider.getTurn14RestApi(
-      turn14Keys.client,
-      turn14Keys.secret
-    );
-  }
-
-  public async getBaseProducts(
-    turn14RestApi: Turn14RestApi,
-    brandId: string,
-    page: number
-  ): Promise<Turn14Page> {
-    const BRAND_ITEMS_RESOURCE = `items/brand/${brandId}`;
-
-    return this.getPagedTurn14Data(
-      turn14RestApi,
-      BRAND_ITEMS_RESOURCE,
-      page,
-      'item'
-    );
-  }
-
-  public async getProductData(
-    turn14RestApi: Turn14RestApi,
-    brandId: string,
-    page: number
-  ): Promise<Turn14Page> {
-    const BRAND_ITEMS_DATA_RESOURCE = `items/data/brand/${brandId}`;
-
-    return this.getPagedTurn14Data(
-      turn14RestApi,
-      BRAND_ITEMS_DATA_RESOURCE,
-      page,
-      'itemData'
-    );
-  }
-
-  public async getProductPricing(
-    turn14RestApi: Turn14RestApi,
-    brandId: string,
-    page: number
-  ): Promise<Turn14Page> {
-    const BRAND_PRICING_RESOURCE = `pricing/brand/${brandId}`;
-
-    return this.getPagedTurn14Data(
-      turn14RestApi,
-      BRAND_PRICING_RESOURCE,
-      page,
-      'itemPricing'
-    );
-  }
-
-  public async getProductInventory(
-    turn14RestApi: Turn14RestApi,
-    brandId: string,
-    page: number
-  ): Promise<Turn14Page> {
-    const BRAND_INVENTORY_RESOURCE = `inventory/brand/${brandId}`;
-
-    return this.getPagedTurn14Data(
-      turn14RestApi,
-      BRAND_INVENTORY_RESOURCE,
-      page,
-      'itemInventory'
-    );
-  }
-
-  private async getPagedTurn14Data(
-    turn14RestApi: Turn14RestApi,
-    resource: string,
-    page: number,
-    turn14Prop: string
-  ): Promise<Turn14Page> {
-    const responseData = await turn14RestApi.getRequest(resource, page);
-
-    const turn14Dtos: Turn14ProductDTO[] = this.getDataFromResponse(
-      responseData,
-      turn14Prop
-    );
-    const pagesLeft = this.getPagesLeft(responseData, page);
-
-    return { turn14Dtos: turn14Dtos, pagesLeft: pagesLeft };
-  }
-
-  private getDataFromResponse(
-    responseData: JSON,
-    turn14Prop: string
-  ): Turn14ProductDTO[] {
-    const items = responseData['data'] as JSON[];
-
-    const turn14Dtos: Turn14ProductDTO[] = [];
-    for (const item of items) {
-      const turn14Dto = {};
-      turn14Dto[turn14Prop] = item;
-
-      turn14Dtos.push(turn14Dto);
-    }
-    return turn14Dtos;
-  }
-
-  private getPagesLeft(responseData: JSON, page: number): number {
-    const totalPages = responseData?.['meta']?.['total_pages'];
-    const pagesLeft = totalPages - page;
-    return pagesLeft;
   }
 
   private async getAllBrandProductData(

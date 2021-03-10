@@ -9,7 +9,7 @@ export default (): void => {
   const productSyncJobScheduler = Container.get(ProductSyncJobScheduler);
   productSyncJobScheduler.scheduleInventoryUpdate();
   productSyncJobScheduler.schedulePricingUpdate();
-  // productSyncJobScheduler.scheduleNewProductSync();
-  // productSyncJobScheduler.scheduleRemoveStaleProducts();
+  productSyncJobScheduler.scheduleNewProductSync();
+  productSyncJobScheduler.scheduleRemoveStaleProducts();
   productSyncJobScheduler.scheduleProductResync();
 };
