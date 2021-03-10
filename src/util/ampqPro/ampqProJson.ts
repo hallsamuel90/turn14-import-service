@@ -77,7 +77,7 @@ export class AmqpProJson implements AmqpPro {
    *
    * @param {Channel} channel the message broker channel to subscribe.
    * @param {string} channelName the name of the message broker channel.
-   * @param {Function} callback the callback function to perfrom on incoming messages.
+   * @param {Function} callback the callback function to perform on incoming messages.
    */
   subscribe(channel: Channel, channelName: string, callback: Function): void {
     channel.consume(channelName, (message) => {

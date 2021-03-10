@@ -108,9 +108,11 @@ export class Turn14RestApi {
     } catch (e) {
       const errorJsonString = JSON.stringify(e.toJSON());
 
-      throw new Turn14Error(
+      console.error(
         `Something went wrong communicating with Turn14. ${errorJsonString}`
       );
+
+      return {} as JSON;
     }
   }
 
