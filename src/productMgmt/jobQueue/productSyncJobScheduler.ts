@@ -54,21 +54,6 @@ export class ProductSyncJobScheduler {
   }
 
   /**
-   * Schedules the new product sync job to run once per day.
-   */
-  public async scheduleNewProductSync(): Promise<void> {
-    console.info(
-      `⏲️  Scheduling new product sync for all users every ${ProductSyncJobScheduler.ONE_DAY_SEC} seconds.`
-    );
-
-    this.pushJob(ProductSyncJobType.IMPORT_ADDED_PRODUCTS);
-
-    setInterval(() => {
-      this.pushJob(ProductSyncJobType.IMPORT_ADDED_PRODUCTS);
-    }, ProductSyncJobScheduler.ONE_DAY_SEC * 1000);
-  }
-
-  /**
    * Schedules the stale product removal job to run once per day.
    */
   public async scheduleRemoveStaleProducts(): Promise<void> {
@@ -88,7 +73,9 @@ export class ProductSyncJobScheduler {
    */
   public async scheduleProductResync(): Promise<void> {
     console.info(
-      `⏲️  Scheduling product resync for all users every ${ProductSyncJobScheduler.ONE_MONTH/1000} seconds.`
+      `⏲️  Scheduling product resync for all users every ${
+        ProductSyncJobScheduler.ONE_MONTH / 1000
+      } seconds.`
     );
 
     this.pushJob(ProductSyncJobType.RESYNC_PRODUCTS);
