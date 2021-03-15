@@ -189,10 +189,6 @@ export class ProductMgmtService {
     apiUser: ApiUser,
     brandId: string
   ): Promise<void> {
-    const wcMapper = this.wcMapperFactory.getWcMapper(
-      WcMapperType.UPDATE_INVENTORY
-    ) as UpdateInventoryWcMapper;
-
     const turn14Products = await this.turn14Client.getProductsByBrand(
       apiUser.turn14Keys,
       brandId
@@ -203,20 +199,19 @@ export class ProductMgmtService {
       brandId
     );
 
+    const wcMapper = this.wcMapperFactory.getWcMapper(
+      WcMapperType.UPDATE_INVENTORY
+    ) as UpdateInventoryWcMapper;
+
     const wcUpdateInventoryDtos: WcUpdateInventoryDTO[] = wcMapper.turn14sToWcs(
       turn14Products,
-      fetchedWcProducts
-    );
-
-    const filteredWcUpdateInventoryDtos = this.preProcessingFilter.filterUnchangedInventory(
-      wcUpdateInventoryDtos,
       fetchedWcProducts
     );
 
     this.wcClient.postBatchUpdateWcProducts(
       apiUser.siteUrl,
       apiUser.wcKeys,
-      filteredWcUpdateInventoryDtos
+      wcUpdateInventoryDtos
     );
   }
 
@@ -224,10 +219,6 @@ export class ProductMgmtService {
     apiUser: ApiUser,
     brandId: string
   ): Promise<void> {
-    const wcMapper = this.wcMapperFactory.getWcMapper(
-      WcMapperType.UPDATE_PRICING
-    ) as UpdatePricingWcMapper;
-
     const turn14Products = await this.turn14Client.getProductsByBrand(
       apiUser.turn14Keys,
       brandId
@@ -238,20 +229,19 @@ export class ProductMgmtService {
       brandId
     );
 
+    const wcMapper = this.wcMapperFactory.getWcMapper(
+      WcMapperType.UPDATE_PRICING
+    ) as UpdatePricingWcMapper;
+
     const wcUpdatePricingDtos: WcUpdatePricingDTO[] = wcMapper.turn14sToWcs(
       turn14Products,
-      fetchedWcProducts
-    );
-
-    const filteredWcUpdatePricingDtos = this.preProcessingFilter.filterUnchangedPricing(
-      wcUpdatePricingDtos,
       fetchedWcProducts
     );
 
     this.wcClient.postBatchUpdateWcProducts(
       apiUser.siteUrl,
       apiUser.wcKeys,
-      filteredWcUpdatePricingDtos
+      wcUpdatePricingDtos
     );
   }
 
