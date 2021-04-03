@@ -13,7 +13,7 @@ const INT_URL: string = process.env.INT_URL ?? '';
 const INT_WC_CLIENT: string = process.env.INT_WC_CLIENT ?? '';
 const INT_WC_SECRET: string = process.env.INT_WC_SECRET ?? '';
 
-describe('CreateProductWcMapper Integration tests', () => {
+describe.skip('CreateProductWcMapper Integration tests', () => {
   let createProductWcMapper: CreateProductWcMapper;
 
   const wcRestApiProvider = new WcRestApiProvider();
@@ -29,7 +29,7 @@ describe('CreateProductWcMapper Integration tests', () => {
     createProductWcMapper = new CreateProductWcMapper(wcCache);
   });
 
-  describe('#turn14ToWc', () => {
+  describe.skip('#turn14ToWc', () => {
     it('should not fail when communicating with an active WooCommerce site', async () => {
       const fakeTurn14ProductDto = Turn14FakeData.getFakeTurn14ProductDTO();
 

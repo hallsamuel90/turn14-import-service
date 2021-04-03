@@ -8,7 +8,7 @@
     "debug": "node --inspect=0.0.0.0:7000 build/app.js",
     "start": "node build/app.js",
     "test": "nyc mocha -r ts-node/register 'tests/**/*.ts'",
-    "integration": "mocha --timeout 30000 -r ts-node/register 'integration/**/*.ts'",
+    "test:integration": "./bin/run_integration_tests.sh",
     "build": "npm test && tsc",
     "contain": "sudo docker build -t pmgmt ."
   },
@@ -32,7 +32,8 @@
     "routing-controllers": "^0.8.1",
     "source-map-support": "^0.5.19",
     "typedi": "^0.8.0",
-    "typescript": "^3.9.3"
+    "typescript": "^3.9.3",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.13",
@@ -49,6 +50,7 @@
     "@types/morgan": "^1.9.0",
     "@types/multer": "^1.4.3",
     "@types/node": "^13.11.0",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
     "chai": "^4.2.0",

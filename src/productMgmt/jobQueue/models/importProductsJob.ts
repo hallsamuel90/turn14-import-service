@@ -40,23 +40,36 @@ export class ImportProductsJob extends ProductSyncJob {
     apiUser: ApiUser
   ): Promise<void> {
     if (this.brandIsActiveAndNotYetImported(this.activeBrandDto, brandIds)) {
-      const pmgmtDto = new PmgmtDTO(
-        apiUser.siteUrl,
-        apiUser.turn14Keys,
-        apiUser.wcKeys,
-        this.activeBrandDto.getBrandId()
-      );
-      await this.productMgmtService.importBrandProducts(pmgmtDto);
-
-      await this.apiUserService.addBrand(
-        apiUser,
-        this.activeBrandDto.getBrandId()
-      );
+      await this.etl(apiUser);
     } else {
       console.warn(
         `Brand Id ${this.activeBrandDto.getBrandId()} has already been imported. Skipping import...`
       );
     }
+  }
+
+  private async etl(apiUser: ApiUser): Promise<void> {
+    // TODO: extract -> save products keyed by jobId to db as they come in
+
+    // TODO: transform -> paged results from db to woocommerce products
+
+    // TODO: load -> batch ship products when batch is full
+
+    // TODO: cleanup -> add brandId to list of activeBrands, delete all data
+    // associated with jobId
+
+    const pmgmtDto = new PmgmtDTO(
+      apiUser.siteUrl,
+      apiUser.turn14Keys,
+      apiUser.wcKeys,
+      this.activeBrandDto.getBrandId()
+    );
+    await this.productMgmtService.importBrandProducts(pmgmtDto);
+
+    await this.apiUserService.addBrand(
+      apiUser,
+      this.activeBrandDto.getBrandId()
+    );
   }
 
   private brandIsActiveAndNotYetImported(

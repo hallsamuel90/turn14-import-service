@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios';
 import { RateLimitedAxiosInstance } from 'axios-rate-limit';
-import { Turn14Error } from '../errors/Turn14Error';
 
 /**
  * Turn14RestApi.
@@ -93,11 +92,11 @@ export class Turn14RestApi {
     return allData;
   }
 
-  private async getRequest(resource: string): Promise<JSON>;
+  public async getRequest(resource: string): Promise<JSON>;
 
-  private async getRequest(resource: string, pageNumber: number): Promise<JSON>;
+  public async getRequest(resource: string, pageNumber: number): Promise<JSON>;
 
-  private async getRequest(
+  public async getRequest(
     resource: string,
     pageNumber?: number
   ): Promise<JSON> {

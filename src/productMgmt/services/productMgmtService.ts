@@ -46,16 +46,16 @@ export class ProductMgmtService {
   public async importBrandProducts(pmgmtDto: PmgmtDTO): Promise<void> {
     console.info('🔨 Import products job starting!!');
 
+    const turn14Products = await this.turn14Client.getProductsByBrand(
+      pmgmtDto.turn14Keys,
+      pmgmtDto.brandId
+    );
+
     const wcMapper = this.wcMapperFactory.getWcMapper(
       WcMapperType.CREATE_PRODUCT,
       pmgmtDto.siteUrl,
       pmgmtDto.wcKeys
     ) as CreateProductWcMapper;
-
-    const turn14Products = await this.turn14Client.getProductsByBrand(
-      pmgmtDto.turn14Keys,
-      pmgmtDto.brandId
-    );
 
     const wcProducts = await wcMapper.turn14sToWcs(turn14Products);
 
@@ -180,6 +180,8 @@ export class ProductMgmtService {
         apiUser.wcKeys,
         wcCreateProductsDtos
       );
+
+      console.info('successfully published products.');
     }
 
     console.info('👍 Product Resync complete!');

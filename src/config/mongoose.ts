@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import sleep from '../util/sleep';
 
 /**
  * Connects to the mongo instance using. Retries at a set interval if the
@@ -6,18 +7,28 @@ import mongoose from 'mongoose';
  *
  * @author Sam Hall <hallsamuel90@gmail.com>
  */
-export default async function load(): Promise<void> {
+export default async function connect(): Promise<void> {
   const RECONNECT_INTERVAL = 5;
   try {
     await mongoose.connect(process.env.MONGODB_URI || '', {
       useNewUrlParser: true,
       useCreateIndex: true,
     });
+
+    console.info('sucessfully connected to mongo');
   } catch (e) {
     console.error('🔥 error: ' + e);
+
     console.log('💪 Retrying in ' + RECONNECT_INTERVAL + ' seconds...');
-    setTimeout(() => {
-      load();
-    }, RECONNECT_INTERVAL * 1000);
+    await sleep(RECONNECT_INTERVAL * 1000);
+
+    await connect();
   }
+}
+
+/**
+ *
+ */
+export async function disconnect(): Promise<void> {
+  await mongoose.disconnect();
 }
