@@ -18,7 +18,7 @@ const INT_URL: string = process.env.INT_URL ?? '';
 const INT_WC_CLIENT: string = process.env.INT_WC_CLIENT ?? '';
 const INT_WC_SECRET: string = process.env.INT_WC_SECRET ?? '';
 
-describe('ProductMgmtService Integration tests', () => {
+describe.skip('ProductMgmtService Integration tests', () => {
   let pmgmtService: ProductMgmtService;
 
   let mockTurn14Client: Turn14Client;
@@ -42,7 +42,7 @@ describe('ProductMgmtService Integration tests', () => {
     );
   });
 
-  describe('#importBrandProducts', () => {
+  describe.skip('#importBrandProducts', () => {
     it('should not fail when importing product with large images', async () => {
       const pmgmtDto = new PmgmtDTO(
         INT_URL,

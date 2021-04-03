@@ -1,0 +1,10 @@
+version: '3.5'
+services:
+  mongo:
+    image: mongo:4.1.8-xenial
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongoTestSetup.js:/docker-entrypoint-initdb.d/seed_data.js

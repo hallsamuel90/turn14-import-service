@@ -1,15 +1,15 @@
 import { ApiUser } from '../../../apiUsers/models/apiUser';
 import { ProductSyncJobType } from '../productSyncJobType';
+import { v4 as uuid } from 'uuid';
 
+export type JobId = string;
 export abstract class ProductSyncJob {
-  private readonly jobType: ProductSyncJobType;
+  jobType: ProductSyncJobType;
+  id: JobId;
 
   constructor(jobType: ProductSyncJobType) {
     this.jobType = jobType;
-  }
-
-  public getJobType(): ProductSyncJobType {
-    return this.jobType;
+    this.id = uuid();
   }
 
   public abstract run(): Promise<void>;
