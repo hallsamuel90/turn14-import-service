@@ -20,7 +20,8 @@
       "esModuleInterop": true,
     },
     "include": [
-      "./src/**/*"
+      "./src/**/*",
+      "mongoTestSetup.js"
     ],
     "exclude": [
       "./node_modules",

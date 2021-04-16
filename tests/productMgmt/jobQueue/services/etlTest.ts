@@ -1,168 +1,132 @@
-// /* eslint-disable @typescript-eslint/camelcase */
-// import { expect } from 'chai';
-// import { capture, instance, mock, verify, when } from 'ts-mockito';
-// import ETL from '../../../../src/productMgmt/jobQueue/models/etl';
-// import ProductSyncJobDataRepository from '../../../../src/productMgmt/jobQueue/repositories/productSyncJobDataRepository';
-// import { Turn14RestApi } from '../../../../src/turn14/clients/turn14RestApi';
-// import { Turn14RestApiProvider } from '../../../../src/turn14/clients/turn14RestApiProvider';
+/* eslint-disable @typescript-eslint/camelcase */
+import { anything, instance, mock, verify, when } from 'ts-mockito';
+import ETL from '../../../../src/productMgmt/jobQueue/services/etl';
+import Turn14DataExtractor from '../../../../src/productMgmt/jobQueue/services/turn14DataExtractor';
+import { CreateProductWcMapper } from '../../../../src/productMgmt/services/createProductWcMapper';
+import { WcMapperFactory } from '../../../../src/productMgmt/services/wcMapperFactory';
+import { WcMapperType } from '../../../../src/productMgmt/services/wcMapperType';
+import { Turn14ProductDTO } from '../../../../src/turn14/dtos/turn14ProductDto';
+import { WcClient } from '../../../../src/woocommerce/clients/wcClient';
+import { WcCreateProductDTO } from '../../../../src/woocommerce/dtos/wcCreateProductDto';
 
-// const fakeEtlDto = {
-//   jobId: 'fakeJobId',
-//   siteUrl: 'http://someSite.com',
-//   brandId: 'someBrandId',
-//   turn14Keys: {
-//     client: 'fakeClient',
-//     secret: 'fakeSecret',
-//   },
-//   wcKeys: {
-//     client: 'fakeClient',
-//     secret: 'fakeSecret',
-//   },
-// };
+const fakeEtlDto = {
+  jobId: 'fakeJobId',
+  siteUrl: 'http://someSite.com',
+  brandId: 'someBrandId',
+  turn14Keys: {
+    client: 'fakeClient',
+    secret: 'fakeSecret',
+  },
+  wcKeys: {
+    client: 'fakeClient',
+    secret: 'fakeSecret',
+  },
+};
 
-// describe('ETL tests', () => {
-//   let etl: ETL;
+describe('ETL tests', () => {
+  let etl: ETL;
 
-//   let mockTurn14RestApiProvider = mock(Turn14RestApiProvider);
-//   let mockProductSyncJobDataRepository = mock(ProductSyncJobDataRepository);
+  let mockTurn14DataExtractor = mock(Turn14DataExtractor);
+  let mockWcMapperFactory = mock(WcMapperFactory);
+  let mockWcClient = mock(WcClient);
 
-//   beforeEach(() => {
-//     mockTurn14RestApiProvider = mock(Turn14RestApiProvider);
-//     mockProductSyncJobDataRepository = mock(ProductSyncJobDataRepository);
+  beforeEach(() => {
+    mockTurn14DataExtractor = mock(Turn14DataExtractor);
+    mockWcMapperFactory = mock(WcMapperFactory);
+    mockWcClient = mock(WcClient);
 
-//     etl = new ETL(
-//       instance(mockTurn14RestApiProvider),
-//       instance(mockProductSyncJobDataRepository)
-//     );
-//   });
+    etl = new ETL(
+      instance(mockTurn14DataExtractor),
+      instance(mockWcMapperFactory),
+      instance(mockWcClient)
+    );
+  });
 
-//   describe('extract should', () => {
-//     it('save the retrieved turn14 items by jobId', async () => {
-//       const mockTurn14RestApi = mock(Turn14RestApi);
-//       const mockTurn14RestApiInstance = instance(mockTurn14RestApi);
+  describe('extract should', () => {
+    it('extract turn14 items', async () => {
+      await etl.extract(fakeEtlDto);
 
-//       when(
-//         mockTurn14RestApi.getRequest(`items/brand/${fakeEtlDto.brandId}`, 1)
-//       ).thenResolve(({
-//         data: [
-//           {
-//             id: 'fakeId',
-//             type: 'Item',
-//           },
-//         ],
-//         meta: {
-//           total_pages: 1,
-//         },
-//       } as unknown) as JSON);
+      verify(
+        mockTurn14DataExtractor.attemptItemExtraction(fakeEtlDto)
+      ).called();
+    });
 
-//       when(
-//         mockTurn14RestApiProvider.getTurn14RestApi(
-//           fakeEtlDto.turn14Keys.client,
-//           fakeEtlDto.turn14Keys.secret
-//         )
-//       ).thenResolve(mockTurn14RestApiInstance);
+    it('extract turn14 items data', async () => {
+      await etl.extract(fakeEtlDto);
 
-//       await etl.extract(fakeEtlDto);
+      verify(
+        mockTurn14DataExtractor.attemptItemDataExtraction(fakeEtlDto)
+      ).called();
+    });
 
-//       verify(
-//         mockTurn14RestApi.getRequest(`items/brand/${fakeEtlDto.brandId}`, 1)
-//       ).called();
+    it('extract turn14 items inventory', async () => {
+      await etl.extract(fakeEtlDto);
 
-//       const [saveArgs] = capture(
-//         mockProductSyncJobDataRepository.saveAll
-//       ).last();
+      verify(
+        mockTurn14DataExtractor.attemptItemInventoryExtraction(fakeEtlDto)
+      ).called();
+    });
 
-//       expect(saveArgs[0].jobId).to.eq('fakeJobId');
-//       expect(saveArgs[0].turn14Id).to.eq('fakeId');
-//       expect(saveArgs[0].item?.['type']).to.eq('Item');
-//     });
+    it('extract turn14 items pricing', async () => {
+      await etl.extract(fakeEtlDto);
 
-//     it('update the saved turn14 items with itemsData', async () => {
-//       const mockTurn14RestApi = mock(Turn14RestApi);
-//       const mockTurn14RestApiInstance = instance(mockTurn14RestApi);
+      verify(
+        mockTurn14DataExtractor.attemptItemPricingExtraction(fakeEtlDto)
+      ).called();
+    });
+  });
 
-//       when(
-//         mockTurn14RestApi.getRequest(
-//           `items/data/brand/${fakeEtlDto.brandId}`,
-//           1
-//         )
-//       ).thenResolve(({
-//         data: [
-//           {
-//             id: 'fakeId',
-//             type: 'ProductData',
-//           },
-//         ],
-//         meta: {
-//           total_pages: 1,
-//         },
-//       } as unknown) as JSON);
+  describe('transformLoad should', () => {
+    it('exit if all data has been processed', async () => {
+      when(
+        mockTurn14DataExtractor.getEnrichedTurn14Data(fakeEtlDto.jobId, 1)
+      ).thenResolve([]);
+      await etl.transformLoad(fakeEtlDto);
 
-//       when(
-//         mockTurn14RestApiProvider.getTurn14RestApi(
-//           fakeEtlDto.turn14Keys.client,
-//           fakeEtlDto.turn14Keys.secret
-//         )
-//       ).thenResolve(mockTurn14RestApiInstance);
+      verify(
+        mockWcMapperFactory.getWcMapper(WcMapperType.CREATE_PRODUCT)
+      ).never();
 
-//       await etl.extract(fakeEtlDto);
+      verify(
+        mockWcClient.postBatchCreateWcProducts(
+          fakeEtlDto.siteUrl,
+          fakeEtlDto.wcKeys,
+          anything()
+        )
+      ).never();
+    });
 
-//       verify(
-//         mockTurn14RestApi.getRequest(
-//           `items/data/brand/${fakeEtlDto.brandId}`,
-//           1
-//         )
-//       ).called();
+    it('process all of the data', async () => {
+      const dummyTurn14ProductDto = {} as Turn14ProductDTO;
+      const dummyWcProduct = {} as WcCreateProductDTO;
 
-//       const [updateArgs] = capture(
-//         mockProductSyncJobDataRepository.batchUpdate
-//       ).last();
-//       expect(updateArgs[0].jobId).to.eq('fakeJobId');
-//       expect(updateArgs[0].itemData?.['type']).to.eq('ProductData');
-//     });
+      const dummyTurn14ProductDtos = [dummyTurn14ProductDto];
+      when(
+        mockTurn14DataExtractor.getEnrichedTurn14Data(fakeEtlDto.jobId, 1)
+      ).thenResolve(dummyTurn14ProductDtos);
+      when(
+        mockTurn14DataExtractor.getEnrichedTurn14Data(fakeEtlDto.jobId, 2)
+      ).thenResolve([]);
 
-//     it('update the saved turn14 items with itemsPricing', async () => {
-//       const mockTurn14RestApi = mock(Turn14RestApi);
-//       const mockTurn14RestApiInstance = instance(mockTurn14RestApi);
+      const mockWcMapper = mock(CreateProductWcMapper);
+      when(
+        mockWcMapperFactory.getWcMapper(WcMapperType.CREATE_PRODUCT)
+      ).thenReturn(instance(mockWcMapper));
 
-//       when(
-//         mockTurn14RestApi.getRequest(`pricing/brand/${fakeEtlDto.brandId}`, 1)
-//       ).thenResolve(({
-//         data: [
-//           {
-//             id: 'fakeId',
-//             type: 'PricingItem',
-//           },
-//         ],
-//         meta: {
-//           total_pages: 1,
-//         },
-//       } as unknown) as JSON);
+      const dummyWcProducts = [dummyWcProduct];
+      when(mockWcMapper.turn14sToWcs(dummyTurn14ProductDtos)).thenResolve(
+        dummyWcProducts
+      );
 
-//       when(
-//         mockTurn14RestApiProvider.getTurn14RestApi(
-//           fakeEtlDto.turn14Keys.client,
-//           fakeEtlDto.turn14Keys.secret
-//         )
-//       ).thenResolve(mockTurn14RestApiInstance);
+      await etl.transformLoad(fakeEtlDto);
 
-//       await etl.extract(fakeEtlDto);
-
-//       verify(
-//         mockTurn14RestApi.getRequest(
-//           `items/data/brand/${fakeEtlDto.brandId}`,
-//           1
-//         )
-//       ).called();
-
-//       const [updateArgs] = capture(
-//         mockProductSyncJobDataRepository.batchUpdate
-//       ).last();
-//       expect(updateArgs[0].jobId).to.eq('fakeJobId');
-//       expect(updateArgs[0].itemData?.['type']).to.eq('PricingItem');
-//     });
-
-//     // test('update the saved turn14 items with items inventory', async () => {});
-//     // test('update the saved turn14 items with items pricing', async () => {});
-//   });
-// });
+      verify(
+        mockWcClient.postBatchCreateWcProducts(
+          fakeEtlDto.siteUrl,
+          fakeEtlDto.wcKeys,
+          dummyWcProducts
+        )
+      ).once();
+    });
+  });
+});

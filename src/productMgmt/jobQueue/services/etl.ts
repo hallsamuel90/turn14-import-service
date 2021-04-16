@@ -1,17 +1,23 @@
 import { Keys } from '../../../apiUsers/models/apiUser';
-import { Turn14RestApiProvider } from '../../../turn14/clients/turn14RestApiProvider';
-import ProductSyncJobDataRepository from '../repositories/productSyncJobDataRepository';
-import ProductJobMapper from './productJobMapper';
+import { WcClient } from '../../../woocommerce/clients/wcClient';
+import { CreateProductWcMapper } from '../../services/createProductWcMapper';
+import { WcMapperFactory } from '../../services/wcMapperFactory';
+import { WcMapperType } from '../../services/wcMapperType';
 import { JobId } from '../models/productSyncJob';
 import Turn14DataExtractor from './turn14DataExtractor';
+
+export enum Turn14DataType {
+  ITEM_BASE = 'Item',
+  ITEM_DATA = 'ProductData',
+  ITEM_PRICING = 'PricingItem',
+  ITEM_INVENTORY = 'InventoryItem',
+}
 
 export interface ProductSyncJobData {
   jobId: JobId;
   turn14Id: string;
-  item?: JSON;
-  itemData?: JSON;
-  itemPricing?: JSON;
-  itemInventory?: JSON;
+  type: Turn14DataType;
+  data: JSON;
 }
 
 export interface EtlDto {
@@ -24,31 +30,51 @@ export interface EtlDto {
 
 export default class ETL {
   private readonly turn14DataExtractor: Turn14DataExtractor;
+  private readonly wcMapperFactory: WcMapperFactory;
+  private readonly wcClient: WcClient;
 
-  constructor(turn14DataExtractor: Turn14DataExtractor) {
+  constructor(
+    turn14DataExtractor: Turn14DataExtractor,
+    wcMapperFactory: WcMapperFactory,
+    wcClient: WcClient
+  ) {
     this.turn14DataExtractor = turn14DataExtractor;
+    this.wcMapperFactory = wcMapperFactory;
+    this.wcClient = wcClient;
   }
 
-  async extract(etlDto: EtlDto): Promise<void> {
+  public async extract(etlDto: EtlDto): Promise<void> {
     await this.turn14DataExtractor.attemptItemExtraction(etlDto);
     await this.turn14DataExtractor.attemptItemDataExtraction(etlDto);
     await this.turn14DataExtractor.attemptItemPricingExtraction(etlDto);
+    await this.turn14DataExtractor.attemptItemInventoryExtraction(etlDto);
+  }
 
-    // TODO: extract -> save products keyed by jobId to db as they come in
-    // TODO: transform -> paged results from db to woocommerce products
-    // TODO: load -> batch ship products when batch is full
-    // TODO: cleanup -> add brandId to list of activeBrands, delete all data
-    // associated with jobId
-    // const pmgmtDto = new PmgmtDTO(
-    //   apiUser.siteUrl,
-    //   apiUser.turn14Keys,
-    //   apiUser.wcKeys,
-    //   this.activeBrandDto.getBrandId()
-    // );
-    // await this.productMgmtService.importBrandProducts(pmgmtDto);
-    // await this.apiUserService.addBrand(
-    //   apiUser,
-    //   this.activeBrandDto.getBrandId()
-    // );
+  public async transformLoad(etlDto: EtlDto, pageNumber = 1): Promise<void> {
+    const enrichedTurn14Data = await this.turn14DataExtractor.getEnrichedTurn14Data(
+      etlDto.jobId,
+      pageNumber
+    );
+
+    if (!enrichedTurn14Data.length) {
+      console.warn('enriched products empty, skipping import.');
+      return;
+    }
+
+    const wcMapper = this.wcMapperFactory.getWcMapper(
+      WcMapperType.CREATE_PRODUCT
+    ) as CreateProductWcMapper;
+
+    await this.wcClient.postBatchCreateWcProducts(
+      etlDto.siteUrl,
+      etlDto.wcKeys,
+      await wcMapper.turn14sToWcs(enrichedTurn14Data)
+    );
+
+    await this.transformLoad(etlDto, pageNumber + 1);
+  }
+
+  public async cleanUp(jobId: string): Promise<void> {
+    await this.turn14DataExtractor.deleteExtractedData(jobId);
   }
 }

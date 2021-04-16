@@ -1,20 +1,21 @@
 import { Turn14RestApiProvider } from '../../../turn14/clients/turn14RestApiProvider';
-import ProductSyncJobDataRepository from '../repositories/productSyncJobDataRepository';
-import { EtlDto, ProductSyncJobData } from './etl';
+import { Turn14ProductDTO } from '../../../turn14/dtos/turn14ProductDto';
+import ProductSyncJobDataDao from '../repositories/productSyncJobDataDao';
+import { EtlDto, ProductSyncJobData, Turn14DataType } from './etl';
 import ProductJobMapper from './productJobMapper';
 
 export default class Turn14DataExtractor {
   turn14RestApiProvider: Turn14RestApiProvider;
   productJobMapper: ProductJobMapper;
-  productSyncJobDataRepository: ProductSyncJobDataRepository;
+  productSyncJobDataDao: ProductSyncJobDataDao;
 
   constructor(
     turn14RestApiProvider: Turn14RestApiProvider,
-    productSyncJobDataRepository: ProductSyncJobDataRepository,
+    productSyncJobDataDao: ProductSyncJobDataDao,
     productJobMapper: ProductJobMapper = new ProductJobMapper()
   ) {
     this.turn14RestApiProvider = turn14RestApiProvider;
-    this.productSyncJobDataRepository = productSyncJobDataRepository;
+    this.productSyncJobDataDao = productSyncJobDataDao;
     this.productJobMapper = productJobMapper;
   }
 
@@ -58,6 +59,45 @@ export default class Turn14DataExtractor {
     }
   }
 
+  public async getEnrichedTurn14Data(
+    jobId: string,
+    pageNumber: number
+  ): Promise<Turn14ProductDTO[]> {
+    const items = await this.productSyncJobDataDao.findAllByJobId(
+      jobId,
+      pageNumber
+    );
+
+    const enrichedProducts: Turn14ProductDTO[] = [];
+
+    for (const item of items) {
+      const enrichedProduct = {
+        item: item.data,
+      };
+
+      const itemDataPricingInventory = await this.productSyncJobDataDao.findAllByTurn14Id(
+        item.turn14Id
+      );
+      for (const i of itemDataPricingInventory) {
+        if (i.type === Turn14DataType.ITEM_DATA) {
+          enrichedProduct['itemData'] = i.data;
+        } else if (i.type === Turn14DataType.ITEM_INVENTORY) {
+          enrichedProduct['itemInventory'] = i.data;
+        } else if (i.type === Turn14DataType.ITEM_PRICING) {
+          enrichedProduct['itemPricing'] = i.data;
+        }
+      }
+
+      enrichedProducts.push(enrichedProduct);
+    }
+
+    return enrichedProducts;
+  }
+
+  public async deleteExtractedData(jobId: string): Promise<void> {
+    await this.productSyncJobDataDao.deleteAllByJobId(jobId);
+  }
+
   private async extractItems(etlDto: EtlDto): Promise<void> {
     const turn14RestApi = await this.turn14RestApiProvider.getTurn14RestApi(
       etlDto.turn14Keys.client,
@@ -71,12 +111,12 @@ export default class Turn14DataExtractor {
         i
       );
 
-      const productData: ProductSyncJobData[] = this.productJobMapper.mapItems(
+      const productData: ProductSyncJobData[] = this.productJobMapper.mapJobData(
         responseData,
         etlDto
       );
 
-      await this.productSyncJobDataRepository.saveAll(productData);
+      await this.productSyncJobDataDao.saveAll(productData);
 
       if (this.isDonePaging(i, responseData['meta'])) {
         break;
@@ -99,12 +139,12 @@ export default class Turn14DataExtractor {
         i
       );
 
-      const productData: ProductSyncJobData[] = this.productJobMapper.mapItemsData(
+      const productData: ProductSyncJobData[] = this.productJobMapper.mapJobData(
         responseData,
         etlDto
       );
 
-      await this.productSyncJobDataRepository.batchUpdate(productData);
+      await this.productSyncJobDataDao.saveAll(productData);
 
       if (this.isDonePaging(i, responseData['meta'])) {
         break;
@@ -127,12 +167,12 @@ export default class Turn14DataExtractor {
         i
       );
 
-      const productData: ProductSyncJobData[] = this.productJobMapper.mapItemsPricing(
+      const productData: ProductSyncJobData[] = this.productJobMapper.mapJobData(
         responseData,
         etlDto
       );
 
-      await this.productSyncJobDataRepository.batchUpdate(productData);
+      await this.productSyncJobDataDao.saveAll(productData);
 
       if (this.isDonePaging(i, responseData['meta'])) {
         break;
@@ -155,12 +195,12 @@ export default class Turn14DataExtractor {
         i
       );
 
-      const productData: ProductSyncJobData[] = this.productJobMapper.mapItemsInventory(
+      const productData: ProductSyncJobData[] = this.productJobMapper.mapJobData(
         responseData,
         etlDto
       );
 
-      await this.productSyncJobDataRepository.batchUpdate(productData);
+      await this.productSyncJobDataDao.saveAll(productData);
 
       if (this.isDonePaging(i, responseData['meta'])) {
         break;
