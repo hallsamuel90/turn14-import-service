@@ -4,6 +4,7 @@
       "./src/**/*",
       "./tests/**/*",
       "./integration/**/*",
+      "mongoTestSetup.js"
     ],
     "exclude": [
       "./node_modules",

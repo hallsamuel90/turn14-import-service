@@ -15,7 +15,7 @@ export default async function connect(): Promise<void> {
       useCreateIndex: true,
     });
 
-    console.info('sucessfully connected to mongo');
+    console.info('successfully connected to mongo');
   } catch (e) {
     console.error('🔥 error: ' + e);
 

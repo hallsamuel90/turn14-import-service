@@ -151,9 +151,10 @@ export class PreProcessingFilter {
     wcUpdateInventoryDto: WcUpdateInventoryDTO,
     wcProducts: JSON[]
   ): boolean {
-    const wcProductMap = (_.keyBy(wcProducts, 'sku') as unknown) as Dictionary<
-      JSON
-    >;
+    const wcProductMap = (_.keyBy(
+      wcProducts,
+      'sku'
+    ) as unknown) as Dictionary<JSON>;
     const existingWcProduct = wcProductMap[wcUpdateInventoryDto.id];
 
     return (
@@ -166,9 +167,10 @@ export class PreProcessingFilter {
     wcUpdatePricingDto: WcUpdatePricingDTO,
     wcProducts: JSON[]
   ): boolean {
-    const wcProductMap = (_.keyBy(wcProducts, 'sku') as unknown) as Dictionary<
-      JSON
-    >;
+    const wcProductMap = (_.keyBy(
+      wcProducts,
+      'sku'
+    ) as unknown) as Dictionary<JSON>;
     const existingWcProduct = wcProductMap[wcUpdatePricingDto.id];
 
     const regularPriceChanged =

@@ -3,9 +3,9 @@
  */
 export class Turn14ProductDTO {
   item: JSON;
-  itemData: JSON;
-  itemPricing: JSON;
-  itemInventory: JSON;
+  itemData?: JSON;
+  itemPricing?: JSON;
+  itemInventory?: JSON;
   /**
    * Constructor for Turn14ProductDTO
    *

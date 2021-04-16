@@ -12,11 +12,13 @@ import { RemoveStaleProductsJob } from '../models/removeStaleProductsJob';
 import { UpdateInventoryJob } from '../models/updateInventoryJob';
 import { UpdatePricingJob } from '../models/updatePricingJob';
 import { ProductSyncJobType } from '../productSyncJobType';
+import ETL from './etl';
 
 @Service()
 export class ProductSyncJobFactory {
   private readonly apiUserService: ApiUserService;
   private readonly pmgmtService: ProductMgmtService;
+  private readonly etlService: ETL;
 
   constructor(
     apiUserService: ApiUserService,
@@ -59,7 +61,7 @@ export class ProductSyncJobFactory {
           this.pmgmtService
         );
       case ProductSyncJobType.RESYNC_PRODUCTS:
-        return new ProductsResyncJob(this.apiUserService, this.pmgmtService);
+        return new ProductsResyncJob(this.apiUserService, this.etlService);
       default:
         throw new ProductSyncJobError(
           `Cannot create job with unknown type: ${jobType}`

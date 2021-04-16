@@ -16,10 +16,10 @@ jobs:
           node-version: '12'
       
       - name: Install Dependencies
-        run: npm install
+        run: yarn install
       
       - name: Test
-        run: npm test
+        run: yarn test:ci
 
       - name: Build, Tag, and Publish
         uses: mattdavis0351/actions/docker-gpr@v1
