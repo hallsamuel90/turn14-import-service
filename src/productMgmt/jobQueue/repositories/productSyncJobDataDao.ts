@@ -1,8 +1,7 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, PaginateModel } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
-
-import { ProductSyncJobData, Turn14DataType } from '../services/etl';
 import { JobId } from '../models/productSyncJob';
+import { ProductSyncJobData } from '../services/etl';
 
 interface ProductSyncJobDataDocument extends ProductSyncJobData, Document {}
 
@@ -14,10 +13,10 @@ const ProductSyncJobDataModel = new mongoose.Schema({
 });
 ProductSyncJobDataModel.plugin(mongoosePaginate);
 
-const ProductSyncJobDataClient = mongoose.model<ProductSyncJobDataDocument>(
+const ProductSyncJobDataClient: PaginateModel<ProductSyncJobDataDocument> = mongoose.model<ProductSyncJobDataDocument>(
   'ProductSyncJobData',
   ProductSyncJobDataModel
-);
+) as PaginateModel<ProductSyncJobDataDocument>;
 
 export default class ProductSyncJobDataDao {
   public async saveAll(
@@ -32,8 +31,7 @@ export default class ProductSyncJobDataDao {
 
   public async findAllByJobId(
     jobId: JobId,
-    pageNumber = 1,
-    type?: Turn14DataType
+    pageNumber = 1
   ): Promise<ProductSyncJobData[]> {
     const result = await ProductSyncJobDataClient.paginate(
       { jobId },

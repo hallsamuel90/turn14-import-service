@@ -1,8 +1,8 @@
 FROM node:12.16.1-alpine
 WORKDIR /usr/src/app
 COPY package.json .
-RUN npm install
+RUN yarn install
 ADD . /usr/src/app
-RUN npm run build
-CMD ["npm", "start"]
+RUN yarn build
+CMD ["yarn", "start"]
 EXPOSE 8081

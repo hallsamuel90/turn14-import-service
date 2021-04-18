@@ -12,7 +12,7 @@
     "test:unit": "./bin/run_unit_tests.sh",
     "test:integration": "./bin/run_integration_tests.sh",
     "test:ci": "./bin/run_ci_tests.sh",
-    "build": "npm test && tsc",
+    "build": "tsc",
     "contain": "sudo docker build -t pmgmt ."
   },
   "dependencies": {
@@ -50,7 +50,6 @@
     "@types/express": "^4.17.4",
     "@types/lodash": "^4.14.149",
     "@types/mocha": "^7.0.2",
-    "@types/mongoose": "~5.7.12",
     "@types/mongoose-paginate-v2": "^1.3.9",
     "@types/morgan": "^1.9.0",
     "@types/multer": "^1.4.3",
