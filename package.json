@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf build/*",
     "debug": "node --inspect=0.0.0.0:7000 build/app.js",
-    "start": "node build/app.js",
+    "start": "node build/src/app.js",
     "lint": "eslint . --ext .ts",
     "test": "yarn test:unit && yarn test:integration",
     "test:unit": "./bin/run_unit_tests.sh",
