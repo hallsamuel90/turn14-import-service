@@ -23,7 +23,9 @@ export class Turn14RestApi {
   public async fetchBrands(): Promise<JSON[]> {
     const BRANDS_RESOURCE = 'brands';
 
-    return await this.getRequest(BRANDS_RESOURCE)?.['data'];
+    const response = await this.getRequest(BRANDS_RESOURCE);
+
+    return response?.['data'];
   }
 
   /**
