@@ -26,8 +26,10 @@ export default class Turn14DataExtractor {
       await this.extractItems(etlDto);
     } catch (e) {
       console.error(
-        `failed to extract items for ${etlDto.brandId}, some products will be missing.`
+        `failed to extract items for ${etlDto.brandId}, some products will be missing: ${e}`
       );
+
+      throw e;
     }
   }
 
@@ -36,7 +38,7 @@ export default class Turn14DataExtractor {
       await this.extractItemsData(etlDto);
     } catch (e) {
       console.error(
-        `failed to extract items data for ${etlDto.brandId}, some products data may be missing.`
+        `failed to extract items data for ${etlDto.brandId}, some products data may be missing: ${e}`
       );
     }
   }
@@ -46,7 +48,7 @@ export default class Turn14DataExtractor {
       await this.extractItemsPricing(etlDto);
     } catch (e) {
       console.error(
-        `failed to extract items for ${etlDto.brandId}, some products prices will be missing.`
+        `failed to extract items for ${etlDto.brandId}, some products prices will be missing: ${e}`
       );
     }
   }
@@ -56,7 +58,7 @@ export default class Turn14DataExtractor {
       await this.extractItemsInventory(etlDto);
     } catch (e) {
       console.error(
-        `failed to extract items for ${etlDto.brandId}, some products prices will be missing.`
+        `failed to extract items for ${etlDto.brandId}, some products inventory will be missing: ${e}`
       );
     }
   }

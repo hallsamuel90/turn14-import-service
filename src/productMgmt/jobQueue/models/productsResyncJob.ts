@@ -25,11 +25,17 @@ export class ProductsResyncJob extends ProductSyncJob {
   private async resyncProductsForUser(user: ApiUser): Promise<void> {
     for (const brandId of user.brandIds) {
       const etlDto = { jobId: this.id, brandId: brandId, ...user };
+
+      console.info(`Extracting products for brandId: ${brandId}...`);
       await this.etl.extract(etlDto);
 
+      console.info(`Transforming products and sending to WooCommerce...`);
       await this.etl.transformLoad(etlDto);
 
+      console.info(`Cleaning up temporary resources...`);
       await this.etl.cleanUp(etlDto.jobId);
+
+      console.info(`Job complete!`);
     }
   }
 }
