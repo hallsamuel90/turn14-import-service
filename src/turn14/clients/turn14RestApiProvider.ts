@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import axios, { AxiosInstance } from 'axios';
 import rateLimit, { RateLimitedAxiosInstance } from 'axios-rate-limit';
+import { Service } from 'typedi';
 import { Turn14Error } from '../errors/Turn14Error';
 import { Turn14RestApi } from './turn14RestApi';
 
 /**
  * Turn14RestApiProvider.
  */
+@Service()
 export class Turn14RestApiProvider {
   private static readonly REQUEST_RATE = 3;
   private static readonly BASE_URL = 'https://apitest.turn14.com/v1';

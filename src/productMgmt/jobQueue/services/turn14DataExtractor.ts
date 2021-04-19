@@ -1,9 +1,11 @@
+import { Service } from 'typedi';
 import { Turn14RestApiProvider } from '../../../turn14/clients/turn14RestApiProvider';
 import { Turn14ProductDTO } from '../../../turn14/dtos/turn14ProductDto';
 import ProductSyncJobDataDao from '../repositories/productSyncJobDataDao';
 import { EtlDto, ProductSyncJobData, Turn14DataType } from './etl';
 import ProductJobMapper from './productJobMapper';
 
+@Service()
 export default class Turn14DataExtractor {
   turn14RestApiProvider: Turn14RestApiProvider;
   productJobMapper: ProductJobMapper;

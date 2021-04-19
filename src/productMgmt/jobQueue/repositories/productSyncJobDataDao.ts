@@ -1,5 +1,6 @@
 import mongoose, { Document, PaginateModel } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
+import { Service } from 'typedi';
 import { JobId } from '../models/productSyncJob';
 import { ProductSyncJobData } from '../services/etl';
 
@@ -18,6 +19,7 @@ const ProductSyncJobDataClient: PaginateModel<ProductSyncJobDataDocument> = mong
   ProductSyncJobDataModel
 ) as PaginateModel<ProductSyncJobDataDocument>;
 
+@Service()
 export default class ProductSyncJobDataDao {
   public async saveAll(
     productSyncJobData: ProductSyncJobData[]

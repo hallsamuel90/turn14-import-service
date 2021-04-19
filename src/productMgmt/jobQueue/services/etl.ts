@@ -1,3 +1,4 @@
+import { Service } from 'typedi';
 import { Keys } from '../../../apiUsers/models/apiUser';
 import { WcClient } from '../../../woocommerce/clients/wcClient';
 import { CreateProductWcMapper } from '../../services/createProductWcMapper';
@@ -28,6 +29,7 @@ export interface EtlDto {
   wcKeys: Keys;
 }
 
+@Service()
 export default class ETL {
   private readonly turn14DataExtractor: Turn14DataExtractor;
   private readonly wcMapperFactory: WcMapperFactory;
