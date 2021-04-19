@@ -22,10 +22,12 @@ export class ProductSyncJobFactory {
 
   constructor(
     apiUserService: ApiUserService,
-    pmgmtService: ProductMgmtService
+    pmgmtService: ProductMgmtService,
+    etlService: ETL
   ) {
     this.apiUserService = apiUserService;
     this.pmgmtService = pmgmtService;
+    this.etlService = etlService;
   }
 
   public createFromBrandDto(activeBrandDto: ActiveBrandDTO): ProductSyncJob {
