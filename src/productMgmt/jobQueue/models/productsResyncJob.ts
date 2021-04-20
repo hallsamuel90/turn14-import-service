@@ -24,7 +24,13 @@ export class ProductsResyncJob extends ProductSyncJob {
 
   private async resyncProductsForUser(user: ApiUser): Promise<void> {
     for (const brandId of user.brandIds) {
-      const etlDto = { jobId: this.id, brandId: brandId, ...user };
+      const etlDto = {
+        jobId: this.id,
+        brandId: brandId,
+        turn14Keys: user.turn14Keys,
+        wcKeys: user.wcKeys,
+        siteUrl: user.siteUrl,
+      };
 
       console.info(`Extracting products for brandId: ${brandId}...`);
       await this.etl.extract(etlDto);
