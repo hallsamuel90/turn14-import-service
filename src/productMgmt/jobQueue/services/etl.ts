@@ -64,7 +64,9 @@ export default class ETL {
     }
 
     const wcMapper = this.wcMapperFactory.getWcMapper(
-      WcMapperType.CREATE_PRODUCT
+      WcMapperType.CREATE_PRODUCT,
+      etlDto.siteUrl,
+      etlDto.wcKeys
     ) as CreateProductWcMapper;
 
     await this.wcClient.postBatchCreateWcProducts(
