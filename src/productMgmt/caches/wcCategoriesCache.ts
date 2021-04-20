@@ -204,6 +204,10 @@ export class WcCategoriesCache {
   }
 
   private sanitizeName(categoryName: string): string {
+    if (!categoryName) {
+      return '';
+    }
+
     return categoryName.replace('&', '&amp;');
   }
 }
