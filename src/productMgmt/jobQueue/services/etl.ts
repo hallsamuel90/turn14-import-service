@@ -75,11 +75,14 @@ export default class ETL {
     const mappedWcProducts = await wcMapper.turn14sToWcs(enrichedTurn14Data);
     console.info('DEBUGGING mappedWcProducts');
     console.dir(mappedWcProducts);
-    await this.wcClient.postBatchCreateWcProducts(
+    const response = await this.wcClient.postBatchCreateWcProducts(
       etlDto.siteUrl,
       etlDto.wcKeys,
       mappedWcProducts
     );
+
+    console.info('DEBUGGING woocommerce response');
+    console.dir(response);
 
     await this.transformLoad(etlDto, pageNumber + 1);
   }
