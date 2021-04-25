@@ -62,7 +62,7 @@ export default class ETL {
     console.dir(enrichedTurn14Data);
 
     if (!enrichedTurn14Data.length) {
-      console.warn('enriched products empty, skipping import.');
+      console.warn('enriched products empty, exiting transform/load...');
       return;
     }
 
@@ -81,7 +81,7 @@ export default class ETL {
       mappedWcProducts
     );
 
-    await this.transformLoad(etlDto, pageNumber + 1);
+    this.transformLoad(etlDto, pageNumber + 1);
   }
 
   public async cleanUp(jobId: string): Promise<void> {
