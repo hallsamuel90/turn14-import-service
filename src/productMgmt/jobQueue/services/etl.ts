@@ -63,7 +63,7 @@ export default class ETL {
 
     if (!enrichedTurn14Data.length) {
       console.warn('enriched products empty, exiting transform/load...');
-      return;
+      return Promise.resolve();
     }
 
     const wcMapper = this.wcMapperFactory.getWcMapper(
@@ -81,7 +81,7 @@ export default class ETL {
       mappedWcProducts
     );
 
-    this.transformLoad(etlDto, pageNumber + 1);
+    await this.transformLoad(etlDto, pageNumber + 1);
   }
 
   public async cleanUp(jobId: string): Promise<void> {
