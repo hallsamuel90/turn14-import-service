@@ -161,7 +161,9 @@ export class WcCategoriesCache {
 
       return newCategory;
     } catch (e) {
-      console.error('🔥 ' + e);
+      console.error(
+        `🔥 Failed to create Category with payload: ${categoryName}, and error ${e}`
+      );
 
       return ({ id: 0 } as unknown) as JSON; // 'uncategorized'
     }
@@ -197,7 +199,9 @@ export class WcCategoriesCache {
 
       return brand;
     } catch (e) {
-      console.error('🔥 ' + e);
+      console.error(
+        `🔥 Failed to create brand with payload: ${sanitizedBrandName}, and error ${e}`
+      );
     }
 
     return ({ id: 0 } as unknown) as JSON;

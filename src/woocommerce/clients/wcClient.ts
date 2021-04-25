@@ -147,7 +147,9 @@ export class WcClient {
     try {
       await wcRestApi.batchModifyProducts(wcProducts);
     } catch (e) {
-      console.error('🔥 ' + e);
+      console.error(
+        `🔥 Failed to batch modify products with payload: ${wcProducts} and error: ${e}`
+      );
     }
   }
 
