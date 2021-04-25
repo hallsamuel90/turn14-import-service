@@ -34,10 +34,13 @@ export class WcRestApi {
    */
   public async batchModifyProducts(wcProducts: WcBatchDTO): Promise<void> {
     try {
-      await this.axiosClient.post(
+      const response = await this.axiosClient.post(
         WcRestApi.BATCH_PRODUCTS_RESOURCE,
         wcProducts
       );
+
+      console.info('DEBUGGING woocommerce response');
+      console.dir(response);
     } catch (e) {
       console.error('🔥 ' + e);
     }
