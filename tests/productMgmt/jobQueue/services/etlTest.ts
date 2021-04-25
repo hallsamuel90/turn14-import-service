@@ -110,7 +110,11 @@ describe('ETL tests', () => {
 
       const mockWcMapper = mock(CreateProductWcMapper);
       when(
-        mockWcMapperFactory.getWcMapper(WcMapperType.CREATE_PRODUCT)
+        mockWcMapperFactory.getWcMapper(
+          WcMapperType.CREATE_PRODUCT,
+          fakeEtlDto.siteUrl,
+          fakeEtlDto.wcKeys
+        )
       ).thenReturn(instance(mockWcMapper));
 
       const dummyWcProducts = [dummyWcProduct];
