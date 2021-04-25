@@ -67,10 +67,7 @@ export default class Turn14DataExtractor {
     jobId: string,
     pageNumber: number
   ): Promise<Turn14ProductDTO[]> {
-    const items = await this.productSyncJobDataDao.findAllByJobId(
-      jobId,
-      pageNumber
-    );
+    const items = await this.getTurn14Items(jobId, pageNumber);
 
     const enrichedProducts: Turn14ProductDTO[] = [];
 
@@ -96,6 +93,25 @@ export default class Turn14DataExtractor {
     }
 
     return enrichedProducts;
+  }
+
+  private async getTurn14Items(
+    jobId: string,
+    pageNumber: number
+  ): Promise<ProductSyncJobData[]> {
+    const allItemTypes = await this.productSyncJobDataDao.findAllByJobId(
+      jobId,
+      pageNumber
+    );
+
+    const results: ProductSyncJobData[] = [];
+    for (const i of allItemTypes) {
+      if (i.type === 'Item') {
+        results.push(i);
+      }
+    }
+
+    return results;
   }
 
   public async deleteExtractedData(jobId: string): Promise<void> {
