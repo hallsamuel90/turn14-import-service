@@ -84,4 +84,4 @@ describe('ProductSyncJobDataDao Integration Tests', () => {
   after(async () => {
     await disconnect();
   });
-});
+}).timeout('45s');

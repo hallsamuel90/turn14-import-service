@@ -11,7 +11,7 @@ import { Turn14RestApi } from './turn14RestApi';
 @Service()
 export class Turn14RestApiProvider {
   private static readonly REQUEST_RATE = 3;
-  private static readonly BASE_URL = 'https://apitest.turn14.com/v1';
+  private static readonly BASE_URL = 'https://api.turn14.com/v1';
   private static readonly API_INIT_DELAY_MS = 500;
   /**
    * Creates and returns a pre-configured instance of Turn14RestApi with the provided

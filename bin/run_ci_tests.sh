@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 export MONGODB_URI="mongodb://localhost:27017/productSyncJobData"
 
 sudo docker-compose up -d
