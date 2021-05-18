@@ -34,7 +34,7 @@ export class ProductSyncJobFactory {
     if (activeBrandDto.isActive()) {
       return new ImportProductsJob(
         this.apiUserService,
-        this.pmgmtService,
+        this.etlService,
         activeBrandDto
       );
     }
