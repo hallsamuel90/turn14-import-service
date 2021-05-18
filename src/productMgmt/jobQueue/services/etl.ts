@@ -58,9 +58,6 @@ export default class ETL {
       pageNumber
     );
 
-    console.info('DEBUGGING enrichedTur14Data');
-    console.dir(enrichedTurn14Data);
-
     if (!enrichedTurn14Data.length) {
       console.warn('enriched products empty, exiting transform/load...');
       return Promise.resolve();
@@ -73,8 +70,7 @@ export default class ETL {
     ) as CreateProductWcMapper;
 
     const mappedWcProducts = await wcMapper.turn14sToWcs(enrichedTurn14Data);
-    console.info('DEBUGGING mappedWcProducts');
-    console.dir(mappedWcProducts);
+
     await this.wcClient.postBatchCreateWcProducts(
       etlDto.siteUrl,
       etlDto.wcKeys,
