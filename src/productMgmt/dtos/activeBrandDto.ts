@@ -2,9 +2,9 @@
  *
  */
 export class ActiveBrandDTO {
-  private readonly userId: string;
-  private readonly brandId: string;
-  private readonly active: boolean;
+  userId: string;
+  brandId: string;
+  active: boolean;
 
   constructor(userId: string, brandId: string, active: boolean) {
     this.userId = userId;
