@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { anything, instance, mock, verify, when } from 'ts-mockito';
-import ETL from '../../../../src/productMgmt/jobQueue/services/etl';
+import ImportProductsEtl from '../../../../src/productMgmt/jobQueue/services/importProductsEtl';
 import Turn14DataExtractor from '../../../../src/productMgmt/jobQueue/services/turn14DataExtractor';
 import { CreateProductWcMapper } from '../../../../src/productMgmt/services/createProductWcMapper';
 import { WcMapperFactory } from '../../../../src/productMgmt/services/wcMapperFactory';
@@ -23,8 +23,8 @@ const fakeEtlDto = {
   },
 };
 
-describe('ETL tests', () => {
-  let etl: ETL;
+describe('ImportProductsEtl tests', () => {
+  let etl: ImportProductsEtl;
 
   let mockTurn14DataExtractor = mock(Turn14DataExtractor);
   let mockWcMapperFactory = mock(WcMapperFactory);
@@ -35,7 +35,7 @@ describe('ETL tests', () => {
     mockWcMapperFactory = mock(WcMapperFactory);
     mockWcClient = mock(WcClient);
 
-    etl = new ETL(
+    etl = new ImportProductsEtl(
       instance(mockTurn14DataExtractor),
       instance(mockWcMapperFactory),
       instance(mockWcClient)
