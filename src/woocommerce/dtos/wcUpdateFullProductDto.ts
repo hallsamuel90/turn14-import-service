@@ -7,7 +7,7 @@ import { WcImageDTO } from './wcImageDto';
 import { WcProductDTO } from './wcProductDto';
 
 export class WcUpdateFullProductDTO extends WcProductDTO {
-  id: number;
+  id: string;
   name: string;
   type: string;
   short_description: string;

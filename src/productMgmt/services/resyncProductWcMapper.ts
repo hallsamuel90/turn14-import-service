@@ -31,8 +31,8 @@ export class ResyncProductsWcMapper extends WcMapper {
    */
   public async turn14sToWcs(
     turn14Products: Turn14ProductDTO[]
-  ): Promise<WcCreateProductDTO[]> {
-    const wcProducts: WcCreateProductDTO[] = [];
+  ): Promise<WcUpdateFullProductDTO[]> {
+    const wcProducts: WcUpdateFullProductDTO[] = [];
     for (const turn14Product of turn14Products) {
       const wcProduct = await this.turn14ToWc(turn14Product);
       wcProducts.push(wcProduct);
@@ -50,7 +50,7 @@ export class ResyncProductsWcMapper extends WcMapper {
    */
   public async turn14ToWc(
     turn14ProductDto: Turn14ProductDTO
-  ): Promise<WcCreateProductDTO> {
+  ): Promise<WcUpdateFullProductDTO> {
     const wcProduct = new WcUpdateFullProductDTO();
 
     const itemAttributes = turn14ProductDto?.item?.['attributes'];

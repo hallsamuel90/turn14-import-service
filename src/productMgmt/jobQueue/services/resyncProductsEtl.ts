@@ -48,7 +48,7 @@ export default class ResyncProductsEtl implements Etl {
 
     const mappedWcProducts = await wcMapper.turn14sToWcs(enrichedTurn14Data);
 
-    await this.wcClient.postBatchCreateWcProducts(
+    await this.wcClient.postBatchUpdateWcProducts(
       etlDto.siteUrl,
       etlDto.wcKeys,
       mappedWcProducts

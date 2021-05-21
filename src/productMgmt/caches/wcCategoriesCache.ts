@@ -96,7 +96,7 @@ export class WcCategoriesCache {
     return this.getBrandIdFromBrand(brand);
   }
 
-  public async getProductIdFromSku(sku: string): Promise<number> {
+  public async getProductIdFromSku(sku: string): Promise<string> {
     const product = await this.wcRestApi.fetchProductBySku(sku);
 
     return product['id'];
