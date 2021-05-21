@@ -5,4 +5,5 @@ export enum WcMapperType {
   CREATE_PRODUCT,
   UPDATE_INVENTORY,
   UPDATE_PRICING,
+  RESYNC_PRODUCTS,
 }

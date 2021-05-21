@@ -96,6 +96,12 @@ export class WcCategoriesCache {
     return this.getBrandIdFromBrand(brand);
   }
 
+  public async getProductIdFromSku(sku: string): Promise<string> {
+    const product = await this.wcRestApi.fetchProductBySku(sku);
+
+    return product['id'];
+  }
+
   private getBrandFromCache(sanitizedBrandName: string): JSON | undefined {
     return this.brands[sanitizedBrandName];
   }

@@ -10,7 +10,6 @@ import { RemoveStaleProductsJob } from '../../../../src/productMgmt/jobQueue/mod
 import { UpdateInventoryJob } from '../../../../src/productMgmt/jobQueue/models/updateInventoryJob';
 import { UpdatePricingJob } from '../../../../src/productMgmt/jobQueue/models/updatePricingJob';
 import { ProductSyncJobType } from '../../../../src/productMgmt/jobQueue/productSyncJobType';
-import ETL from '../../../../src/productMgmt/jobQueue/services/etl';
 import { ProductSyncJobFactory } from '../../../../src/productMgmt/jobQueue/services/productSyncJobFactory';
 import { ProductMgmtService } from '../../../../src/productMgmt/services/productMgmtService';
 
@@ -20,12 +19,10 @@ describe('ProductSyncJobFactory tests', () => {
   beforeEach(() => {
     const mockApiUserService = mock(ApiUserService);
     const mockPmgmtService = mock(ProductMgmtService);
-    const mockEtlService = mock(ETL);
 
     productSyncJobFactory = new ProductSyncJobFactory(
       instance(mockApiUserService),
-      instance(mockPmgmtService),
-      instance(mockEtlService)
+      instance(mockPmgmtService)
     );
   });
 

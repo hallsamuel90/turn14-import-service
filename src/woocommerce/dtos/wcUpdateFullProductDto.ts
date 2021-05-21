@@ -1,23 +1,24 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 import { WcAttributeDTO } from './wcAttributeDto';
-import { WcCategoryDTO } from './wcCategoryDto';
+import { WcCategoryIdDTO } from './wcCategoryIdDto';
 import { WcDimensionsDTO } from './wcDimensionsDto';
 import { WcImageDTO } from './wcImageDto';
-import { WcUpdateProductDTO } from './wcUpdateProductDto';
+import { WcProductDTO } from './wcProductDto';
 
-/**
- * WooCommerce Update Product Data Transfer Object TODO:
- */
-export class WcUpdateFullProductDTO extends WcUpdateProductDTO {
+export class WcUpdateFullProductDTO extends WcProductDTO {
+  id: string;
   name: string;
   type: string;
-  shortDescription: string;
+  short_description: string;
   description: string;
   sku: string;
+  brand_id: number;
+  brands: number[];
+  ymm_fitment: string;
   regular_price: string;
   sale_price: string;
-  categories: WcCategoryDTO[];
+  categories: WcCategoryIdDTO[];
   images: WcImageDTO[];
   weight: string;
   dimensions: WcDimensionsDTO;
@@ -28,19 +29,15 @@ export class WcUpdateFullProductDTO extends WcUpdateProductDTO {
   backorders_allowed: boolean;
   attributes: WcAttributeDTO[];
 
-  /**
-   * Initializes the instance to its default state.
-   *
-   * @param {string} id the id of the wc product.
-   */
-  constructor(id: string) {
-    super(id);
+  constructor() {
+    super();
 
     this.name = '';
     this.type = 'simple';
-    this.shortDescription = '';
+    this.short_description = '';
     this.description = '';
     this.sku = '';
+    this.brands = [];
     this.regular_price = '';
     this.sale_price = '';
     this.categories = [];

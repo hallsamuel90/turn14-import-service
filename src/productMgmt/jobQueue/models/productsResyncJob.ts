@@ -1,14 +1,14 @@
 import { ApiUser } from '../../../apiUsers/models/apiUser';
 import { ApiUserService } from '../../../apiUsers/services/apiUserService';
 import { ProductSyncJobType } from '../productSyncJobType';
-import ETL from '../services/etl';
+import { Etl } from '../services/etl';
 import { ProductSyncJob } from './productSyncJob';
 
 export class ProductsResyncJob extends ProductSyncJob {
   private readonly apiUserService: ApiUserService;
-  private readonly etl: ETL;
+  private readonly etl: Etl;
 
-  constructor(apiUserService: ApiUserService, etl: ETL) {
+  constructor(apiUserService: ApiUserService, etl: Etl) {
     super(ProductSyncJobType.RESYNC_PRODUCTS);
     this.apiUserService = apiUserService;
     this.etl = etl;

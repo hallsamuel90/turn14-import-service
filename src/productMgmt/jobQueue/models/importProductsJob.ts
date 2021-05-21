@@ -1,21 +1,17 @@
 import { ApiUserService } from '../../../apiUsers/services/apiUserService';
 import { ActiveBrandDTO } from '../../dtos/activeBrandDto';
 import { ProductSyncJobType } from '../productSyncJobType';
-import ETL from '../services/etl';
+import { Etl } from '../services/etl';
 import { ProductSyncJob } from './productSyncJob';
 
-/**
- * ImportProductJob imports products from Turn14 into the user's WooCommerce
- * store.
- */
 export class ImportProductsJob extends ProductSyncJob {
   private readonly apiUserService: ApiUserService;
-  private readonly etl: ETL;
+  private readonly etl: Etl;
   private readonly activeBrandDto: ActiveBrandDTO;
 
   constructor(
     apiUserService: ApiUserService,
-    etl: ETL,
+    etl: Etl,
     activeBrandDto: ActiveBrandDTO
   ) {
     super(ProductSyncJobType.IMPORT_BRAND);
