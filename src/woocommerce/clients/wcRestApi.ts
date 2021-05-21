@@ -39,8 +39,8 @@ export class WcRestApi {
         wcProducts
       );
 
-      console.info('DEBUGGING woocommerce response'); // TODO REMOVE
-      console.dir(response?.data);
+      // console.info('DEBUGGING woocommerce response'); // TODO REMOVE
+      // console.debug(response?.data);
     } catch (e) {
       console.error('🔥 ' + e);
     }
