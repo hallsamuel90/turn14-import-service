@@ -40,7 +40,7 @@ export class WcRestApi {
       );
 
       console.info('DEBUGGING woocommerce response'); // TODO REMOVE
-      console.dir(response);
+      console.dir(response?.data);
     } catch (e) {
       console.error('🔥 ' + e);
     }
