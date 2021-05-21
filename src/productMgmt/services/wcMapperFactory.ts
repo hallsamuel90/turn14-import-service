@@ -8,6 +8,7 @@ import { WcMapperFactoryError } from '../../woocommerce/errors/wcMapperFactoryEr
 import { UpdatePricingWcMapper } from './updatePricingWcMapper';
 import { Service } from 'typedi';
 import { WcRestApiProvider } from '../../woocommerce/clients/wcRestApiProvider';
+import { ResyncProductsWcMapper } from './resyncProductWcMapper';
 
 /**
  * WcMapperProvider.
@@ -44,6 +45,14 @@ export class WcMapperFactory {
         throw new WcMapperFactoryError(
           'wcSiteUrl and wcKeys cannot be undefined.'
         );
+      case WcMapperType.RESYNC_PRODUCTS:
+        if (wcSiteUrl != undefined && wcKeys != undefined) {
+          return this.buildResyncProductsWcMapper(wcSiteUrl, wcKeys);
+        }
+
+        throw new WcMapperFactoryError(
+          'wcSiteUrl and wcKeys cannot be undefined.'
+        );
       case WcMapperType.UPDATE_INVENTORY:
         return new UpdateInventoryWcMapper();
       case WcMapperType.UPDATE_PRICING:
@@ -65,6 +74,20 @@ export class WcMapperFactory {
     const categoriesCache = new WcCategoriesCache(wcRestClient);
 
     return new CreateProductWcMapper(categoriesCache);
+  }
+
+  private buildResyncProductsWcMapper(
+    wcSiteUrl: string,
+    wcKeys: Keys
+  ): WcMapper {
+    const wcRestClient = this.wcRestApiProvider.getWcRestApi(
+      wcSiteUrl,
+      wcKeys.client,
+      wcKeys.secret
+    );
+    const categoriesCache = new WcCategoriesCache(wcRestClient);
+
+    return new ResyncProductsWcMapper(categoriesCache);
   }
 
   private invalidFactoryType(wcMapperType: WcMapperType): Error {

@@ -39,7 +39,7 @@ export class WcRestApi {
         wcProducts
       );
 
-      console.info('DEBUGGING woocommerce response');
+      console.info('DEBUGGING woocommerce response'); // TODO REMOVE
       console.dir(response);
     } catch (e) {
       console.error('🔥 ' + e);
@@ -219,6 +219,20 @@ export class WcRestApi {
         slug: brandName,
       });
       return response.data;
+    } catch (e) {
+      throw this.buildWcError(e);
+    }
+  }
+
+  public async fetchProductBySku(sku: string): Promise<JSON> {
+    try {
+      const response = await this.axiosClient.get(WcRestApi.PRODUCTS_RESOURCE, {
+        params: {
+          sku,
+        },
+      });
+
+      return response.data[0];
     } catch (e) {
       throw this.buildWcError(e);
     }
