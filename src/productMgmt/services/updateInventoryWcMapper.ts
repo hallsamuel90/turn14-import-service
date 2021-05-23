@@ -17,8 +17,12 @@ export class UpdateInventoryWcMapper extends WcMapper {
   ): Promise<WcUpdateInventoryDTO[]> {
     const wcProducts: WcUpdateInventoryDTO[] = [];
     for (const turn14Product of turn14Products) {
-      const wcProduct = await this.turn14ToWc(turn14Product);
-      wcProducts.push(wcProduct);
+      try {
+        const wcProduct = await this.turn14ToWc(turn14Product);
+        wcProducts.push(wcProduct);
+      } catch (e) {
+        console.error(`Something went wrong mapping the inventory ${e}`);
+      }
     }
 
     return wcProducts;
