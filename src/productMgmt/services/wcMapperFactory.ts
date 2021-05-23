@@ -58,7 +58,9 @@ export class WcMapperFactory {
           return this.buildUpdateInventoryWcMapper(wcSiteUrl, wcKeys);
         }
       case WcMapperType.UPDATE_PRICING:
-        return new UpdatePricingWcMapper();
+        if (wcSiteUrl != undefined && wcKeys != undefined) {
+          return this.buildUpdatePricingWcMapper(wcSiteUrl, wcKeys);
+        }
       default:
         throw this.invalidFactoryType(wcMapperType);
     }
@@ -104,6 +106,20 @@ export class WcMapperFactory {
     const categoriesCache = new WcCategoriesCache(wcRestClient);
 
     return new UpdateInventoryWcMapper(categoriesCache);
+  }
+
+  private buildUpdatePricingWcMapper(
+    wcSiteUrl: string,
+    wcKeys: Keys
+  ): WcMapper {
+    const wcRestClient = this.wcRestApiProvider.getWcRestApi(
+      wcSiteUrl,
+      wcKeys.client,
+      wcKeys.secret
+    );
+    const categoriesCache = new WcCategoriesCache(wcRestClient);
+
+    return new UpdatePricingWcMapper(categoriesCache);
   }
 
   private invalidFactoryType(wcMapperType: WcMapperType): Error {

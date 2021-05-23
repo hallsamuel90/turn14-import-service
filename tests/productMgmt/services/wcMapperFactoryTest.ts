@@ -63,11 +63,19 @@ describe('WcMapperFactory tests', () => {
     });
 
     it('should return an instance of UpdatePricingWcMapper if params are valid', () => {
-      const updateInventoryWcMapper = instance.getWcMapper(
-        WcMapperType.UPDATE_PRICING
+      const fakeSiteUrl = 'fakeSiteUrl';
+      const fakeKeys = {
+        client: 'fakeClient',
+        secret: 'fakeSecret',
+      };
+
+      const updatePricingWcMapper = instance.getWcMapper(
+        WcMapperType.UPDATE_PRICING,
+        fakeSiteUrl,
+        fakeKeys
       );
 
-      expect(updateInventoryWcMapper).to.be.instanceOf(UpdatePricingWcMapper);
+      expect(updatePricingWcMapper).to.be.instanceOf(UpdatePricingWcMapper);
     });
   });
 });
