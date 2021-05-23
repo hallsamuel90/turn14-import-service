@@ -47,8 +47,16 @@ describe('WcMapperFactory tests', () => {
     });
 
     it('should return an instance of UpdateInventoryWcMapper if params are valid', () => {
+      const fakeSiteUrl = 'fakeSiteUrl';
+      const fakeKeys = {
+        client: 'fakeClient',
+        secret: 'fakeSecret',
+      };
+
       const updateInventoryWcMapper = instance.getWcMapper(
-        WcMapperType.UPDATE_INVENTORY
+        WcMapperType.UPDATE_INVENTORY,
+        fakeSiteUrl,
+        fakeKeys
       );
 
       expect(updateInventoryWcMapper).to.be.instanceOf(UpdateInventoryWcMapper);
