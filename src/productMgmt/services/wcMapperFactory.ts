@@ -54,7 +54,9 @@ export class WcMapperFactory {
           'wcSiteUrl and wcKeys cannot be undefined.'
         );
       case WcMapperType.UPDATE_INVENTORY:
-        return new UpdateInventoryWcMapper();
+        if (wcSiteUrl != undefined && wcKeys != undefined) {
+          return this.buildUpdateInventoryWcMapper(wcSiteUrl, wcKeys);
+        }
       case WcMapperType.UPDATE_PRICING:
         return new UpdatePricingWcMapper();
       default:
@@ -88,6 +90,20 @@ export class WcMapperFactory {
     const categoriesCache = new WcCategoriesCache(wcRestClient);
 
     return new ResyncProductsWcMapper(categoriesCache);
+  }
+
+  private buildUpdateInventoryWcMapper(
+    wcSiteUrl: string,
+    wcKeys: Keys
+  ): WcMapper {
+    const wcRestClient = this.wcRestApiProvider.getWcRestApi(
+      wcSiteUrl,
+      wcKeys.client,
+      wcKeys.secret
+    );
+    const categoriesCache = new WcCategoriesCache(wcRestClient);
+
+    return new UpdateInventoryWcMapper(categoriesCache);
   }
 
   private invalidFactoryType(wcMapperType: WcMapperType): Error {
