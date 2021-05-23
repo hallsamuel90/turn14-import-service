@@ -4,6 +4,7 @@ import { JobId } from '../models/productSyncJob';
 import { ProductSyncJobType } from '../productSyncJobType';
 import ImportProductsEtl from './importProductsEtl';
 import ResyncProductsEtl from './resyncProductsEtl';
+import UpdateInventoryEtl from './updateInventoryEtl';
 
 export enum Turn14DataType {
   ITEM_BASE = 'Item',
@@ -39,6 +40,8 @@ export const getEtlService = (type: ProductSyncJobType): Etl => {
       return Container.get(ImportProductsEtl);
     case ProductSyncJobType.RESYNC_PRODUCTS:
       return Container.get(ResyncProductsEtl);
+    case ProductSyncJobType.UPDATE_INVENTORY:
+      return Container.get(UpdateInventoryEtl);
     default:
       throw Error(`${type} is not a valid job type`);
   }

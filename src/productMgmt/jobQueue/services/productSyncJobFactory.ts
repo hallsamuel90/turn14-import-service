@@ -46,7 +46,10 @@ export class ProductSyncJobFactory {
   public createFromJobType(jobType: ProductSyncJobType): ProductSyncJob {
     switch (jobType) {
       case ProductSyncJobType.UPDATE_INVENTORY:
-        return new UpdateInventoryJob(this.apiUserService, this.pmgmtService);
+        return new UpdateInventoryJob(
+          this.apiUserService,
+          getEtlService(jobType)
+        );
       case ProductSyncJobType.UPDATE_PRICING:
         return new UpdatePricingJob(this.apiUserService, this.pmgmtService);
       case ProductSyncJobType.IMPORT_ADDED_PRODUCTS:
@@ -62,7 +65,7 @@ export class ProductSyncJobFactory {
       case ProductSyncJobType.RESYNC_PRODUCTS:
         return new ProductsResyncJob(
           this.apiUserService,
-          getEtlService(ProductSyncJobType.RESYNC_PRODUCTS)
+          getEtlService(jobType)
         );
       default:
         throw new ProductSyncJobError(

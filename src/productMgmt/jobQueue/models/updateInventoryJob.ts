@@ -1,40 +1,49 @@
 import { ApiUser } from '../../../apiUsers/models/apiUser';
 import { ApiUserService } from '../../../apiUsers/services/apiUserService';
-import { ProductMgmtService } from '../../services/productMgmtService';
 import { ProductSyncJobType } from '../productSyncJobType';
+import { Etl } from '../services/etl';
 import { ProductSyncJob } from './productSyncJob';
 
-/**
- * Updates the WooCommerce store products' inventory.
- */
 export class UpdateInventoryJob extends ProductSyncJob {
   private readonly apiUserService: ApiUserService;
-  private readonly productMgmtService: ProductMgmtService;
+  private readonly etl: Etl;
 
-  constructor(
-    apiUserService: ApiUserService,
-    productMgmtService: ProductMgmtService
-  ) {
+  constructor(apiUserService: ApiUserService, etl: Etl) {
     super(ProductSyncJobType.UPDATE_INVENTORY);
     this.apiUserService = apiUserService;
-    this.productMgmtService = productMgmtService;
+    this.etl = etl;
   }
 
   public async run(): Promise<void> {
-    const apiUsers = await this.apiUserService.retrieveAll();
+    const users = await this.apiUserService.retrieveAll();
 
-    await this.updateAllUserInventory(apiUsers);
-  }
-
-  private async updateAllUserInventory(apiUsers: ApiUser[]): Promise<void> {
-    for (const apiUser of apiUsers) {
-      await this.updateUserInventory(apiUser);
+    for (const user of users) {
+      await this.updateInventoryForUser(user);
     }
   }
 
-  private async updateUserInventory(apiUser: ApiUser): Promise<void> {
-    if (this.userHasActiveBrands(apiUser)) {
-      await this.productMgmtService.updateUserActiveInventory(apiUser);
+  private async updateInventoryForUser(user: ApiUser): Promise<void> {
+    for (const brandId of user.brandIds) {
+      const etlDto = {
+        jobId: this.id,
+        brandId: brandId,
+        turn14Keys: user.turn14Keys,
+        wcKeys: user.wcKeys,
+        siteUrl: user.siteUrl,
+      };
+
+      console.info(`Extracting product inventory for brandId: ${brandId}...`);
+      await this.etl.extract(etlDto);
+
+      console.info(
+        `Transforming product inventory and sending to WooCommerce...`
+      );
+      await this.etl.transformLoad(etlDto);
+
+      console.info(`Cleaning up temporary resources...`);
+      await this.etl.cleanUp(etlDto.jobId);
+
+      console.info(`Update Inventory Job complete!`);
     }
   }
 }
