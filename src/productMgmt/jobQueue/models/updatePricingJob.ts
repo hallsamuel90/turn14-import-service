@@ -1,40 +1,48 @@
 import { ApiUser } from '../../../apiUsers/models/apiUser';
 import { ApiUserService } from '../../../apiUsers/services/apiUserService';
-import { ProductMgmtService } from '../../services/productMgmtService';
 import { ProductSyncJobType } from '../productSyncJobType';
+import { Etl } from '../services/etl';
 import { ProductSyncJob } from './productSyncJob';
-
-/**
- * Updates the pricing for products in the WooCommerce store.
- */
 export class UpdatePricingJob extends ProductSyncJob {
   private readonly apiUserService: ApiUserService;
-  private readonly productMgmtService: ProductMgmtService;
+  private readonly etl: Etl;
 
-  constructor(
-    apiUserService: ApiUserService,
-    productMgmtService: ProductMgmtService
-  ) {
+  constructor(apiUserService: ApiUserService, etl: Etl) {
     super(ProductSyncJobType.UPDATE_PRICING);
     this.apiUserService = apiUserService;
-    this.productMgmtService = productMgmtService;
+    this.etl = etl;
   }
 
   public async run(): Promise<void> {
-    const apiUsers = await this.apiUserService.retrieveAll();
+    const users = await this.apiUserService.retrieveAll();
 
-    await this.updatePricingForAllUsers(apiUsers);
-  }
-
-  private async updatePricingForAllUsers(apiUsers: ApiUser[]): Promise<void> {
-    for (const apiUser of apiUsers) {
-      await this.updatePricingForUser(apiUser);
+    for (const user of users) {
+      await this.updatePricingForUser(user);
     }
   }
 
-  private async updatePricingForUser(apiUser: ApiUser): Promise<void> {
-    if (this.userHasActiveBrands(apiUser)) {
-      await this.productMgmtService.updateUserActivePricing(apiUser);
+  private async updatePricingForUser(user: ApiUser): Promise<void> {
+    for (const brandId of user.brandIds) {
+      const etlDto = {
+        jobId: this.id,
+        brandId: brandId,
+        turn14Keys: user.turn14Keys,
+        wcKeys: user.wcKeys,
+        siteUrl: user.siteUrl,
+      };
+
+      console.info(`Extracting product pricing for brandId: ${brandId}...`);
+      await this.etl.extract(etlDto);
+
+      console.info(
+        `Transforming product pricing and sending to WooCommerce...`
+      );
+      await this.etl.transformLoad(etlDto);
+
+      console.info(`Cleaning up temporary resources...`);
+      await this.etl.cleanUp(etlDto.jobId);
+
+      console.info(`Update Pricing Job complete!`);
     }
   }
 }

@@ -219,19 +219,13 @@ export class ProductMgmtService {
       apiUser.turn14Keys,
       brandId
     );
-    const fetchedWcProducts = await this.wcClient.getWcProductsByBrand(
-      apiUser.siteUrl,
-      apiUser.wcKeys,
-      brandId
-    );
 
     const wcMapper = this.wcMapperFactory.getWcMapper(
       WcMapperType.UPDATE_PRICING
     ) as UpdatePricingWcMapper;
 
-    const wcUpdatePricingDtos: WcUpdatePricingDTO[] = wcMapper.turn14sToWcs(
-      turn14Products,
-      fetchedWcProducts
+    const wcUpdatePricingDtos: WcUpdatePricingDTO[] = await wcMapper.turn14sToWcs(
+      turn14Products
     );
 
     this.wcClient.postBatchUpdateWcProducts(

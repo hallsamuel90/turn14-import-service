@@ -51,7 +51,10 @@ export class ProductSyncJobFactory {
           getEtlService(jobType)
         );
       case ProductSyncJobType.UPDATE_PRICING:
-        return new UpdatePricingJob(this.apiUserService, this.pmgmtService);
+        return new UpdatePricingJob(
+          this.apiUserService,
+          getEtlService(jobType)
+        );
       case ProductSyncJobType.IMPORT_ADDED_PRODUCTS:
         return new ImportAddedProductsJob(
           this.apiUserService,
