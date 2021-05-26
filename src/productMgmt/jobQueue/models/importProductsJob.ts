@@ -24,6 +24,11 @@ export class ImportProductsJob extends ProductSyncJob {
   public async run(): Promise<void> {
     const user = await this.apiUserService.retrieve(this.activeBrandDto.userId);
 
+    console.info(
+      `Adding brandId: ${this.activeBrandDto.brandId} to user's managed brands...`
+    );
+    await this.apiUserService.addBrand(user, this.activeBrandDto.brandId);
+
     const etlDto = {
       jobId: this.id,
       brandId: this.activeBrandDto.brandId,
