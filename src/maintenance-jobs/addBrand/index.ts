@@ -14,4 +14,6 @@ export default async (): Promise<void> => {
   } catch (e) {
     console.error(`something went wrong adding the brand... ${e}`);
   }
+
+  console.info('add brand job completed successfully!');
 };
