@@ -22,7 +22,7 @@ jobs:
         run: yarn test:ci
 
       - name: Publish pmgmt image
-        uses: hallsamuel90/actions/docker-gpr
+        uses: hallsamuel90/actions/docker-gpr@master
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           image-name: pmgmt
@@ -30,7 +30,7 @@ jobs:
           dockerfile-name: Dockerfile.pmgmt
 
       - name: Publish job-scheduler image
-        uses: hallsamuel90/actions/docker-gpr
+        uses: hallsamuel90/actions/docker-gpr@master
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           image-name: job-scheduler
