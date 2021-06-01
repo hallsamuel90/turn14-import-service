@@ -6,14 +6,16 @@
   "scripts": {
     "clean": "rm -rf build/*",
     "debug": "node --inspect=0.0.0.0:7000 build/app.js",
-    "start": "node build/src/app.js",
+    "start:pmgmt": "node build/src/app.js",
+    "start:jobScheduler": "node build/src/jobScheduler.app.js",
     "lint": "eslint . --ext .ts",
     "test": "yarn test:unit && yarn test:integration",
     "test:unit": "./bin/run_unit_tests.sh",
     "test:integration": "./bin/run_integration_tests.sh",
     "test:ci": "./bin/run_ci_tests.sh",
     "build": "tsc",
-    "contain": "sudo docker build -t pmgmt ."
+    "contain:pmgmt": "sudo docker build -t pmgmt . -f Dockerfile.pmgmt",
+    "contain:jobScheduler": "sudo docker build -t job-scheduler . -f Dockerfile.jobScheduler"
   },
   "dependencies": {
     "amqplib": "^0.5.5",
