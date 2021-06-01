@@ -21,9 +21,19 @@ jobs:
       - name: Test
         run: yarn test:ci
 
-      - name: Build, Tag, and Publish
-        uses: mattdavis0351/actions/docker-gpr@v1
+      - name: Publish pmgmt image
+        uses: hallsamuel90/actions/docker-gpr
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          image-name: pmgmt-prod
+          image-name: pmgmt
+          tag: prod
+          dockerfile-name: Dockerfile.pmgmt
+
+      - name: Publish job-scheduler image
+        uses: hallsamuel90/actions/docker-gpr
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: job-scheduler
+          tag: prod
+          dockerfile-name: Dockerfile.jobScheduler
 

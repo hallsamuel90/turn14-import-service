@@ -4,5 +4,5 @@ COPY package.json .
 RUN yarn install
 ADD . /usr/src/app
 RUN yarn build
-CMD ["yarn", "start"]
-EXPOSE 8081
+CMD ["yarn", "start:jobScheduler"]
+EXPOSE 8083
