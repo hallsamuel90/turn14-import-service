@@ -31,10 +31,10 @@ export class ProductSyncJobScheduler {
       `⏲️  Scheduling inventory updates for all users every ${ProductSyncJobScheduler.ONE_HOUR_SEC} seconds.`
     );
 
-    this.pushJob(ProductSyncJobType.UPDATE_INVENTORY);
+    await this.pushJob(ProductSyncJobType.UPDATE_INVENTORY);
 
-    setInterval(() => {
-      this.pushJob(ProductSyncJobType.UPDATE_INVENTORY);
+    setInterval(async () => {
+      await this.pushJob(ProductSyncJobType.UPDATE_INVENTORY);
     }, ProductSyncJobScheduler.ONE_HOUR_SEC * 1000);
   }
 
@@ -46,10 +46,10 @@ export class ProductSyncJobScheduler {
       `⏲️  Scheduling pricing updates for all users every ${ProductSyncJobScheduler.ONE_DAY_SEC} seconds.`
     );
 
-    this.pushJob(ProductSyncJobType.UPDATE_PRICING);
+    await this.pushJob(ProductSyncJobType.UPDATE_PRICING);
 
-    setInterval(() => {
-      this.pushJob(ProductSyncJobType.UPDATE_PRICING);
+    setInterval(async () => {
+      await this.pushJob(ProductSyncJobType.UPDATE_PRICING);
     }, ProductSyncJobScheduler.ONE_DAY_SEC * 1000);
   }
 
@@ -61,10 +61,10 @@ export class ProductSyncJobScheduler {
       `⏲️  Scheduling stale product removal for all users every ${ProductSyncJobScheduler.ONE_DAY_SEC} seconds.`
     );
 
-    this.pushJob(ProductSyncJobType.REMOVE_STALE_PRODUCTS);
+    await this.pushJob(ProductSyncJobType.REMOVE_STALE_PRODUCTS);
 
-    setInterval(() => {
-      this.pushJob(ProductSyncJobType.REMOVE_STALE_PRODUCTS);
+    setInterval(async () => {
+      await this.pushJob(ProductSyncJobType.REMOVE_STALE_PRODUCTS);
     }, ProductSyncJobScheduler.ONE_DAY_SEC * 1000);
   }
 
@@ -78,16 +78,16 @@ export class ProductSyncJobScheduler {
       } seconds.`
     );
 
-    this.pushJob(ProductSyncJobType.RESYNC_PRODUCTS);
+    await this.pushJob(ProductSyncJobType.RESYNC_PRODUCTS);
 
     setInterval(() => {
       this.pushJob(ProductSyncJobType.RESYNC_PRODUCTS);
     }, ProductSyncJobScheduler.ONE_MONTH);
   }
 
-  private pushJob(jobType: ProductSyncJobType): void {
+  private async pushJob(jobType: ProductSyncJobType): Promise<void> {
     const job = this.productSyncJobFactory.createFromJobType(jobType);
 
-    this.productSyncQueueService.enqueue(job);
+    await this.productSyncQueueService.enqueue(job);
   }
 }

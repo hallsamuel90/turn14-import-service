@@ -18,51 +18,51 @@ describe('ProductSyncQueueService tests', () => {
   });
 
   describe('#lockQueue', () => {
-    it('should lock the queue', () => {
-      expect(productSyncQueueService.isLocked()).to.be.false;
+    it('should lock the queue', async () => {
+      expect(await productSyncQueueService.isLocked()).to.be.false;
 
-      productSyncQueueService.lockQueue();
+      await productSyncQueueService.lockQueue();
 
-      expect(productSyncQueueService.isLocked()).to.be.true;
+      expect(await productSyncQueueService.isLocked()).to.be.true;
     });
   });
 
   describe('#unlockQueue', () => {
-    it('should unlock the queue', () => {
-      productSyncQueueService.lockQueue();
-      expect(productSyncQueueService.isLocked()).to.be.true;
+    it('should unlock the queue', async () => {
+      await productSyncQueueService.lockQueue();
+      expect(await productSyncQueueService.isLocked()).to.be.true;
 
-      productSyncQueueService.unlockQueue();
+      await productSyncQueueService.unlockQueue();
 
-      expect(productSyncQueueService.isLocked()).to.be.false;
+      expect(await productSyncQueueService.isLocked()).to.be.false;
     });
   });
 
-  describe('#dequeue', () => {
-    it('should return the last item in the queue', () => {
+  describe('#dequeue', async () => {
+    it('should return the last item in the queue', async () => {
       const mockEnqueuedJob = mock(ProductSyncJob);
-      productSyncQueueService.enqueue(mockEnqueuedJob);
+      await productSyncQueueService.enqueue(mockEnqueuedJob);
 
-      expect(productSyncQueueService.isEmpty()).to.be.false;
+      expect(await productSyncQueueService.isEmpty()).to.be.false;
 
-      const mockDequeuedJob = productSyncQueueService.dequeue();
+      const mockDequeuedJob = await productSyncQueueService.dequeue();
 
       expect(mockDequeuedJob).to.be.equal(mockEnqueuedJob);
     });
 
-    it('should remove the last item in the queue', () => {
+    it('should remove the last item in the queue', async () => {
       const mockEnqueuedJob = mock(ProductSyncJob);
-      productSyncQueueService.enqueue(mockEnqueuedJob);
+      await productSyncQueueService.enqueue(mockEnqueuedJob);
 
-      expect(productSyncQueueService.isEmpty()).to.be.false;
+      expect(await productSyncQueueService.isEmpty()).to.be.false;
 
-      productSyncQueueService.dequeue();
+      await productSyncQueueService.dequeue();
 
-      expect(productSyncQueueService.isEmpty()).to.be.true;
+      expect(await productSyncQueueService.isEmpty()).to.be.true;
     });
 
-    it('should throw an error there are no jobs in the queue', () => {
-      expect(productSyncQueueService.dequeue).to.throw(Error);
+    it('should throw an error there are no jobs in the queue', async () => {
+      expect(productSyncQueueService.dequeue()).to.be.rejectedWith(Error);
     });
   });
 });
