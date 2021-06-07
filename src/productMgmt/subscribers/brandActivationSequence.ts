@@ -13,10 +13,6 @@ export class BrandActivationSequence {
   private readonly productSyncQueueService: ProductSyncQueueService;
   private readonly productSyncJobFactory: ProductSyncJobFactory;
 
-  /**
-   * @param productSyncQueueService
-   * @param productSyncJobFactory
-   */
   constructor(
     productSyncQueueService: ProductSyncQueueService,
     productSyncJobFactory: ProductSyncJobFactory
@@ -35,7 +31,7 @@ export class BrandActivationSequence {
     const brandDto = this.convertJson(jsonMsg);
     const job = this.productSyncJobFactory.createFromBrandDto(brandDto);
 
-    this.productSyncQueueService.enqueue(job);
+    await this.productSyncQueueService.enqueue(job);
   }
 
   private convertJson(msg: JSON): ActiveBrandDTO {

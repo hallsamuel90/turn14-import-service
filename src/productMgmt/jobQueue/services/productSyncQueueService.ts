@@ -2,9 +2,6 @@ import { ProductSyncQueueRepository } from '../repositories/productSyncQueueRepo
 import { Service } from 'typedi';
 import { ProductSyncJob } from '../models/productSyncJob';
 
-/**
- * Service class for operations on ProductSyncQueue
- */
 @Service()
 export class ProductSyncQueueService {
   private productSyncQueueRepository: ProductSyncQueueRepository;
@@ -13,47 +10,47 @@ export class ProductSyncQueueService {
     this.productSyncQueueRepository = productSyncQueueRepository;
   }
 
-  public lockQueue(): void {
-    const jobQueue = this.productSyncQueueRepository.fetchQueue();
+  public async lockQueue(): Promise<void> {
+    const jobQueue = await this.productSyncQueueRepository.fetchQueue();
 
     jobQueue.lock();
 
-    this.productSyncQueueRepository.save(jobQueue);
+    await this.productSyncQueueRepository.save(jobQueue);
   }
 
-  public unlockQueue(): void {
-    const jobQueue = this.productSyncQueueRepository.fetchQueue();
+  public async unlockQueue(): Promise<void> {
+    const jobQueue = await this.productSyncQueueRepository.fetchQueue();
 
     jobQueue.unLock();
 
-    this.productSyncQueueRepository.save(jobQueue);
+    await this.productSyncQueueRepository.save(jobQueue);
   }
 
-  public enqueue(productSyncJob: ProductSyncJob): void {
-    const jobQueue = this.productSyncQueueRepository.fetchQueue();
+  public async enqueue(productSyncJob: ProductSyncJob): Promise<void> {
+    const jobQueue = await this.productSyncQueueRepository.fetchQueue();
 
     jobQueue.enqueue(productSyncJob);
 
-    this.productSyncQueueRepository.save(jobQueue);
+    await this.productSyncQueueRepository.save(jobQueue);
   }
 
-  public dequeue(): ProductSyncJob {
-    const jobQueue = this.productSyncQueueRepository.fetchQueue();
+  public async dequeue(): Promise<ProductSyncJob> {
+    const jobQueue = await this.productSyncQueueRepository.fetchQueue();
     const job = jobQueue.dequeue();
 
-    this.productSyncQueueRepository.save(jobQueue);
+    await this.productSyncQueueRepository.save(jobQueue);
 
     return job;
   }
 
-  public isLocked(): boolean {
-    const jobQueue = this.productSyncQueueRepository.fetchQueue();
+  public async isLocked(): Promise<boolean> {
+    const jobQueue = await this.productSyncQueueRepository.fetchQueue();
 
     return jobQueue.isLocked();
   }
 
-  public isEmpty(): boolean {
-    const jobQueue = this.productSyncQueueRepository.fetchQueue();
+  public async isEmpty(): Promise<boolean> {
+    const jobQueue = await this.productSyncQueueRepository.fetchQueue();
 
     return jobQueue.isEmpty();
   }

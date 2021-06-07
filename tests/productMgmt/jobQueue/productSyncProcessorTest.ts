@@ -3,6 +3,24 @@ import { ProductSyncJob } from '../../../src/productMgmt/jobQueue/models/product
 import { ProductSyncJobProcessor } from '../../../src/productMgmt/jobQueue/productSyncJobProcessor';
 import { ProductSyncQueueService } from '../../../src/productMgmt/jobQueue/services/productSyncQueueService';
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const resolvableInstance = <T extends {}>(mock: T) =>
+  new Proxy<T>(instance(mock), {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    get(target, name: PropertyKey) {
+      if (
+        ['Symbol(Symbol.toPrimitive)', 'then', 'catch'].includes(
+          name.toString()
+        )
+      ) {
+        return undefined;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (target as any)[name];
+    },
+  });
+
 describe('ProductSyncJobProcessor tests', () => {
   let productSyncJobProcessor: ProductSyncJobProcessor;
 
@@ -28,9 +46,11 @@ describe('ProductSyncJobProcessor tests', () => {
     it('should process the job if the queue is available', async () => {
       const mockJob = mock<ProductSyncJob>();
 
-      when(mockProductSyncQueueService.isLocked()).thenReturn(false);
-      when(mockProductSyncQueueService.isEmpty()).thenReturn(false);
-      when(mockProductSyncQueueService.dequeue()).thenReturn(instance(mockJob));
+      when(mockProductSyncQueueService.isLocked()).thenResolve(false);
+      when(mockProductSyncQueueService.isEmpty()).thenResolve(false);
+      when(mockProductSyncQueueService.dequeue()).thenResolve(
+        resolvableInstance(mockJob)
+      );
 
       await productSyncJobProcessor.processJob();
 
@@ -40,9 +60,11 @@ describe('ProductSyncJobProcessor tests', () => {
     it('should not process the job if the queue is locked', async () => {
       const mockJob = mock<ProductSyncJob>();
 
-      when(mockProductSyncQueueService.isEmpty()).thenReturn(false);
-      when(mockProductSyncQueueService.isLocked()).thenReturn(true);
-      when(mockProductSyncQueueService.dequeue()).thenReturn(instance(mockJob));
+      when(mockProductSyncQueueService.isEmpty()).thenResolve(false);
+      when(mockProductSyncQueueService.isLocked()).thenResolve(true);
+      when(mockProductSyncQueueService.dequeue()).thenResolve(
+        resolvableInstance(mockJob)
+      );
 
       await productSyncJobProcessor.processJob();
 
@@ -52,9 +74,11 @@ describe('ProductSyncJobProcessor tests', () => {
     it('should not process the job if the queue is empty', async () => {
       const mockJob = mock<ProductSyncJob>();
 
-      when(mockProductSyncQueueService.isEmpty()).thenReturn(true);
-      when(mockProductSyncQueueService.isLocked()).thenReturn(false);
-      when(mockProductSyncQueueService.dequeue()).thenReturn(instance(mockJob));
+      when(mockProductSyncQueueService.isEmpty()).thenResolve(true);
+      when(mockProductSyncQueueService.isLocked()).thenResolve(false);
+      when(mockProductSyncQueueService.dequeue()).thenResolve(
+        resolvableInstance(mockJob)
+      );
 
       await productSyncJobProcessor.processJob();
 
@@ -65,9 +89,11 @@ describe('ProductSyncJobProcessor tests', () => {
       const mockJob = mock<ProductSyncJob>();
       when(mockJob.run()).thenReject(Error());
 
-      when(mockProductSyncQueueService.isLocked()).thenReturn(false);
-      when(mockProductSyncQueueService.isEmpty()).thenReturn(false);
-      when(mockProductSyncQueueService.dequeue()).thenReturn(instance(mockJob));
+      when(mockProductSyncQueueService.isLocked()).thenResolve(false);
+      when(mockProductSyncQueueService.isEmpty()).thenResolve(false);
+      when(mockProductSyncQueueService.dequeue()).thenResolve(
+        resolvableInstance(mockJob)
+      );
 
       await productSyncJobProcessor.processJob();
 

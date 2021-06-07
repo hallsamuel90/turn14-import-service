@@ -5,11 +5,13 @@ import { ProductSyncQueue } from '../models/productSyncQueue';
 export class ProductSyncQueueRepository {
   private productSyncQueue: ProductSyncQueue = new ProductSyncQueue();
 
-  public save(productSyncQueue: ProductSyncQueue): void {
+  public async save(productSyncQueue: ProductSyncQueue): Promise<void> {
     this.productSyncQueue = productSyncQueue;
+
+    return Promise.resolve();
   }
 
-  public fetchQueue(): ProductSyncQueue {
+  public async fetchQueue(): Promise<ProductSyncQueue> {
     return this.productSyncQueue;
   }
 }
