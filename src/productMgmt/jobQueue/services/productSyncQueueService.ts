@@ -1,4 +1,7 @@
-import { ProductSyncQueueRepository } from '../repositories/productSyncQueueRepository';
+import {
+  ProductSyncQueueRepository,
+  ProductSyncQueueRepositoryMongo,
+} from '../repositories';
 import { Service } from 'typedi';
 import { ProductSyncJob } from '../models/productSyncJob';
 
@@ -6,7 +9,9 @@ import { ProductSyncJob } from '../models/productSyncJob';
 export class ProductSyncQueueService {
   private productSyncQueueRepository: ProductSyncQueueRepository;
 
-  constructor(productSyncQueueRepository: ProductSyncQueueRepository) {
+  constructor(
+    productSyncQueueRepository: ProductSyncQueueRepository = new ProductSyncQueueRepositoryMongo()
+  ) {
     this.productSyncQueueRepository = productSyncQueueRepository;
   }
 
