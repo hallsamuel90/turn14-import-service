@@ -1,16 +1,16 @@
-import { mock } from 'ts-mockito';
 import { expect } from 'chai';
+import { mock } from 'ts-mockito';
 import { ProductSyncJob } from '../../../../src/productMgmt/jobQueue/models/productSyncJob';
-import { ProductSyncQueueRepository } from '../../../../src/productMgmt/jobQueue/repositories/productSyncQueueRepository';
+import { ProductSyncQueueRepositoryInMemory } from '../../../../src/productMgmt/jobQueue/repositories/productSyncQueueRepositoryInMemory';
 import { ProductSyncQueueService } from '../../../../src/productMgmt/jobQueue/services/productSyncQueueService';
 
 describe('ProductSyncQueueService tests', () => {
   let productSyncQueueService: ProductSyncQueueService;
 
-  let inMemoryProductSyncQueueRepository: ProductSyncQueueRepository;
+  let inMemoryProductSyncQueueRepository: ProductSyncQueueRepositoryInMemory;
 
   beforeEach(() => {
-    inMemoryProductSyncQueueRepository = new ProductSyncQueueRepository();
+    inMemoryProductSyncQueueRepository = new ProductSyncQueueRepositoryInMemory();
 
     productSyncQueueService = new ProductSyncQueueService(
       inMemoryProductSyncQueueRepository

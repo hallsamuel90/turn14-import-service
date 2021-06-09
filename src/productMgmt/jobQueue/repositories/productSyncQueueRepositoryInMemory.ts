@@ -1,8 +1,10 @@
 import { Service } from 'typedi';
 import { ProductSyncQueue } from '../models/productSyncQueue';
+import { ProductSyncQueueRepository } from './types';
 
 @Service()
-export class ProductSyncQueueRepository {
+export class ProductSyncQueueRepositoryInMemory
+  implements ProductSyncQueueRepository {
   private productSyncQueue: ProductSyncQueue = new ProductSyncQueue();
 
   public async save(productSyncQueue: ProductSyncQueue): Promise<void> {

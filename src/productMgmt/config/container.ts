@@ -9,7 +9,7 @@ import { ProductMgmtService } from '../services/productMgmtService';
 import { WcMapperFactory } from '../services/wcMapperFactory';
 import { ProductSyncJobProcessor } from '../jobQueue/productSyncJobProcessor';
 import { ProductSyncQueueService } from '../jobQueue/services/productSyncQueueService';
-import { ProductSyncQueueRepository } from '../jobQueue/repositories/productSyncQueueRepository';
+import { ProductSyncQueueRepositoryMongo } from '../jobQueue/repositories';
 
 /**
  * Configures the container dependencies for the product management module.
@@ -28,5 +28,5 @@ export default (): void => {
 
   Container.get(ProductSyncJobProcessor);
   Container.get(ProductSyncQueueService);
-  Container.get(ProductSyncQueueRepository);
+  Container.get(ProductSyncQueueRepositoryMongo);
 };

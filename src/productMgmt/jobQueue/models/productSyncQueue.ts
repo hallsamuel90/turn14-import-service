@@ -4,8 +4,13 @@ import { ProductSyncJob } from './productSyncJob';
  * Data structure to queue product sync jobs.
  */
 export class ProductSyncQueue {
-  private lockStatus = false;
-  private jobQueue: ProductSyncJob[] = [];
+  lockStatus: boolean;
+  jobQueue: ProductSyncJob[];
+
+  constructor(lockStatus = false, jobQueue: ProductSyncJob[] = []) {
+    this.lockStatus = lockStatus;
+    this.jobQueue = jobQueue;
+  }
 
   public lock(): void {
     this.lockStatus = true;
