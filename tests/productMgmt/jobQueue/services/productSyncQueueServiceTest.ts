@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { mock } from 'ts-mockito';
 import { ProductSyncJob } from '../../../../src/productMgmt/jobQueue/models/productSyncJob';
+import { ProductSyncJobType } from '../../../../src/productMgmt/jobQueue/productSyncJobType';
 import { ProductSyncQueueRepositoryInMemory } from '../../../../src/productMgmt/jobQueue/repositories/productSyncQueueRepositoryInMemory';
 import { ProductSyncQueueService } from '../../../../src/productMgmt/jobQueue/services/productSyncQueueService';
 
@@ -40,19 +40,20 @@ describe('ProductSyncQueueService tests', () => {
 
   describe('#dequeue', async () => {
     it('should return the last item in the queue', async () => {
-      const mockEnqueuedJob = mock(ProductSyncJob);
-      await productSyncQueueService.enqueue(mockEnqueuedJob);
+      await productSyncQueueService.enqueue(ProductSyncJobType.RESYNC_PRODUCTS);
 
       expect(await productSyncQueueService.isEmpty()).to.be.false;
 
-      const mockDequeuedJob = await productSyncQueueService.dequeue();
+      const dequeuedJob = await productSyncQueueService.dequeue();
 
-      expect(mockDequeuedJob).to.be.equal(mockEnqueuedJob);
+      expect(dequeuedJob).to.be.instanceOf(ProductSyncJob);
+      expect(dequeuedJob.jobType).to.be.eq(ProductSyncJobType.RESYNC_PRODUCTS);
     });
 
     it('should remove the last item in the queue', async () => {
-      const mockEnqueuedJob = mock(ProductSyncJob);
-      await productSyncQueueService.enqueue(mockEnqueuedJob);
+      await productSyncQueueService.enqueue(
+        ProductSyncJobType.UPDATE_INVENTORY
+      );
 
       expect(await productSyncQueueService.isEmpty()).to.be.false;
 

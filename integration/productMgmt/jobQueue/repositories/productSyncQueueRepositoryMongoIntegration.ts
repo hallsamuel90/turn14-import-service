@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import mongooseSetup, { disconnect } from '../../../../src/config/mongoose';
-import { ProductSyncJob } from '../../../../src/productMgmt/jobQueue/models/productSyncJob';
 import { ProductSyncQueue } from '../../../../src/productMgmt/jobQueue/models/productSyncQueue';
 import { ProductSyncJobType } from '../../../../src/productMgmt/jobQueue/productSyncJobType';
 import { ProductSyncQueueRepositoryMongo } from '../../../../src/productMgmt/jobQueue/repositories/productSyncQueueRepositoryMongo';
@@ -22,9 +21,7 @@ describe('ProductSyncQueueRepositoryMongo should', () => {
     const productSyncQueueRepository = new ProductSyncQueueRepositoryMongo();
 
     const queue = new ProductSyncQueue();
-    queue.enqueue({
-      jobType: ProductSyncJobType.RESYNC_PRODUCTS,
-    } as ProductSyncJob);
+    queue.enqueue(ProductSyncJobType.RESYNC_PRODUCTS);
 
     await productSyncQueueRepository.save(queue);
 
