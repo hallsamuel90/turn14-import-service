@@ -1,3 +1,7 @@
+import Container from 'typedi';
+import { ActiveBrandDTO } from '../../dtos/activeBrandDto';
+import { ProductSyncJobType } from '../productSyncJobType';
+import { ProductSyncJobFactory } from '../services/productSyncJobFactory';
 import { ProductSyncJob } from './productSyncJob';
 
 /**
@@ -5,9 +9,12 @@ import { ProductSyncJob } from './productSyncJob';
  */
 export class ProductSyncQueue {
   lockStatus: boolean;
-  jobQueue: ProductSyncJob[];
+  jobQueue: (ProductSyncJobType | ActiveBrandDTO)[];
 
-  constructor(lockStatus = false, jobQueue: ProductSyncJob[] = []) {
+  constructor(
+    lockStatus = false,
+    jobQueue: (ProductSyncJobType | ActiveBrandDTO)[] = []
+  ) {
     this.lockStatus = lockStatus;
     this.jobQueue = jobQueue;
   }
@@ -24,21 +31,31 @@ export class ProductSyncQueue {
     return this.lockStatus;
   }
 
-  public enqueue(productSyncJob: ProductSyncJob): void {
-    this.jobQueue.push(productSyncJob);
+  public enqueue(jobArgs: ProductSyncJobType | ActiveBrandDTO): void {
+    this.jobQueue.push(jobArgs);
   }
 
   public dequeue(): ProductSyncJob {
     const job = this.jobQueue.pop();
 
-    if (job) {
-      return job;
+    if (!job) {
+      throw new Error('No jobs exist in the queue.');
     }
 
-    throw new Error('No jobs exist in the queue.');
+    if (this.isActiveBrandDto(job)) {
+      return Container.get(ProductSyncJobFactory).createFromBrandDto(job);
+    }
+
+    return Container.get(ProductSyncJobFactory).createFromJobType(job);
   }
 
   public isEmpty(): boolean {
     return this.jobQueue.length == 0;
+  }
+
+  private isActiveBrandDto(
+    job: ProductSyncJobType | ActiveBrandDTO
+  ): job is ActiveBrandDTO {
+    return (job as ActiveBrandDTO).active !== undefined;
   }
 }

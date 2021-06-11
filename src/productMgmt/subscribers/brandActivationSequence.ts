@@ -28,10 +28,7 @@ export class BrandActivationSequence {
    * contains the brand's active state.
    */
   async handler(jsonMsg: JSON): Promise<void> {
-    const brandDto = this.convertJson(jsonMsg);
-    const job = this.productSyncJobFactory.createFromBrandDto(brandDto);
-
-    await this.productSyncQueueService.enqueue(job);
+    await this.productSyncQueueService.enqueue(this.convertJson(jsonMsg));
   }
 
   private convertJson(msg: JSON): ActiveBrandDTO {

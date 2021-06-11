@@ -86,8 +86,6 @@ export class ProductSyncJobScheduler {
   }
 
   private async pushJob(jobType: ProductSyncJobType): Promise<void> {
-    const job = this.productSyncJobFactory.createFromJobType(jobType);
-
-    await this.productSyncQueueService.enqueue(job);
+    await this.productSyncQueueService.enqueue(jobType);
   }
 }
