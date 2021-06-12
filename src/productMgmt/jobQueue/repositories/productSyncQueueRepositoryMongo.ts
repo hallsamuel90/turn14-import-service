@@ -18,6 +18,28 @@ const productSyncQueueClient = mongoose.model<ProductSyncQueueDocument>(
 
 const ONLY_QUEUE = 'only-queue';
 
+const initIfDoesNotExist = async (): Promise<void> => {
+  const result = await productSyncQueueClient
+    .findOne({
+      queueId: ONLY_QUEUE,
+    })
+    .lean();
+
+  if (!result) {
+    console.log(`queue was null, initializing...`);
+    await productSyncQueueClient.findOneAndUpdate(
+      { queueId: ONLY_QUEUE },
+      new ProductSyncQueue(),
+      { upsert: true }
+    );
+    return;
+  }
+
+  console.log(result);
+};
+
+initIfDoesNotExist();
+
 @Service()
 export class ProductSyncQueueRepositoryMongo
   implements ProductSyncQueueRepository {
@@ -37,7 +59,7 @@ export class ProductSyncQueueRepositoryMongo
       .lean();
 
     if (!result) {
-      return new ProductSyncQueue();
+      throw new Error('Failed to retrieve the queue!');
     }
 
     return new ProductSyncQueue(result.lockStatus, result.jobQueue);
