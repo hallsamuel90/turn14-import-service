@@ -2,7 +2,7 @@ import {
   ProductSyncQueueRepository,
   ProductSyncQueueRepositoryMongo,
 } from '../repositories';
-import { Service } from 'typedi';
+import Container, { Service } from 'typedi';
 import { ProductSyncJob } from '../models/productSyncJob';
 import { ProductSyncJobType } from '../productSyncJobType';
 import { ActiveBrandDTO } from '../../dtos/activeBrandDto';
@@ -12,7 +12,9 @@ export class ProductSyncQueueService {
   private productSyncQueueRepository: ProductSyncQueueRepository;
 
   constructor(
-    productSyncQueueRepository: ProductSyncQueueRepository = new ProductSyncQueueRepositoryMongo()
+    productSyncQueueRepository: ProductSyncQueueRepository = Container.get(
+      ProductSyncQueueRepositoryMongo
+    )
   ) {
     this.productSyncQueueRepository = productSyncQueueRepository;
   }
@@ -36,6 +38,7 @@ export class ProductSyncQueueService {
   public async enqueue(
     jobArgs: ProductSyncJobType | ActiveBrandDTO
   ): Promise<void> {
+    console.log(`adding job to the queue`);
     const jobQueue = await this.productSyncQueueRepository.fetchQueue();
 
     jobQueue.enqueue(jobArgs);
