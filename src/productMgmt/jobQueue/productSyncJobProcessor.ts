@@ -6,7 +6,9 @@ import { ProductSyncJob } from './models/productSyncJob';
 export class ProductSyncJobProcessor {
   private readonly productSyncQueueService: ProductSyncQueueService;
 
-  constructor(productSyncQueueService: ProductSyncQueueService) {
+  constructor(
+    productSyncQueueService: ProductSyncQueueService = new ProductSyncQueueService()
+  ) {
     this.productSyncQueueService = productSyncQueueService;
   }
 
