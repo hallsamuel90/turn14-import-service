@@ -1,6 +1,5 @@
 import { Service } from 'typedi';
 import { ProductSyncJobType } from './productSyncJobType';
-import { ProductSyncJobFactory } from './services/productSyncJobFactory';
 import { ProductSyncQueueService } from './services/productSyncQueueService';
 
 /**
@@ -13,14 +12,11 @@ export class ProductSyncJobScheduler {
   private static ONE_MONTH = 2147483647; // max timeout ~ 24.8 days
 
   private readonly productSyncQueueService: ProductSyncQueueService;
-  private readonly productSyncJobFactory: ProductSyncJobFactory;
 
   constructor(
-    productSyncQueueService: ProductSyncQueueService,
-    productSyncJobFactory: ProductSyncJobFactory
+    productSyncQueueService: ProductSyncQueueService = new ProductSyncQueueService()
   ) {
     this.productSyncQueueService = productSyncQueueService;
-    this.productSyncJobFactory = productSyncJobFactory;
   }
 
   /**

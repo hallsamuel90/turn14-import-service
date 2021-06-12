@@ -7,7 +7,9 @@ export class ProductSyncJobPoller {
 
   private readonly productSyncJobProcessor: ProductSyncJobProcessor;
 
-  constructor(productSyncJobProcessor: ProductSyncJobProcessor) {
+  constructor(
+    productSyncJobProcessor: ProductSyncJobProcessor = new ProductSyncJobProcessor()
+  ) {
     this.productSyncJobProcessor = productSyncJobProcessor;
   }
 
