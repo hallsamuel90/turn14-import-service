@@ -13,15 +13,19 @@ dotenv.config();
 // log ts files instead of js
 require('source-map-support').install();
 
-mongoConfig();
+const appConfig = async (): Promise<void> => {
+  await mongoConfig();
 
-apiUsersConfig();
+  apiUsersConfig();
 
-brandsConfig();
+  brandsConfig();
 
-productMgmtConfig();
+  productMgmtConfig();
+
+  await runMaintenanceJobs();
+};
+
+appConfig();
 
 const app = expressAppConfig();
 app.listen(process.env.PORT || '8081');
-
-runMaintenanceJobs();
