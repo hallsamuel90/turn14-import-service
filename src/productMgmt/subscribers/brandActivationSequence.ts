@@ -1,7 +1,8 @@
 import { Service } from 'typedi';
-import { ActiveBrandDTO } from '../dtos/activeBrandDto';
-import { ProductSyncJobFactory } from '../jobQueue/services/productSyncJobFactory';
+import { ProductSyncJobType } from '../jobQueue/productSyncJobType';
 import { ProductSyncQueueService } from '../jobQueue/services/productSyncQueueService';
+import { JobDto } from '../jobQueue/types';
+import { BrandActivationMessage } from './brandActivationSubscriber';
 
 /**
  * BrandActivationSequence.
@@ -11,31 +12,26 @@ import { ProductSyncQueueService } from '../jobQueue/services/productSyncQueueSe
 @Service()
 export class BrandActivationSequence {
   private readonly productSyncQueueService: ProductSyncQueueService;
-  private readonly productSyncJobFactory: ProductSyncJobFactory;
 
-  constructor(
-    productSyncQueueService: ProductSyncQueueService,
-    productSyncJobFactory: ProductSyncJobFactory
-  ) {
+  constructor(productSyncQueueService: ProductSyncQueueService) {
     this.productSyncQueueService = productSyncQueueService;
-    this.productSyncJobFactory = productSyncJobFactory;
   }
 
-  /**
-   * Handler for the product management operations.
-   *
-   * @param {JSON} jsonMsg the data transfer object that
-   * contains the brand's active state.
-   */
-  async handler(jsonMsg: JSON): Promise<void> {
-    await this.productSyncQueueService.enqueue(this.convertJson(jsonMsg));
+  async handler(message: BrandActivationMessage): Promise<void> {
+    await this.productSyncQueueService.enqueue(this.getJobDto(message));
   }
 
-  private convertJson(msg: JSON): ActiveBrandDTO {
-    return new ActiveBrandDTO(
-      msg?.['userId'],
-      msg?.['brandId'],
-      msg?.['active']
-    );
+  private getJobDto(message: BrandActivationMessage): JobDto {
+    if (message.active) {
+      return {
+        ...message,
+        jobType: ProductSyncJobType.IMPORT_BRAND,
+      };
+    }
+
+    return {
+      ...message,
+      jobType: ProductSyncJobType.REMOVE_BRAND,
+    };
   }
 }

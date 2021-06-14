@@ -1,4 +1,7 @@
-import { Service } from 'typedi';
+import Container, { Service } from 'typedi';
+import { ApiUser } from '../../apiUsers/models/apiUser';
+import { ApiUserService } from '../../apiUsers/services/apiUserService';
+import { JobDto } from './types';
 import { ProductSyncJobType } from './productSyncJobType';
 import { ProductSyncQueueService } from './services/productSyncQueueService';
 
@@ -12,10 +15,13 @@ export class ProductSyncJobScheduler {
   private static ONE_MONTH = 2147483647; // max timeout ~ 24.8 days
 
   private readonly productSyncQueueService: ProductSyncQueueService;
+  private readonly apiUserService: ApiUserService;
 
   constructor(
+    apiUserService: ApiUserService = Container.get(ApiUserService),
     productSyncQueueService: ProductSyncQueueService = new ProductSyncQueueService()
   ) {
+    this.apiUserService = apiUserService;
     this.productSyncQueueService = productSyncQueueService;
   }
 
@@ -27,10 +33,20 @@ export class ProductSyncJobScheduler {
       `⏲️  Scheduling inventory updates for all users every ${ProductSyncJobScheduler.ONE_HOUR_SEC} seconds.`
     );
 
-    await this.pushJob(ProductSyncJobType.UPDATE_INVENTORY);
+    await this.pushJobs(
+      ...this.getJobsForUsers(
+        await this.apiUserService.retrieveAll(),
+        ProductSyncJobType.UPDATE_INVENTORY
+      )
+    );
 
     setInterval(async () => {
-      await this.pushJob(ProductSyncJobType.UPDATE_INVENTORY);
+      await this.pushJobs(
+        ...this.getJobsForUsers(
+          await this.apiUserService.retrieveAll(),
+          ProductSyncJobType.UPDATE_INVENTORY
+        )
+      );
     }, ProductSyncJobScheduler.ONE_HOUR_SEC * 1000);
   }
 
@@ -42,10 +58,20 @@ export class ProductSyncJobScheduler {
       `⏲️  Scheduling pricing updates for all users every ${ProductSyncJobScheduler.ONE_DAY_SEC} seconds.`
     );
 
-    await this.pushJob(ProductSyncJobType.UPDATE_PRICING);
+    await this.pushJobs(
+      ...this.getJobsForUsers(
+        await this.apiUserService.retrieveAll(),
+        ProductSyncJobType.UPDATE_PRICING
+      )
+    );
 
     setInterval(async () => {
-      await this.pushJob(ProductSyncJobType.UPDATE_PRICING);
+      await this.pushJobs(
+        ...this.getJobsForUsers(
+          await this.apiUserService.retrieveAll(),
+          ProductSyncJobType.UPDATE_PRICING
+        )
+      );
     }, ProductSyncJobScheduler.ONE_DAY_SEC * 1000);
   }
 
@@ -57,10 +83,20 @@ export class ProductSyncJobScheduler {
       `⏲️  Scheduling stale product removal for all users every ${ProductSyncJobScheduler.ONE_DAY_SEC} seconds.`
     );
 
-    await this.pushJob(ProductSyncJobType.REMOVE_STALE_PRODUCTS);
+    await this.pushJobs(
+      ...this.getJobsForUsers(
+        await this.apiUserService.retrieveAll(),
+        ProductSyncJobType.REMOVE_STALE_PRODUCTS
+      )
+    );
 
     setInterval(async () => {
-      await this.pushJob(ProductSyncJobType.REMOVE_STALE_PRODUCTS);
+      await this.pushJobs(
+        ...this.getJobsForUsers(
+          await this.apiUserService.retrieveAll(),
+          ProductSyncJobType.REMOVE_STALE_PRODUCTS
+        )
+      );
     }, ProductSyncJobScheduler.ONE_DAY_SEC * 1000);
   }
 
@@ -74,14 +110,44 @@ export class ProductSyncJobScheduler {
       } seconds.`
     );
 
-    await this.pushJob(ProductSyncJobType.RESYNC_PRODUCTS);
+    await this.pushJobs(
+      ...this.getJobsForUsers(
+        await this.apiUserService.retrieveAll(),
+        ProductSyncJobType.RESYNC_PRODUCTS
+      )
+    );
 
-    setInterval(() => {
-      this.pushJob(ProductSyncJobType.RESYNC_PRODUCTS);
+    setInterval(async () => {
+      await this.pushJobs(
+        ...this.getJobsForUsers(
+          await this.apiUserService.retrieveAll(),
+          ProductSyncJobType.RESYNC_PRODUCTS
+        )
+      );
     }, ProductSyncJobScheduler.ONE_MONTH);
   }
 
-  private async pushJob(jobType: ProductSyncJobType): Promise<void> {
-    await this.productSyncQueueService.enqueue(jobType);
+  private async pushJobs(...jobDtos: JobDto[]): Promise<void> {
+    await this.productSyncQueueService.enqueue(...jobDtos);
+  }
+
+  private getJobsForUsers(
+    users: ApiUser[],
+    jobType: ProductSyncJobType
+  ): JobDto[] {
+    const jobBatches: JobDto[][] = [];
+    for (const user of users) {
+      jobBatches.push(
+        user.brandIds.map((brandId) => {
+          return {
+            userId: user.userId,
+            brandId,
+            jobType,
+          };
+        })
+      );
+    }
+
+    return ([] as JobDto[]).concat(...jobBatches);
   }
 }
