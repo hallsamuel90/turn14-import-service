@@ -3,10 +3,10 @@ import chaiAsPromised from 'chai-as-promised';
 import chai from 'chai';
 import { ApiUser } from '../../../../src/apiUsers/models/apiUser';
 import { ApiUserService } from '../../../../src/apiUsers/services/apiUserService';
-import { ActiveBrandDTO } from '../../../../src/productMgmt/dtos/activeBrandDto';
 import { PmgmtDTO } from '../../../../src/productMgmt/dtos/pmgmtDto';
 import { DeleteProductsJob } from '../../../../src/productMgmt/jobQueue/models/deleteProductsJob';
 import { ProductMgmtService } from '../../../../src/productMgmt/services/productMgmtService';
+import { ProductSyncJobType } from '../../../../src/productMgmt/jobQueue/productSyncJobType';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -16,13 +16,17 @@ describe('DeleteProductsJob tests', () => {
 
   const mockApiUserService = mock(ApiUserService);
   const mockPmgmtService = mock(ProductMgmtService);
-  const mockActiveBrandDto = mock(ActiveBrandDTO);
 
   beforeEach(() => {
     deleteProductsJob = new DeleteProductsJob(
       instance(mockApiUserService),
       instance(mockPmgmtService),
-      instance(mockActiveBrandDto)
+      {
+        userId: 'fakeUserId',
+        brandId: 'fakeBrandId',
+        jobType: ProductSyncJobType.REMOVE_BRAND,
+        active: false,
+      }
     );
   });
 
@@ -31,10 +35,6 @@ describe('DeleteProductsJob tests', () => {
       when(mockApiUserService.retrieve('fakeUserId')).thenReject(
         Error('Could not retrieve apiusers')
       );
-
-      when(mockActiveBrandDto.getUserId()).thenReturn('fakeUserId');
-      when(mockActiveBrandDto.getBrandId()).thenReturn('fakeBrandId');
-      when(mockActiveBrandDto.isActive()).thenReturn(false);
 
       expect(deleteProductsJob.run()).to.be.rejectedWith(Error);
     });
@@ -49,10 +49,6 @@ describe('DeleteProductsJob tests', () => {
       } as unknown) as ApiUser;
 
       when(mockApiUserService.retrieve('fakeUserId')).thenResolve(fakeApiUser);
-
-      when(mockActiveBrandDto.getUserId()).thenReturn('fakeUserId');
-      when(mockActiveBrandDto.getBrandId()).thenReturn('fakeBrandId');
-      when(mockActiveBrandDto.isActive()).thenReturn(false);
 
       await deleteProductsJob.run();
 
@@ -71,10 +67,6 @@ describe('DeleteProductsJob tests', () => {
       } as unknown) as ApiUser;
 
       when(mockApiUserService.retrieve('fakeUserId')).thenResolve(fakeApiUser);
-
-      when(mockActiveBrandDto.getUserId()).thenReturn('fakeUserId');
-      when(mockActiveBrandDto.getBrandId()).thenReturn('fakeBrandId');
-      when(mockActiveBrandDto.isActive()).thenReturn(false);
 
       await deleteProductsJob.run();
 

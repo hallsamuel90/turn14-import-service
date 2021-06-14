@@ -3,6 +3,7 @@ import mongooseSetup, { disconnect } from '../../../../src/config/mongoose';
 import { ProductSyncQueue } from '../../../../src/productMgmt/jobQueue/models/productSyncQueue';
 import { ProductSyncJobType } from '../../../../src/productMgmt/jobQueue/productSyncJobType';
 import { ProductSyncQueueRepositoryMongo } from '../../../../src/productMgmt/jobQueue/repositories/productSyncQueueRepositoryMongo';
+import { JobDto } from '../../../../src/productMgmt/jobQueue/types';
 
 describe('ProductSyncQueueRepositoryMongo should', () => {
   before(async () => {
@@ -21,7 +22,7 @@ describe('ProductSyncQueueRepositoryMongo should', () => {
     const productSyncQueueRepository = new ProductSyncQueueRepositoryMongo();
 
     const queue = new ProductSyncQueue();
-    queue.enqueue(ProductSyncJobType.RESYNC_PRODUCTS);
+    queue.enqueue({ jobType: ProductSyncJobType.RESYNC_PRODUCTS } as JobDto);
 
     await productSyncQueueRepository.save(queue);
 

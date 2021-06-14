@@ -1,45 +1,39 @@
 import { ApiUserService } from '../../../apiUsers/services/apiUserService';
-import { ActiveBrandDTO } from '../../dtos/activeBrandDto';
 import { ProductSyncJobType } from '../productSyncJobType';
 import { Etl } from '../services/etl';
+import { JobDto } from '../types';
 import { ProductSyncJob } from './productSyncJob';
 
 export class ImportProductsJob extends ProductSyncJob {
   private readonly apiUserService: ApiUserService;
   private readonly etl: Etl;
-  private readonly activeBrandDto: ActiveBrandDTO;
+  private readonly jobDto: JobDto;
 
-  constructor(
-    apiUserService: ApiUserService,
-    etl: Etl,
-    activeBrandDto: ActiveBrandDTO
-  ) {
+  constructor(apiUserService: ApiUserService, etl: Etl, jobDto: JobDto) {
     super(ProductSyncJobType.IMPORT_BRAND);
 
     this.apiUserService = apiUserService;
     this.etl = etl;
-    this.activeBrandDto = activeBrandDto;
+    this.jobDto = jobDto;
   }
 
   public async run(): Promise<void> {
-    const user = await this.apiUserService.retrieve(this.activeBrandDto.userId);
+    const user = await this.apiUserService.retrieve(this.jobDto.userId);
 
     console.info(
-      `Adding brandId: ${this.activeBrandDto.brandId} to user's managed brands...`
+      `Adding brandId: ${this.jobDto.brandId} to user's managed brands...`
     );
-    await this.apiUserService.addBrand(user, this.activeBrandDto.brandId);
+    await this.apiUserService.addBrand(user, this.jobDto.brandId);
 
     const etlDto = {
       jobId: this.id,
-      brandId: this.activeBrandDto.brandId,
+      brandId: this.jobDto.brandId,
       turn14Keys: user.turn14Keys,
       wcKeys: user.wcKeys,
       siteUrl: user.siteUrl,
     };
 
-    console.info(
-      `Extracting products for brandId: ${this.activeBrandDto.brandId}...`
-    );
+    console.info(`Extracting products for brandId: ${this.jobDto.brandId}...`);
     await this.etl.extract(etlDto);
 
     console.info(`Transforming products and sending to WooCommerce...`);

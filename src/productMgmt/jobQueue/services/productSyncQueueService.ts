@@ -4,8 +4,7 @@ import {
 } from '../repositories';
 import Container, { Service } from 'typedi';
 import { ProductSyncJob } from '../models/productSyncJob';
-import { ProductSyncJobType } from '../productSyncJobType';
-import { ActiveBrandDTO } from '../../dtos/activeBrandDto';
+import { JobDto } from '../types';
 
 @Service()
 export class ProductSyncQueueService {
@@ -35,13 +34,11 @@ export class ProductSyncQueueService {
     await this.productSyncQueueRepository.save(jobQueue);
   }
 
-  public async enqueue(
-    jobArgs: ProductSyncJobType | ActiveBrandDTO
-  ): Promise<void> {
+  public async enqueue(...jobDtos: JobDto[]): Promise<void> {
     console.log(`adding job to the queue`);
     const jobQueue = await this.productSyncQueueRepository.fetchQueue();
 
-    jobQueue.enqueue(jobArgs);
+    jobQueue.enqueue(...jobDtos);
 
     await this.productSyncQueueRepository.save(jobQueue);
   }

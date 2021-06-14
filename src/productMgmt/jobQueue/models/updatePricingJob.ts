@@ -1,48 +1,49 @@
-import { ApiUser } from '../../../apiUsers/models/apiUser';
 import { ApiUserService } from '../../../apiUsers/services/apiUserService';
 import { ProductSyncJobType } from '../productSyncJobType';
-import { Etl } from '../services/etl';
+import * as etl from '../services/etl';
+import { GetEtlService } from '../services/etl';
+import { JobDto } from '../types';
 import { ProductSyncJob } from './productSyncJob';
 export class UpdatePricingJob extends ProductSyncJob {
+  private readonly jobDto: JobDto;
   private readonly apiUserService: ApiUserService;
-  private readonly etl: Etl;
+  private readonly getEtlService: GetEtlService;
 
-  constructor(apiUserService: ApiUserService, etl: Etl) {
+  constructor(
+    jobDto: JobDto,
+    apiUserService: ApiUserService,
+    getEtlService: GetEtlService = etl.getEtlService
+  ) {
     super(ProductSyncJobType.UPDATE_PRICING);
+    this.jobDto = jobDto;
     this.apiUserService = apiUserService;
-    this.etl = etl;
+    this.getEtlService = getEtlService;
   }
 
   public async run(): Promise<void> {
-    const users = await this.apiUserService.retrieveAll();
+    const user = await this.apiUserService.retrieve(this.jobDto.userId);
 
-    for (const user of users) {
-      await this.updatePricingForUser(user);
-    }
-  }
+    const etlDto = {
+      jobId: this.id,
+      brandId: this.jobDto.brandId,
+      turn14Keys: user.turn14Keys,
+      wcKeys: user.wcKeys,
+      siteUrl: user.siteUrl,
+    };
 
-  private async updatePricingForUser(user: ApiUser): Promise<void> {
-    for (const brandId of user.brandIds) {
-      const etlDto = {
-        jobId: this.id,
-        brandId: brandId,
-        turn14Keys: user.turn14Keys,
-        wcKeys: user.wcKeys,
-        siteUrl: user.siteUrl,
-      };
+    const etl = this.getEtlService(this.jobDto.jobType);
 
-      console.info(`Extracting product pricing for brandId: ${brandId}...`);
-      await this.etl.extract(etlDto);
+    console.info(
+      `Extracting product pricing for brandId: ${this.jobDto.brandId}...`
+    );
+    await etl.extract(etlDto);
 
-      console.info(
-        `Transforming product pricing and sending to WooCommerce...`
-      );
-      await this.etl.transformLoad(etlDto);
+    console.info(`Transforming product pricing and sending to WooCommerce...`);
+    await etl.transformLoad(etlDto);
 
-      console.info(`Cleaning up temporary resources...`);
-      await this.etl.cleanUp(etlDto.jobId);
+    console.info(`Cleaning up temporary resources...`);
+    await etl.cleanUp(etlDto.jobId);
 
-      console.info(`Update Pricing Job complete!`);
-    }
+    console.info(`Update Pricing Job complete!`);
   }
 }

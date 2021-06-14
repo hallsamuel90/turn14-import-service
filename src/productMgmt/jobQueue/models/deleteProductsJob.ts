@@ -1,10 +1,10 @@
 import { ProductSyncJob } from './productSyncJob';
 import { ProductSyncJobType } from '../productSyncJobType';
 import { ApiUserService } from '../../../apiUsers/services/apiUserService';
-import { ActiveBrandDTO } from '../../dtos/activeBrandDto';
 import { PmgmtDTO } from '../../dtos/pmgmtDto';
 import { ProductMgmtService } from '../../services/productMgmtService';
 import { ApiUser } from '../../../apiUsers/models/apiUser';
+import { JobDto } from '../types';
 
 /**
  * DeleteProductsJob removes a user's products for a particular brand from the
@@ -13,23 +13,21 @@ import { ApiUser } from '../../../apiUsers/models/apiUser';
 export class DeleteProductsJob extends ProductSyncJob {
   private readonly apiUserService: ApiUserService;
   private readonly productMgmtService: ProductMgmtService;
-  private readonly activeBrandDto: ActiveBrandDTO;
+  private readonly jobDto: JobDto;
 
   constructor(
     apiUserService: ApiUserService,
     productMgmtService: ProductMgmtService,
-    activeBrandDto: ActiveBrandDTO
+    jobDto: JobDto
   ) {
     super(ProductSyncJobType.REMOVE_BRAND);
     this.apiUserService = apiUserService;
     this.productMgmtService = productMgmtService;
-    this.activeBrandDto = activeBrandDto;
+    this.jobDto = jobDto;
   }
 
   public async run(): Promise<void> {
-    const apiUser = await this.apiUserService.retrieve(
-      this.activeBrandDto.getUserId()
-    );
+    const apiUser = await this.apiUserService.retrieve(this.jobDto.userId);
     const brandIds = apiUser.brandIds;
 
     await this.deleteProductsIfInStore(brandIds, apiUser);
@@ -39,9 +37,9 @@ export class DeleteProductsJob extends ProductSyncJob {
     brandIds: string[],
     apiUser: ApiUser
   ): Promise<void> {
-    if (this.brandIsNotActiveInStore(this.activeBrandDto, brandIds)) {
+    if (this.brandIsNotActiveInStore(this.jobDto, brandIds)) {
       console.warn(
-        `Brand Id ${this.activeBrandDto.getBrandId()} is not currently active. Skipping removal...`
+        `Brand Id ${this.jobDto.brandId} is not currently active. Skipping removal...`
       );
 
       return;
@@ -51,23 +49,14 @@ export class DeleteProductsJob extends ProductSyncJob {
       apiUser.siteUrl,
       apiUser.turn14Keys,
       apiUser.wcKeys,
-      this.activeBrandDto.getBrandId()
+      this.jobDto.brandId
     );
     await this.productMgmtService.deleteBrandProducts(pmgmtDto);
 
-    await this.apiUserService.removeBrand(
-      apiUser,
-      this.activeBrandDto.getBrandId()
-    );
+    await this.apiUserService.removeBrand(apiUser, this.jobDto.brandId);
   }
 
-  private brandIsNotActiveInStore(
-    activeBrandDto: ActiveBrandDTO,
-    brandIds: string[]
-  ): boolean {
-    return (
-      !activeBrandDto.isActive() &&
-      !brandIds.includes(activeBrandDto.getBrandId())
-    );
+  private brandIsNotActiveInStore(jobDto: JobDto, brandIds: string[]): boolean {
+    return !jobDto.active && !brandIds.includes(jobDto.brandId);
   }
 }

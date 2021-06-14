@@ -49,3 +49,5 @@ export const getEtlService = (type: ProductSyncJobType): Etl => {
       throw Error(`${type} is not a valid job type`);
   }
 };
+
+export type GetEtlService = typeof getEtlService;

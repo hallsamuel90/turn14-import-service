@@ -3,6 +3,7 @@ import { ProductSyncJob } from '../../../../src/productMgmt/jobQueue/models/prod
 import { ProductSyncJobType } from '../../../../src/productMgmt/jobQueue/productSyncJobType';
 import { ProductSyncQueueRepositoryInMemory } from '../../../../src/productMgmt/jobQueue/repositories/productSyncQueueRepositoryInMemory';
 import { ProductSyncQueueService } from '../../../../src/productMgmt/jobQueue/services/productSyncQueueService';
+import { JobDto } from '../../../../src/productMgmt/jobQueue/types';
 
 describe('ProductSyncQueueService tests', () => {
   let productSyncQueueService: ProductSyncQueueService;
@@ -40,7 +41,9 @@ describe('ProductSyncQueueService tests', () => {
 
   describe('#dequeue', async () => {
     it('should return the last item in the queue', async () => {
-      await productSyncQueueService.enqueue(ProductSyncJobType.RESYNC_PRODUCTS);
+      await productSyncQueueService.enqueue({
+        jobType: ProductSyncJobType.RESYNC_PRODUCTS,
+      } as JobDto);
 
       expect(await productSyncQueueService.isEmpty()).to.be.false;
 
@@ -51,9 +54,9 @@ describe('ProductSyncQueueService tests', () => {
     });
 
     it('should remove the last item in the queue', async () => {
-      await productSyncQueueService.enqueue(
-        ProductSyncJobType.UPDATE_INVENTORY
-      );
+      await productSyncQueueService.enqueue({
+        jobType: ProductSyncJobType.UPDATE_INVENTORY,
+      } as JobDto);
 
       expect(await productSyncQueueService.isEmpty()).to.be.false;
 
