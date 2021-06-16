@@ -33,7 +33,7 @@ export class ResyncProductsWcMapper extends WcMapper {
     turn14Products: Turn14ProductDTO[]
   ): Promise<WcUpdateFullProductDTO[]> {
     const wcProducts: WcUpdateFullProductDTO[] = [];
-    for (const turn14Product of turn14Products) {
+    for await (const turn14Product of turn14Products) {
       try {
         const wcProduct = await this.turn14ToWc(turn14Product);
         wcProducts.push(wcProduct);

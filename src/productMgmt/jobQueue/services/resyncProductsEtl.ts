@@ -1,5 +1,6 @@
 import { Service } from 'typedi';
 import { WcClient } from '../../../woocommerce/clients/wcClient';
+import { CreateProductWcMapper } from '../../services/createProductWcMapper';
 import { ResyncProductsWcMapper } from '../../services/resyncProductWcMapper';
 import { WcMapperFactory } from '../../services/wcMapperFactory';
 import { WcMapperType } from '../../services/wcMapperType';
@@ -52,6 +53,22 @@ export default class ResyncProductsEtl implements Etl {
       etlDto.siteUrl,
       etlDto.wcKeys,
       mappedWcProducts
+    );
+
+    const createWcMapper = this.wcMapperFactory.getWcMapper(
+      WcMapperType.CREATE_PRODUCT,
+      etlDto.siteUrl,
+      etlDto.wcKeys
+    ) as CreateProductWcMapper;
+
+    const mappedCreateWcProducts = await createWcMapper.turn14sToWcs(
+      enrichedTurn14Data
+    );
+
+    await this.wcClient.postBatchCreateWcProducts(
+      etlDto.siteUrl,
+      etlDto.wcKeys,
+      mappedCreateWcProducts
     );
 
     await this.transformLoad(etlDto, pageNumber + 1);
