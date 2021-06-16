@@ -44,7 +44,7 @@ export class CreateProductWcMapper extends WcMapper {
     turn14Products: Turn14ProductDTO[]
   ): Promise<WcCreateProductDTO[]> {
     const wcProducts: WcCreateProductDTO[] = [];
-    for (const turn14Product of turn14Products) {
+    for await (const turn14Product of turn14Products) {
       try {
         const wcProduct = await this.turn14ToWc(turn14Product);
         wcProducts.push(wcProduct);
