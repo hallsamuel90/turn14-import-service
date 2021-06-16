@@ -1,8 +1,8 @@
 import { ProductSyncJobScheduler } from '../jobQueue/productSyncJobScheduler';
 
-export default async (): Promise<void> => {
-  const productSyncJobScheduler = new ProductSyncJobScheduler();
-
+export default async (
+  productSyncJobScheduler: ProductSyncJobScheduler = new ProductSyncJobScheduler()
+): Promise<void> => {
   await productSyncJobScheduler.scheduleInventoryUpdate();
   await productSyncJobScheduler.schedulePricingUpdate();
   // productSyncJobScheduler.scheduleRemoveStaleProducts();
