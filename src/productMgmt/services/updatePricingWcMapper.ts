@@ -2,6 +2,7 @@ import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
 import { WcMapper } from './wcMapper';
 import { WcUpdatePricingDTO } from '../../woocommerce/dtos/wcUpdatePricingDto';
 import { WcCategoriesCache } from '../caches/wcCategoriesCache';
+import pMap from 'p-map';
 
 export class UpdatePricingWcMapper extends WcMapper {
   private readonly categoriesCache: WcCategoriesCache;
@@ -16,14 +17,18 @@ export class UpdatePricingWcMapper extends WcMapper {
     turn14Products: Turn14ProductDTO[]
   ): Promise<WcUpdatePricingDTO[]> {
     const wcUpdatePricingDtos: WcUpdatePricingDTO[] = [];
-    for (const turn14Product of turn14Products) {
-      try {
-        const wcUpdatePricingDto = await this.turn14ToWc(turn14Product);
-        wcUpdatePricingDtos.push(wcUpdatePricingDto);
-      } catch (e) {
-        console.error(`Something went wrong mapping the pricing ${e}`);
-      }
-    }
+    await pMap(
+      turn14Products,
+      async (turn14Product) => {
+        try {
+          const wcUpdatePricingDto = await this.turn14ToWc(turn14Product);
+          wcUpdatePricingDtos.push(wcUpdatePricingDto);
+        } catch (e) {
+          console.error(`Something went wrong mapping the pricing ${e}`);
+        }
+      },
+      { concurrency: 5 }
+    );
 
     return wcUpdatePricingDtos;
   }

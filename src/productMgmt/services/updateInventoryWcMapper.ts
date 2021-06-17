@@ -2,7 +2,7 @@ import { Turn14ProductDTO } from '../../turn14/dtos/turn14ProductDto';
 import { WcUpdateInventoryDTO } from '../../woocommerce/dtos/wcUpdateInventoryDto';
 import { WcCategoriesCache } from '../caches/wcCategoriesCache';
 import { WcMapper } from './wcMapper';
-
+import pMap from 'p-map';
 export class UpdateInventoryWcMapper extends WcMapper {
   private readonly categoriesCache: WcCategoriesCache;
 
@@ -16,14 +16,19 @@ export class UpdateInventoryWcMapper extends WcMapper {
     turn14Products: Turn14ProductDTO[]
   ): Promise<WcUpdateInventoryDTO[]> {
     const wcProducts: WcUpdateInventoryDTO[] = [];
-    for (const turn14Product of turn14Products) {
-      try {
-        const wcProduct = await this.turn14ToWc(turn14Product);
-        wcProducts.push(wcProduct);
-      } catch (e) {
-        console.error(`Something went wrong mapping the inventory ${e}`);
-      }
-    }
+
+    await pMap(
+      turn14Products,
+      async (turn14Product) => {
+        try {
+          const wcProduct = await this.turn14ToWc(turn14Product);
+          wcProducts.push(wcProduct);
+        } catch (e) {
+          console.error(`Something went wrong mapping the inventory ${e}`);
+        }
+      },
+      { concurrency: 5 }
+    );
 
     return wcProducts;
   }

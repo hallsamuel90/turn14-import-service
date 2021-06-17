@@ -7,6 +7,7 @@ import { WcImageDTO } from '../../woocommerce/dtos/wcImageDto';
 import { WcUpdateFullProductDTO } from '../../woocommerce/dtos/wcUpdateFullProductDto';
 import { WcCategoriesCache } from '../caches/wcCategoriesCache';
 import { WcMapper } from './wcMapper';
+import pMap from 'p-map';
 
 export class ResyncProductsWcMapper extends WcMapper {
   private static DESCRIPTION = 'Market Description';
@@ -33,16 +34,21 @@ export class ResyncProductsWcMapper extends WcMapper {
     turn14Products: Turn14ProductDTO[]
   ): Promise<WcUpdateFullProductDTO[]> {
     const wcProducts: WcUpdateFullProductDTO[] = [];
-    for await (const turn14Product of turn14Products) {
-      try {
-        const wcProduct = await this.turn14ToWc(turn14Product);
-        wcProducts.push(wcProduct);
-      } catch (e) {
-        console.error(
-          `Something went wrong mapping the full update product ${e}`
-        );
-      }
-    }
+
+    await pMap(
+      turn14Products,
+      async (turn14Product) => {
+        try {
+          const wcProduct = await this.turn14ToWc(turn14Product);
+          wcProducts.push(wcProduct);
+        } catch (e) {
+          console.error(
+            `Something went wrong mapping the full update product ${e}`
+          );
+        }
+      },
+      { concurrency: 5 }
+    );
 
     return wcProducts;
   }
