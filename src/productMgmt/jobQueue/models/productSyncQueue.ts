@@ -32,7 +32,7 @@ export class ProductSyncQueue {
   }
 
   public dequeue(): ProductSyncJob {
-    const job = this.jobQueue.pop();
+    const job = this.jobQueue.shift();
 
     if (!job) {
       throw new Error('No jobs exist in the queue.');
