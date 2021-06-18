@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import 'reflect-metadata';
 import expressAppConfig from './config/expressApp';
-import { createQueueIfDoesNotExist } from './config/initQueue';
+import { initQueue } from './config/initQueue';
 import mongoConfig from './config/mongoose';
 import jobSchedulerConfig from './productMgmt/config/jobSchedulerConfig';
 
@@ -14,7 +14,7 @@ require('source-map-support').install();
 const appConfig = async (): Promise<void> => {
   await mongoConfig();
 
-  await createQueueIfDoesNotExist();
+  await initQueue();
 
   await jobSchedulerConfig();
 };
