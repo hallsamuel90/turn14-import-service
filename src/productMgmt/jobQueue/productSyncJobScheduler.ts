@@ -33,13 +33,6 @@ export class ProductSyncJobScheduler {
       `⏲️  Scheduling inventory updates for all users every ${ProductSyncJobScheduler.ONE_HOUR_SEC} seconds.`
     );
 
-    await this.pushJobs(
-      ...this.getJobsForUsers(
-        await this.apiUserService.retrieveAll(),
-        ProductSyncJobType.UPDATE_INVENTORY
-      )
-    );
-
     setInterval(async () => {
       await this.pushJobs(
         ...this.getJobsForUsers(
@@ -56,13 +49,6 @@ export class ProductSyncJobScheduler {
   public async schedulePricingUpdate(): Promise<void> {
     console.info(
       `⏲️  Scheduling pricing updates for all users every ${ProductSyncJobScheduler.ONE_DAY_SEC} seconds.`
-    );
-
-    await this.pushJobs(
-      ...this.getJobsForUsers(
-        await this.apiUserService.retrieveAll(),
-        ProductSyncJobType.UPDATE_PRICING
-      )
     );
 
     setInterval(async () => {

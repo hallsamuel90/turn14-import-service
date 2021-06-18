@@ -4,13 +4,13 @@ import { ProductSyncQueue } from '../../../../src/productMgmt/jobQueue/models/pr
 import { ProductSyncJobType } from '../../../../src/productMgmt/jobQueue/productSyncJobType';
 import { ProductSyncQueueRepositoryMongo } from '../../../../src/productMgmt/jobQueue/repositories/productSyncQueueRepositoryMongo';
 import { JobDto } from '../../../../src/productMgmt/jobQueue/types';
-import { createQueueIfDoesNotExist } from '../../../../src/config/initQueue';
+import { initQueue } from '../../../../src/config/initQueue';
 
 describe.skip('ProductSyncQueueRepositoryMongo should', () => {
   before(async () => {
     await mongooseSetup();
 
-    await createQueueIfDoesNotExist();
+    await initQueue();
   });
 
   it('be able fetch the queue', async () => {
