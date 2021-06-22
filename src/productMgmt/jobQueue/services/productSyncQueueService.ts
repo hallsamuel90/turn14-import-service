@@ -5,6 +5,7 @@ import {
 import Container, { Service } from 'typedi';
 import { ProductSyncJob } from '../models/productSyncJob';
 import { JobDto } from '../types';
+import { ProductSyncJobType } from '../productSyncJobType';
 
 @Service()
 export class ProductSyncQueueService {
@@ -63,5 +64,13 @@ export class ProductSyncQueueService {
     const jobQueue = await this.productSyncQueueRepository.fetchQueue();
 
     return jobQueue.isEmpty();
+  }
+
+  public async isBackedUp(jobType: ProductSyncJobType): Promise<boolean> {
+    const jobQueue = await this.productSyncQueueRepository.fetchQueue();
+
+    const filtered = jobQueue.jobQueue.filter((job) => job.jobType === jobType);
+
+    return filtered.length > 0;
   }
 }
