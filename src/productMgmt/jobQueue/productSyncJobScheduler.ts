@@ -34,12 +34,17 @@ export class ProductSyncJobScheduler {
     );
 
     setInterval(async () => {
-      await this.pushJobs(
-        ...this.getJobsForUsers(
-          await this.apiUserService.retrieveAll(),
-          ProductSyncJobType.UPDATE_INVENTORY
-        )
+      const queueIsBackedUp = await this.productSyncQueueService.isBackedUp(
+        ProductSyncJobType.UPDATE_INVENTORY
       );
+      if (!queueIsBackedUp) {
+        await this.pushJobs(
+          ...this.getJobsForUsers(
+            await this.apiUserService.retrieveAll(),
+            ProductSyncJobType.UPDATE_INVENTORY
+          )
+        );
+      }
     }, ProductSyncJobScheduler.ONE_HOUR_SEC * 1000);
   }
 
@@ -52,12 +57,17 @@ export class ProductSyncJobScheduler {
     );
 
     setInterval(async () => {
-      await this.pushJobs(
-        ...this.getJobsForUsers(
-          await this.apiUserService.retrieveAll(),
-          ProductSyncJobType.UPDATE_PRICING
-        )
+      const queueIsBackedUp = await this.productSyncQueueService.isBackedUp(
+        ProductSyncJobType.UPDATE_PRICING
       );
+      if (!queueIsBackedUp) {
+        await this.pushJobs(
+          ...this.getJobsForUsers(
+            await this.apiUserService.retrieveAll(),
+            ProductSyncJobType.UPDATE_PRICING
+          )
+        );
+      }
     }, ProductSyncJobScheduler.ONE_DAY_SEC * 1000);
   }
 
@@ -96,20 +106,18 @@ export class ProductSyncJobScheduler {
       } seconds.`
     );
 
-    await this.pushJobs(
-      ...this.getJobsForUsers(
-        await this.apiUserService.retrieveAll(),
-        ProductSyncJobType.RESYNC_PRODUCTS
-      )
-    );
-
     setInterval(async () => {
-      await this.pushJobs(
-        ...this.getJobsForUsers(
-          await this.apiUserService.retrieveAll(),
-          ProductSyncJobType.RESYNC_PRODUCTS
-        )
+      const queueIsBackedUp = await this.productSyncQueueService.isBackedUp(
+        ProductSyncJobType.RESYNC_PRODUCTS
       );
+      if (!queueIsBackedUp) {
+        await this.pushJobs(
+          ...this.getJobsForUsers(
+            await this.apiUserService.retrieveAll(),
+            ProductSyncJobType.RESYNC_PRODUCTS
+          )
+        );
+      }
     }, ProductSyncJobScheduler.ONE_MONTH);
   }
 
