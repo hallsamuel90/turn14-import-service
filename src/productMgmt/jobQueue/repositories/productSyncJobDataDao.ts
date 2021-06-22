@@ -37,7 +37,7 @@ export default class ProductSyncJobDataDao {
   ): Promise<ProductSyncJobData[]> {
     const result = await ProductSyncJobDataClient.paginate(
       { jobId },
-      { page: pageNumber, lean: true }
+      { page: pageNumber, lean: true, limit: 50 }
     );
 
     return result.docs;
