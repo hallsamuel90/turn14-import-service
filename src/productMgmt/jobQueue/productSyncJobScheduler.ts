@@ -105,6 +105,19 @@ export class ProductSyncJobScheduler {
         ProductSyncJobScheduler.ONE_MONTH / 1000
       } seconds.`
     );
+    if (Boolean(process.env.RESYNC_ON_DEPLOY)) {
+      const queueIsBackedUp = await this.productSyncQueueService.isBackedUp(
+        ProductSyncJobType.RESYNC_PRODUCTS
+      );
+      if (!queueIsBackedUp) {
+        await this.pushJobs(
+          ...this.getJobsForUsers(
+            await this.apiUserService.retrieveAll(),
+            ProductSyncJobType.RESYNC_PRODUCTS
+          )
+        );
+      }
+    }
 
     setInterval(async () => {
       const queueIsBackedUp = await this.productSyncQueueService.isBackedUp(
