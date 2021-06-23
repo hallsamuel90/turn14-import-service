@@ -17,8 +17,6 @@ const appConfig = async (): Promise<void> => {
 
   await initQueue();
 
-  await clearExtraJobs();
-
   await jobSchedulerConfig();
 };
 
